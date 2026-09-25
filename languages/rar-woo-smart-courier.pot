@@ -1,0 +1,1254 @@
+# Copyright (C) 2026 Ruhul Amin
+# This file is distributed under the GPL-2.0-or-later.
+msgid ""
+msgstr ""
+"Project-Id-Version: RAR Woo Smart Courier 2.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/rar-woo-smart-courier\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-09-25T09:08:11+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: rar-woo-smart-courier\n"
+
+#. Plugin Name of the plugin
+#: rar-woo-smart-courier.php
+msgid "RAR Woo Smart Courier"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: rar-woo-smart-courier.php
+msgid "https://github.com/ruhulaminrevens/RAR-Woo-Smart-Courier"
+msgstr ""
+
+#. Description of the plugin
+#: rar-woo-smart-courier.php
+msgid "Smart multi-courier shipping for WooCommerce (Bangladesh): zone + weight pricing, ETA and delivery-date estimates, recommendation badges, shipment tracking, dispatch board, courier dashboard, labels, manifests and CSV export."
+msgstr ""
+
+#. Author of the plugin
+#: rar-woo-smart-courier.php
+msgid "Ruhul Amin"
+msgstr ""
+
+#. Author URI of the plugin
+#: rar-woo-smart-courier.php
+msgid "https://github.com/ruhulaminrevens"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:36
+#: includes/class-rwsc-admin.php:288
+#: includes/class-rwsc-admin.php:307
+#: includes/class-rwsc-orders-admin.php:54
+msgid "Smart Courier"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:37
+msgid "Courier Dashboard"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:37
+#: includes/class-rwsc-admin.php:268
+#: includes/class-rwsc-plugin.php:89
+msgid "Dashboard"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:40
+#: includes/class-rwsc-admin.php:269
+#: includes/class-rwsc-admin.php:318
+msgid "Shipments"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:41
+msgid "Smart Courier Settings"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:41
+#: includes/class-rwsc-admin.php:270
+#: includes/class-rwsc-plugin.php:90
+msgid "Settings"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:164
+msgid "Courier engine is OFF"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:164
+msgid "Customers see your normal WooCommerce shipping methods."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:166
+msgid "Safe Test Mode is ON"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:166
+msgid "Only shop managers see courier options at checkout. Turn it off when you are happy with the rates."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:169
+msgid "No courier is enabled"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:169
+msgid "Enable at least one courier and give it a name."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:204
+msgid "No shipping method for Bangladesh"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:205
+msgid "Your Bangladesh zone only has pickup. Add a \"Flat rate\" method – couriers replace it at checkout."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:205
+msgid "Create a WooCommerce shipping zone for Bangladesh with a \"Flat rate\" method (and optionally \"Free shipping\"). Couriers replace the flat rate at checkout."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:211
+msgid "Bangladesh is not a shipping country"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:211
+msgid "WooCommerce → Settings → General → \"Shipping location(s)\" must include Bangladesh."
+msgstr ""
+
+#. translators: %s: weight unit
+#: includes/class-rwsc-admin.php:217
+#, php-format
+msgid "Product weights are in %s"
+msgstr ""
+
+#. translators: %s: weight unit
+#: includes/class-rwsc-admin.php:217
+msgid "They are converted to kg automatically for courier pricing."
+msgstr ""
+
+#. translators: 1: number of products, 2: fallback kg
+#: includes/class-rwsc-admin.php:222
+#, php-format
+msgid "%d product has no weight"
+msgid_plural "%d products have no weight"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: 1: number of products, 2: fallback kg
+#: includes/class-rwsc-admin.php:222
+#, php-format
+msgid "The fallback weight (%s kg per item) is used for them."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:253
+msgid "Safe Test Mode is ON – only shop managers see courier options at checkout."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:253
+msgid "Review settings"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:263
+msgid "Live at checkout"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:264
+#: includes/class-rwsc-admin.php:530
+msgid "Safe Test Mode"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:265
+msgid "Engine off"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:304
+#: includes/class-rwsc-admin.php:315
+#: includes/class-rwsc-admin.php:392
+msgid "You do not have permission to view this page."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:307
+msgid "Courier performance, dispatch queue and live rate calculator"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:308
+msgid "Loading dashboard…"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:309
+msgid "Please enable JavaScript to use the dashboard."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:318
+msgid "Book, track and hand over parcels courier by courier"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:319
+msgid "Loading shipments…"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:346
+msgid "Enabled"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:347
+msgid "Colour"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:348
+msgid "Courier name"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:349
+msgid "Priority"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:352
+msgid "Remove courier"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:358
+#: includes/class-rwsc-orders-admin.php:89
+msgid "Zone"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:359
+msgid "On"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:360
+msgid "+ per kg"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:361
+msgid "Delivery time (ETA)"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:378
+msgid "Tracking link"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:381
+msgid "Max weight (kg, 0 = no limit)"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:398
+msgid "Settings saved. Checkout rates were refreshed."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:399
+msgid "Settings imported."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:400
+msgid "Settings reset to defaults."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:401
+msgid "Import failed: that is not a valid Smart Courier settings export."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:402
+msgid "Tracking page created."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:405
+#: includes/class-rwsc-admin.php:443
+msgid "Couriers & rates"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:406
+msgid "Zones & weight"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:407
+#: includes/class-rwsc-admin.php:524
+msgid "Checkout display"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:408
+#: includes/class-rwsc-admin.php:576
+msgid "Delivery dates"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:409
+#: includes/class-rwsc-admin.php:608
+msgid "Tracking & automation"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:410
+#: includes/class-rwsc-admin.php:680
+msgid "Tools"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:424
+msgid "Smart Courier settings"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:424
+msgid "Rates, zones, delivery dates, checkout display and automation"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:444
+msgid "Charges per parcel by zone and weight: up to 1 kg, up to 2 kg, then an extra amount for every started kg above 2 kg. Use the rates from your own courier contracts."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:445
+msgid "Add courier"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:455
+msgid "A zone with no \"≤ 1 kg\" price (0) is not offered for that courier. Use WooCommerce Free shipping for free delivery."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:456
+msgid "Tracking link placeholders: {tracking} = tracking / consignment number, {phone} = customer phone (01XXXXXXXXX), {order} = order number."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:461
+msgid "Delivery zones"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:462
+msgid "Dhaka district = Inside Dhaka. Pick the districts that get the Nearby rate, and the areas inside Dhaka district (Savar, Keraniganj …) that couriers charge as Nearby."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:465
+msgid "Nearby districts"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:467
+msgid "Search districts (English or বাংলা)…"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:474
+#: includes/class-rwsc-locations.php:297
+msgid "Inside Dhaka"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:484
+msgid "Nearby areas inside Dhaka district"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:486
+msgid "Add area and press Enter"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:487
+msgid "Matched against the Town / City (and address lines when enabled below). English and বাংলা both work."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:490
+msgid "Always \"Inside Dhaka\" areas"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:492
+msgid "e.g. Tongi, Uttara"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:493
+msgid "Optional. Areas outside Dhaka district that your couriers charge at the Inside Dhaka rate."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:499
+msgid "Address matching"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:500
+msgid "Also look for area names in the address lines"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:500
+msgid "Recommended – many customers write \"Savar\" in the address and \"Dhaka\" as the city."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:501
+msgid "Only for Bangladesh addresses"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:501
+msgid "Other countries keep your normal WooCommerce rates."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:504
+msgid "Parcel weight"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:506
+msgid "Fallback weight per item (kg)"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:508
+msgid "Packaging weight per parcel (kg)"
+msgstr ""
+
+#. translators: %s: store weight unit
+#: includes/class-rwsc-admin.php:512
+#, php-format
+msgid "Product weights are read in your store unit (%s) and converted to kg."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:517
+msgid "Test an address"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:517
+msgid "(uses saved settings)"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:525
+msgid "How courier choices look and which one is pre-selected for the customer."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:528
+msgid "Engine"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:529
+msgid "Show courier choices at checkout"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:529
+msgid "Replaces the zone's flat rate with one option per courier."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:530
+msgid "Only shop managers see the couriers. Customers keep the normal shipping until you switch this off."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:531
+msgid "Keep \"Local pickup\" as an extra option"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:534
+msgid "Recommendation"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:537
+msgid "Smart"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:537
+msgid "Fastest delivery first, then lower price, then your priority."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:538
+#: includes/class-rwsc-admin.php:559
+msgid "Cheapest"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:538
+msgid "Lowest price first, then faster delivery."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:539
+msgid "My priority"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:539
+msgid "Your priority numbers decide (lower = first)."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:545
+msgid "The recommended courier is listed first and pre-selected."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:550
+msgid "Label"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:551
+msgid "Detailed"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:551
+msgid "Colour dot, badges, price, and a second line with ETA + delivery date."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:552
+msgid "Compact"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:553
+msgid "Show delivery time (ETA)"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:554
+msgid "Show estimated delivery date"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:554
+msgid "e.g. \"Arrives Sat 27 – Sun 28 Sep\" – uses your weekend, holidays and cut-off time."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:555
+msgid "Show badges"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:557
+msgid "Recommended"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:558
+msgid "Fastest"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:561
+msgid "Leave a badge text empty to hide that badge."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:564
+msgid "Free shipping"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:565
+msgid "When WooCommerce \"Free shipping\" applies (e.g. minimum order amount), couriers become free and the normal price is shown struck through."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:566
+msgid "Every courier is free"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:567
+msgid "Only the recommended courier is free"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:567
+msgid "Customers can still pay for another courier."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:568
+msgid "Preview"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:568
+msgid "Inside Dhaka, 1 kg"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:577
+msgid "Estimated delivery dates count business days from the day the parcel can be handed over."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:580
+msgid "Weekly off-days"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:590
+msgid "Same-day hand-over cut-off"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:592
+msgid "Orders after this time are counted from the next business day."
+msgstr ""
+
+#. translators: %s: date
+#: includes/class-rwsc-admin.php:594
+#, php-format
+msgid "An order placed now is handed over on %s."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:597
+msgid "Holidays"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:600
+msgid "One per line: YYYY-MM-DD and an optional name. Add Eid and other moon-dependent holidays when they are announced."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:601
+msgid "Add fixed-date national holidays for next 12 months"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:609
+msgid "What the customer sees, and what happens automatically as parcels move."
+msgstr ""
+
+#. translators: 1 parcels 2 cod 3 kg
+#: includes/class-rwsc-admin.php:612
+#: includes/class-rwsc-print.php:268
+msgid "Customer"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:613
+msgid "Email the customer when a tracking number is added"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:613
+msgid "Sent as a WooCommerce customer note with the tracking link and delivery estimate."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:614
+msgid "Show courier & tracking on the order page"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:614
+msgid "Thank-you page, My Account → Orders, plus a \"Track\" button."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:615
+msgid "Add courier & tracking to order emails"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:617
+msgid "Public tracking page shortcode:"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:619
+msgid "View tracking page"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:621
+msgid "Create a \"Track your order\" page"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:626
+msgid "Automation"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:627
+msgid "Auto-assign the recommended courier"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:627
+msgid "For orders created by phone, admin or the staff app, when they reach a \"ready\" status."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:629
+msgid "Ready to ship when the order is"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:635
+msgid "Mark the order Completed when the parcel is Delivered"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:636
+msgid "When a parcel is Returned, set the order to"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:638
+msgid "— leave the order status —"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:643
+msgid "Warn when a parcel waits for booking longer than (days)"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:649
+msgid "Cash on delivery"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:651
+msgid "Orders paid with these methods show the amount to collect on labels, manifests and CSV."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:662
+msgid "Sender on labels"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:664
+msgid "Shop name"
+msgstr ""
+
+#. translators: 1 parcels 2 cod 3 kg
+#: includes/class-rwsc-admin.php:665
+#: includes/class-rwsc-print.php:268
+msgid "Phone"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:667
+msgid "Return address"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:673
+msgid "Unsaved changes"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:674
+msgid "Save settings"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:680
+msgid "Backup, move settings between sites, and check your setup."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:683
+msgid "Export settings"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:685
+msgid "Copy"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:685
+msgid "Download .json"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:688
+msgid "Import settings"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:693
+msgid "Import"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:695
+msgid "Reset every Smart Courier setting to defaults?"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:698
+msgid "Reset to defaults"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:703
+msgid "Setup check"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:706
+msgid "Plugin"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:709
+msgid "Order storage"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:710
+msgid "Weight unit / currency"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:711
+msgid "Timezone"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:712
+msgid "v1.x order upgrade"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:712
+msgid "Done"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:712
+msgid "Running in the background"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:733
+#: includes/class-rwsc-admin.php:745
+#: includes/class-rwsc-admin.php:771
+#: includes/class-rwsc-admin.php:780
+#: includes/class-rwsc-print.php:76
+msgid "Not allowed."
+msgstr ""
+
+#: includes/class-rwsc-admin.php:789
+#: includes/class-rwsc-frontend.php:156
+msgid "Track your order"
+msgstr ""
+
+#: includes/class-rwsc-ajax.php:22
+msgid "Your session expired. Please reload the page."
+msgstr ""
+
+#: includes/class-rwsc-ajax.php:26
+msgid "You are not allowed to do that."
+msgstr ""
+
+#: includes/class-rwsc-ajax.php:97
+#: includes/class-rwsc-ajax.php:116
+#: includes/functions.php:57
+msgid "Order not found."
+msgstr ""
+
+#: includes/class-rwsc-ajax.php:131
+msgid "Nothing to update."
+msgstr ""
+
+#. translators: %s: date
+#: includes/class-rwsc-engine.php:237
+#, php-format
+msgid "Today, %s"
+msgstr ""
+
+#. translators: %s: date
+#: includes/class-rwsc-engine.php:241
+#, php-format
+msgid "Tomorrow, %s"
+msgstr ""
+
+#. translators: %s: estimated delivery date(s)
+#. translators: %s: date range
+#: includes/class-rwsc-engine.php:556
+#: includes/class-rwsc-engine.php:633
+#, php-format
+msgid "Arrives %s"
+msgstr ""
+
+#: includes/class-rwsc-frontend.php:43
+msgid "Order confirmed"
+msgstr ""
+
+#: includes/class-rwsc-frontend.php:44
+#: includes/class-rwsc-shipments.php:40
+msgid "Booked"
+msgstr ""
+
+#: includes/class-rwsc-frontend.php:45
+#: includes/class-rwsc-shipments.php:41
+msgid "Picked up"
+msgstr ""
+
+#: includes/class-rwsc-frontend.php:46
+msgid "On the way"
+msgstr ""
+
+#: includes/class-rwsc-frontend.php:47
+#: includes/class-rwsc-shipments.php:45
+msgid "Returned"
+msgstr ""
+
+#: includes/class-rwsc-frontend.php:47
+#: includes/class-rwsc-shipments.php:44
+msgid "Delivered"
+msgstr ""
+
+#: includes/class-rwsc-frontend.php:52
+#: includes/class-rwsc-frontend.php:106
+#: includes/class-rwsc-frontend.php:116
+msgid "Delivery"
+msgstr ""
+
+#: includes/class-rwsc-frontend.php:55
+msgid "Preparing your parcel"
+msgstr ""
+
+#: includes/class-rwsc-frontend.php:63
+#: includes/class-rwsc-frontend.php:94
+msgid "Delivery time"
+msgstr ""
+
+#: includes/class-rwsc-frontend.php:64
+#: includes/class-rwsc-frontend.php:97
+msgid "Estimated arrival"
+msgstr ""
+
+#: includes/class-rwsc-frontend.php:65
+msgid "Delivered on"
+msgstr ""
+
+#: includes/class-rwsc-frontend.php:66
+#: includes/class-rwsc-frontend.php:100
+msgid "Tracking number"
+msgstr ""
+
+#: includes/class-rwsc-frontend.php:67
+msgid "Pay on delivery"
+msgstr ""
+
+#. translators: %s courier
+#: includes/class-rwsc-frontend.php:70
+#: includes/class-rwsc-frontend.php:123
+#, php-format
+msgid "Track on %s"
+msgstr ""
+
+#: includes/class-rwsc-frontend.php:92
+#: includes/class-rwsc-orders-admin.php:100
+#: includes/class-rwsc-orders-admin.php:194
+#: includes/class-rwsc-orders-admin.php:198
+#: includes/class-rwsc-orders-admin.php:244
+#: includes/class-rwsc-orders-admin.php:379
+#: includes/class-rwsc-print.php:203
+msgid "Courier"
+msgstr ""
+
+#: includes/class-rwsc-frontend.php:103
+msgid "Shipment"
+msgstr ""
+
+#: includes/class-rwsc-frontend.php:111
+#: includes/class-rwsc-frontend.php:136
+#: includes/class-rwsc-frontend.php:198
+msgid "Track"
+msgstr ""
+
+#: includes/class-rwsc-frontend.php:168
+#: includes/class-rwsc-frontend.php:184
+msgid "No order matches that order number and phone number."
+msgstr ""
+
+#: includes/class-rwsc-frontend.php:171
+msgid "Too many attempts. Please try again in a few minutes."
+msgstr ""
+
+#: includes/class-rwsc-frontend.php:179
+msgid "We found your order. It has not been handed to a courier yet – please check back soon."
+msgstr ""
+
+#. translators: 1: order number 2: order status
+#: includes/class-rwsc-frontend.php:182
+#, php-format
+msgid "Order #%1$s · %2$s"
+msgstr ""
+
+#: includes/class-rwsc-frontend.php:196
+msgid "Order number"
+msgstr ""
+
+#: includes/class-rwsc-frontend.php:197
+msgid "Phone number used for the order"
+msgstr ""
+
+#: includes/class-rwsc-locations.php:298
+msgid "Nearby Dhaka"
+msgstr ""
+
+#: includes/class-rwsc-locations.php:299
+msgid "Outside Dhaka"
+msgstr ""
+
+#: includes/class-rwsc-orders-admin.php:90
+msgid "ETA"
+msgstr ""
+
+#: includes/class-rwsc-orders-admin.php:91
+msgid "Estimated"
+msgstr ""
+
+#: includes/class-rwsc-orders-admin.php:92
+msgid "Weight"
+msgstr ""
+
+#: includes/class-rwsc-orders-admin.php:94
+msgid "Free ship"
+msgstr ""
+
+#: includes/class-rwsc-orders-admin.php:94
+msgid "Yes – normal"
+msgstr ""
+
+#: includes/class-rwsc-orders-admin.php:97
+msgid "No courier yet. Pick one below (or \"Recommended\") and update the order."
+msgstr ""
+
+#: includes/class-rwsc-orders-admin.php:102
+msgid "— keep —"
+msgstr ""
+
+#: includes/class-rwsc-orders-admin.php:103
+msgid "★ Recommended for this address"
+msgstr ""
+
+#: includes/class-rwsc-orders-admin.php:105
+msgid "disabled"
+msgstr ""
+
+#: includes/class-rwsc-orders-admin.php:109
+msgid "Tracking / consignment no."
+msgstr ""
+
+#: includes/class-rwsc-orders-admin.php:113
+msgid "Open tracking page ↗"
+msgstr ""
+
+#: includes/class-rwsc-orders-admin.php:115
+#: includes/class-rwsc-orders-admin.php:252
+msgid "Shipment status"
+msgstr ""
+
+#: includes/class-rwsc-orders-admin.php:122
+msgid "Note for courier / label"
+msgstr ""
+
+#: includes/class-rwsc-orders-admin.php:125
+msgid "Email the customer when tracking is added"
+msgstr ""
+
+#: includes/class-rwsc-orders-admin.php:127
+msgid "Print label"
+msgstr ""
+
+#: includes/class-rwsc-orders-admin.php:128
+msgid "Shipments board"
+msgstr ""
+
+#: includes/class-rwsc-orders-admin.php:131
+msgid "Timeline"
+msgstr ""
+
+#: includes/class-rwsc-orders-admin.php:244
+msgid "All couriers"
+msgstr ""
+
+#: includes/class-rwsc-orders-admin.php:245
+msgid "No courier"
+msgstr ""
+
+#: includes/class-rwsc-orders-admin.php:252
+msgid "Any shipment status"
+msgstr ""
+
+#: includes/class-rwsc-orders-admin.php:312
+msgid "Courier: assign recommended"
+msgstr ""
+
+#. translators: %s: shipment status
+#: includes/class-rwsc-orders-admin.php:315
+#, php-format
+msgid "Shipment: mark %s"
+msgstr ""
+
+#: includes/class-rwsc-orders-admin.php:317
+msgid "Courier: print labels"
+msgstr ""
+
+#: includes/class-rwsc-orders-admin.php:318
+msgid "Courier: hand-over manifest"
+msgstr ""
+
+#: includes/class-rwsc-orders-admin.php:319
+msgid "Courier: export CSV"
+msgstr ""
+
+#. translators: %d: count
+#: includes/class-rwsc-orders-admin.php:363
+#, php-format
+msgid "Smart Courier updated %d order."
+msgid_plural "Smart Courier updated %d orders."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: count
+#: includes/class-rwsc-orders-admin.php:366
+#, php-format
+msgid "%d order could not be updated."
+msgid_plural "%d orders could not be updated."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/class-rwsc-plugin.php:84
+msgid "needs WooCommerce to be installed and active."
+msgstr ""
+
+#: includes/class-rwsc-print.php:158
+#: includes/class-rwsc-print.php:161
+msgid "Parcel labels"
+msgstr ""
+
+#. translators: %d count
+#. translators: %d parcels
+#: includes/class-rwsc-print.php:161
+#: includes/class-rwsc-print.php:257
+#, php-format
+msgid "%d parcel"
+msgid_plural "%d parcels"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/class-rwsc-print.php:165
+#: includes/class-rwsc-print.php:245
+msgid "Print"
+msgstr ""
+
+#: includes/class-rwsc-print.php:168
+#: includes/class-rwsc-print.php:247
+msgid "No orders selected."
+msgstr ""
+
+#: includes/class-rwsc-print.php:207
+msgid "Deliver to"
+msgstr ""
+
+#: includes/class-rwsc-print.php:214
+msgid "COLLECT (COD)"
+msgstr ""
+
+#: includes/class-rwsc-print.php:216
+msgid "PAYMENT"
+msgstr ""
+
+#: includes/class-rwsc-print.php:216
+msgid "PAID"
+msgstr ""
+
+#. translators: 1: qty 2: kg
+#: includes/class-rwsc-print.php:221
+#, php-format
+msgid "%1$d pcs · %2$s kg"
+msgstr ""
+
+#: includes/class-rwsc-print.php:244
+#: includes/class-rwsc-print.php:256
+msgid "Courier hand-over manifest"
+msgstr ""
+
+#: includes/class-rwsc-print.php:245
+msgid "Hand-over manifest"
+msgstr ""
+
+#: includes/class-rwsc-print.php:261
+msgid "Unassigned"
+msgstr ""
+
+#. translators: 1 parcels 2 cod 3 kg
+#: includes/class-rwsc-print.php:267
+#, php-format
+msgid "%1$d parcels · COD %2$s · %3$s kg"
+msgstr ""
+
+#. translators: 1 parcels 2 cod 3 kg
+#: includes/class-rwsc-print.php:268
+msgid "Order"
+msgstr ""
+
+#. translators: 1 parcels 2 cod 3 kg
+#: includes/class-rwsc-print.php:268
+msgid "Address"
+msgstr ""
+
+#. translators: 1 parcels 2 cod 3 kg
+#: includes/class-rwsc-print.php:268
+msgid "Items"
+msgstr ""
+
+#. translators: 1 parcels 2 cod 3 kg
+#: includes/class-rwsc-print.php:268
+msgid "Tracking"
+msgstr ""
+
+#. translators: 1 parcels 2 cod 3 kg
+#: includes/class-rwsc-print.php:268
+msgid "Status"
+msgstr ""
+
+#: includes/class-rwsc-print.php:289
+msgid "Paid"
+msgstr ""
+
+#: includes/class-rwsc-print.php:294
+msgid "Total"
+msgstr ""
+
+#: includes/class-rwsc-print.php:295
+msgid "Handed over by (shop)"
+msgstr ""
+
+#: includes/class-rwsc-print.php:295
+msgid "Received by (courier rep, name & phone)"
+msgstr ""
+
+#: includes/class-rwsc-print.php:295
+msgid "Date & time"
+msgstr ""
+
+#: includes/class-rwsc-shipments.php:39
+msgid "Awaiting booking"
+msgstr ""
+
+#: includes/class-rwsc-shipments.php:39
+msgid "To book"
+msgstr ""
+
+#: includes/class-rwsc-shipments.php:41
+msgid "Picked"
+msgstr ""
+
+#: includes/class-rwsc-shipments.php:42
+msgid "In transit"
+msgstr ""
+
+#: includes/class-rwsc-shipments.php:42
+msgid "Transit"
+msgstr ""
+
+#: includes/class-rwsc-shipments.php:43
+msgid "On hold / issue"
+msgstr ""
+
+#: includes/class-rwsc-shipments.php:43
+msgid "Hold"
+msgstr ""
+
+#: includes/class-rwsc-shipments.php:223
+msgid "System"
+msgstr ""
+
+#. translators: %s: courier name
+#: includes/class-rwsc-shipments.php:305
+#, php-format
+msgid "Customer chose %s at checkout"
+msgstr ""
+
+#: includes/class-rwsc-shipments.php:325
+msgid "This order has no items that need shipping."
+msgstr ""
+
+#: includes/class-rwsc-shipments.php:335
+msgid "Delivery address is outside Bangladesh or could not be resolved."
+msgstr ""
+
+#: includes/class-rwsc-shipments.php:359
+msgid "No enabled courier is available for this address and weight."
+msgstr ""
+
+#: includes/class-rwsc-shipments.php:401
+msgid "Unknown courier."
+msgstr ""
+
+#. translators: %s: courier name
+#: includes/class-rwsc-shipments.php:411
+#, php-format
+msgid "Courier set to %s"
+msgstr ""
+
+#. translators: %s: tracking number
+#: includes/class-rwsc-shipments.php:423
+#, php-format
+msgid "Tracking number %s"
+msgstr ""
+
+#. translators: %s: tracking number
+#: includes/class-rwsc-shipments.php:423
+msgid "Tracking number removed"
+msgstr ""
+
+#: includes/class-rwsc-shipments.php:438
+msgid "Unknown shipment status."
+msgstr ""
+
+#. translators: %s: shipment status
+#: includes/class-rwsc-shipments.php:463
+#, php-format
+msgid "Shipment %s"
+msgstr ""
+
+#: includes/class-rwsc-shipments.php:498
+msgid "Smart Courier: parcel delivered."
+msgstr ""
+
+#: includes/class-rwsc-shipments.php:502
+msgid "Smart Courier: parcel returned."
+msgstr ""
+
+#. translators: 1: courier name, 2: tracking number
+#: includes/class-rwsc-shipments.php:514
+#, php-format
+msgid "Your parcel has been handed to %1$s. Tracking number: %2$s."
+msgstr ""
+
+#. translators: %s: URL
+#: includes/class-rwsc-shipments.php:517
+#, php-format
+msgid "Track it here: %s"
+msgstr ""
+
+#. translators: %s: date range
+#: includes/class-rwsc-shipments.php:521
+#, php-format
+msgid "Estimated delivery: %s."
+msgstr ""
+
+#. translators: %s: courier name
+#: includes/class-rwsc-shipments.php:548
+#, php-format
+msgid "Auto-assigned %s (recommended)"
+msgstr ""
