@@ -1,0 +1,93 @@
+name: PHP quality checks and installable ZIP
+on:
+  push:
+    branches: [main, 'fix/**']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  php:
+    name: PHP ${{ matrix.php }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['7.4', '8.2', '8.3']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          tools: none
+          coverage: none
+          extensions: openssl
+      - name: PHP syntax
+        run: find . -name '*.php' -not -path './releases/*' -print0 | xargs -0 -n1 php -l
+      - name: Logic assertions
+        run: php tests/logic-test.php
+      - name: Legacy settings regression
+        run: php tests/migration-test.php
+      - name: Resumable parcel backfill regression
+        run: php tests/backfill-test.php
+      - name: Browser asset syntax
+        run: |
+          for file in assets/js/*.js; do node --check "$file"; done
+
+  package:
+    name: Installable WordPress ZIP
+    needs: php
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Package plugin directory without dev and legacy files
+        run: |
+          mkdir -p dist/rar-woo-smart-courier
+          cp rar-woo-smart-courier.php readme.txt uninstall.php LICENSE NOTICE.txt dist/rar-woo-smart-courier/
+          cp -R includes assets languages dist/rar-woo-smart-courier/
+          (cd dist && zip -qr ../rar-woo-smart-courier-v3.1.0.zip rar-woo-smart-courier)
+          unzip -t rar-woo-smart-courier-v3.1.0.zip
+          sha256sum rar-woo-smart-courier-v3.1.0.zip > rar-woo-smart-courier-v3.1.0.zip.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rar-woo-smart-courier-v3.1.0-installable
+          path: |
+            rar-woo-smart-courier-v3.1.0.zip
+            rar-woo-smart-courier-v3.1.0.zip.sha256
+          retention-days: 90
+
+  publish:
+    name: Publish tested v3.1.0 GitHub Release
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [php, package]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: rar-woo-smart-courier-v3.1.0-installable
+          path: release-dist
+      - name: Verify artifact
+        run: |
+          cd release-dist
+          sha256sum -c rar-woo-smart-courier-v3.1.0.zip.sha256
+          unzip -t rar-woo-smart-courier-v3.1.0.zip
+      - name: Create GitHub release once after all checks pass
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if gh release view v3.1.0 >/dev/null 2>&1; then
+            echo "v3.1.0 already released; not changing an existing release"
+            exit 0
+          fi
+          gh release create v3.1.0 \
+            release-dist/rar-woo-smart-courier-v3.1.0.zip \
+            release-dist/rar-woo-smart-courier-v3.1.0.zip.sha256 \
+            --target "$GITHUB_SHA" \
+            --title "RAR Woo Smart Courier Pro v3.1.0" \
+            --notes-file docs/RELEASE_NOTES_3.1.0.md \
+            --latest

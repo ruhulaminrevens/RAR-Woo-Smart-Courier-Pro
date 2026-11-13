@@ -50,7 +50,7 @@ final class RAR_Woo_Smart_Courier {
         // API courier dispatch (Pathao / RedX / SteadFast / Paperfly / Sundarban).
         RWSC_Dispatch::load();
         RWSC_Dispatch::boot();
-        if ( is_admin() && ! RWSC_Dispatch::suite_active() ) {
+        if ( is_admin() && ! RWSC_Dispatch::conflicting_dispatch_active() ) {
             RWSC_Dispatch_Admin::init();
         }
 
@@ -77,34 +77,35 @@ final class RAR_Woo_Smart_Courier {
     }
 
     public static function maybe_upgrade() {
-        RWSC_Settings::migrate(); // Idempotent: returns at once when settings are already v2.
+        RWSC_Settings::migrate(); // Idempotent v1 -> v2 settings migration.
         $stored = (string) get_option( 'rwsc_version', '' );
+        if ( RWSC_VERSION !== $stored ) {
+            if ( '' === $stored || version_compare( $stored, '2.0.0', '<' ) ) {
+                delete_option( 'rwsc_backfill_done' );
+            }
+            if ( '' === $stored || version_compare( $stored, '3.1.0', '<' ) ) {
+                // v3.0 incorrectly marked the first 300 orders as a complete
+                // migration. Restart the resumable scan once on upgrade.
+                delete_option( 'rwsc_dispatch_backfill_done' );
+                delete_option( 'rwsc_dispatch_backfill_cursor' );
+            }
+            update_option( 'rwsc_version', RWSC_VERSION, false );
+            if ( class_exists( 'WC_Cache_Helper' ) ) {
+                WC_Cache_Helper::get_transient_version( 'shipping', true );
+            }
+        }
         self::maybe_backfill_dispatch();
-        if ( RWSC_VERSION === $stored ) {
-            return;
-        }
-        if ( '' === $stored || version_compare( $stored, '2.0.0', '<' ) ) {
-            delete_option( 'rwsc_backfill_done' );
-        }
-        if ( '' === $stored || version_compare( $stored, '3.0.0', '<' ) ) {
-            // v3: dispatch engine arrives. Pull in RAR Courier Suite settings and mirror its parcels once.
-            delete_option( 'rwsc_dispatch_backfill_done' );
-        }
-        update_option( 'rwsc_version', RWSC_VERSION, false );
-        if ( class_exists( 'WC_Cache_Helper' ) ) {
-            WC_Cache_Helper::get_transient_version( 'shipping', true );
-        }
     }
 
-    /** One-time: mirror existing API parcels (e.g. from RAR Courier Suite) into the shipment board. */
+    /** Incrementally mirror Suite API parcels into the unified shipment board. */
     public static function maybe_backfill_dispatch() {
-        if ( ! is_admin() || get_option( 'rwsc_dispatch_backfill_done' ) || ! class_exists( 'RWSC_Dispatch' ) ) {
+        if ( ! is_admin() || ! current_user_can( 'manage_woocommerce' )
+            || get_option( 'rwsc_dispatch_backfill_done' ) ) {
             return;
         }
         RWSC_Dispatch::load();
         RWSC_Api_Settings::maybe_import_suite();
-        RWSC_Bridge::backfill( 300 );
-        update_option( 'rwsc_dispatch_backfill_done', time(), false );
+        RWSC_Bridge::backfill( 300 ); // Continues in WP-Cron; never marks partial scans complete.
     }
 
     public function missing_wc_notice() {

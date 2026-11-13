@@ -17,7 +17,7 @@ final class RWSC_Api_Settings {
 	const SUITE_TOKEN  = 'pt_hms_token_data';
 
 	/** Fields stored encrypted at rest. */
-	const SECRETS = array( 'client_secret', 'password', 'redx_token', 'sf_api_key', 'sf_secret_key', 'sf_webhook_token', 'pf_password', 'pf_key' );
+	const SECRETS = array( 'client_secret', 'password', 'webhook_secret', 'redx_token', 'sf_api_key', 'sf_secret_key', 'sf_webhook_token', 'pf_password', 'pf_key' );
 
 	/** @var array|null */
 	private static $cache = null;
@@ -106,6 +106,7 @@ final class RWSC_Api_Settings {
 			return self::$cache;
 		}
 		self::maybe_import_suite();
+		self::harden_legacy_webhook_secret();
 		$saved = get_option( self::OPTION, array() );
 		$saved = is_array( $saved ) ? $saved : array();
 		$out   = wp_parse_args( $saved, self::defaults() );
@@ -143,18 +144,63 @@ final class RWSC_Api_Settings {
 			return false;
 		}
 		$done  = true;
-		$own   = get_option( self::OPTION, null );
 		$suite = get_option( self::SUITE_OPTION, null );
-		if ( ( ! $force && null !== $own ) || ! is_array( $suite ) || empty( $suite ) ) {
+		if ( ! is_array( $suite ) || ! $suite ) {
 			return false;
 		}
-		$merged = is_array( $own ) ? array_merge( $suite, array_filter( $own, 'strlen' ) ) : $suite;
-		update_option( self::OPTION, $merged, false );
+
+		$own    = get_option( self::OPTION, null );
+		$merged = is_array( $own ) ? $own : array();
+		$changed = false;
+		foreach ( $suite as $key => $value ) {
+			// Preserve explicitly configured Pro values. Do not call strlen() on
+			// arrays (e.g. queue_statuses), which throws TypeError on PHP 8.
+			if ( ! array_key_exists( $key, $merged ) || null === $merged[ $key ] || '' === $merged[ $key ] ) {
+				$merged[ $key ] = $value;
+				$changed = true;
+			}
+		}
+		// The original Suite stores most secrets as rpc1: ciphertext. The
+		// webhook secret was plaintext; secure it during migration as well.
+		if ( ! empty( $merged['webhook_secret'] ) && 0 !== strpos( (string) $merged['webhook_secret'], 'rpc1:' ) ) {
+			$merged['webhook_secret'] = self::encrypt( (string) $merged['webhook_secret'] );
+			$changed = true;
+		}
+		if ( $changed ) {
+			update_option( self::OPTION, $merged, false );
+			self::$cache = null;
+		}
 		$token = get_option( self::SUITE_TOKEN, null );
 		if ( $token && false === get_option( RWSC_Pathao_API::TOKEN_OPTION, false ) ) {
 			update_option( RWSC_Pathao_API::TOKEN_OPTION, $token, false );
+			$changed = true;
 		}
-		update_option( 'rwsc_suite_imported', time(), false );
+		if ( $changed || false === get_option( 'rwsc_suite_imported', false ) ) {
+			update_option( 'rwsc_suite_imported', time(), false );
+		}
+		return $changed;
+	}
+
+	/**
+	 * Encrypt an existing plaintext webhook credential on first read. v3.0.0
+	 * stored webhook_secret unencrypted because it was omitted from SECRETS.
+	 * Never replace a value when OpenSSL is unavailable or encryption fails.
+	 */
+	public static function harden_legacy_webhook_secret() {
+		$saved = get_option( self::OPTION, array() );
+		if ( ! is_array( $saved ) ) {
+			return false;
+		}
+		$old = (string) ( $saved['webhook_secret'] ?? '' );
+		if ( '' === $old || 0 === strpos( $old, 'rpc1:' ) ) {
+			return false;
+		}
+		$enc = self::encrypt( $old );
+		if ( 0 !== strpos( $enc, 'rpc1:' ) ) {
+			return false;
+		}
+		$saved['webhook_secret'] = $enc;
+		update_option( self::OPTION, $saved, false );
 		self::$cache = null;
 		return true;
 	}

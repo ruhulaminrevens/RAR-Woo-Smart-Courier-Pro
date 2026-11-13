@@ -21,6 +21,7 @@ final class RWSC_Bridge {
 		add_action( 'rpc_courier_status_changed', array( __CLASS__, 'on_courier_event' ), 20, 2 );
 		add_action( 'rpc_status_changed', array( __CLASS__, 'on_pathao_status' ), 20, 1 );
 		add_action( 'pathao_after_send_order', array( __CLASS__, 'on_pathao_sent' ), 20, 3 );
+		add_action( 'rwsc_dispatch_backfill_batch', array( __CLASS__, 'run_backfill' ) );
 	}
 
 	/** Engine group/slug => shipment status. */
@@ -82,13 +83,17 @@ final class RWSC_Bridge {
 		);
 		// A manual shipment-board edit to "delivered/returned" must not be undone by a stale sync.
 		$cur = (string) $order->get_meta( '_rwsc_status', true );
-		if ( in_array( $cur, array( 'delivered', 'returned' ), true ) && ! $info['final'] ) {
+		if ( in_array( $cur, array( 'delivered', 'returned' ), true ) && $cur !== $changes['status'] ) {
+			// Never silently reverse an already terminal board state.
 			unset( $changes['status'] );
 		}
 		$before     = RWSC_Shipments::get( $order );
 		self::$busy = true;
-		$r          = RWSC_Shipments::update( $order, $changes, wp_parse_args( $args, array( 'notify' => null, 'save' => true ) ) );
-		self::$busy = false;
+		try {
+			$r = RWSC_Shipments::update( $order, $changes, wp_parse_args( $args, array( 'notify' => null, 'save' => true, 'source' => 'api' ) ) );
+		} finally {
+			self::$busy = false;
+		}
 		if ( is_wp_error( $r ) ) {
 			RWSC_Logger::debug( 'Bridge sync failed: ' . $r->get_error_message(), array( 'order' => $order->get_id() ) );
 			return false;
@@ -108,45 +113,86 @@ final class RWSC_Bridge {
 	 * @param int $limit Orders per run.
 	 * @return array array( scanned, synced )
 	 */
+	/**
+	 * Resume the legacy parcel import in bounded pages. Never declare completion
+	 * after an arbitrary first 300 orders; stores may have years of parcels.
+	 * Cursor persists per courier so PHP timeouts do not restart the scan.
+	 *
+	 * @return array scanned, synced, complete
+	 */
 	public static function backfill( $limit = 300 ) {
-		$scanned = 0;
-		$synced  = 0;
-		$seen    = array();
-		foreach ( RWSC_Couriers::slugs() as $slug ) {
-			$key = RWSC_Couriers::id_key( $slug );
+		$size     = 100;
+		$pages    = max( 1, min( 10, (int) ceil( (int) $limit / $size ) ) );
+		$state    = get_option( 'rwsc_dispatch_backfill_cursor', array() );
+		$index    = max( 0, (int) ( $state['courier'] ?? 0 ) );
+		$page     = max( 1, (int) ( $state['page'] ?? 1 ) );
+		$slugs    = array_values( RWSC_Couriers::slugs() );
+		$scanned  = 0;
+		$synced   = 0;
+		$run      = 0;
+
+		while ( $index < count( $slugs ) && $run < $pages ) {
+			$key = RWSC_Couriers::id_key( $slugs[ $index ] );
 			if ( '' === $key ) {
+				++$index;
+				$page = 1;
 				continue;
 			}
-			$ids = wc_get_orders(
-				array(
-					'limit'        => (int) $limit,
-					'return'       => 'ids',
-					'type'         => 'shop_order',
-					'orderby'      => 'date',
-					'order'        => 'DESC',
-					'meta_key'     => $key, // phpcs:ignore WordPress.DB.SlowDBQuery
-					'meta_compare' => '!=',
-					'meta_value'   => '', // phpcs:ignore WordPress.DB.SlowDBQuery
-				)
-			);
-			foreach ( (array) $ids as $id ) {
-				if ( isset( $seen[ $id ] ) ) {
-					continue;
-				}
-				$seen[ $id ] = true;
-				$order       = wc_get_order( $id );
-				if ( ! $order ) {
+			$ids = wc_get_orders( array(
+				'limit'        => $size,
+				'paged'        => $page,
+				'return'       => 'ids',
+				'type'         => 'shop_order',
+				'orderby'      => 'ID',
+				'order'        => 'ASC',
+				'meta_key'     => $key, // phpcs:ignore WordPress.DB.SlowDBQuery
+				'meta_compare' => '!=',
+				'meta_value'   => '', // phpcs:ignore WordPress.DB.SlowDBQuery
+			) );
+			if ( ! is_array( $ids ) ) {
+				// Failed queries must never advance the cursor.
+				break;
+			}
+			foreach ( $ids as $id ) {
+				$order = wc_get_order( $id );
+				if ( ! $order instanceof WC_Order ) {
 					continue;
 				}
 				++$scanned;
-				if ( '' !== (string) $order->get_meta( '_rwsc_tracking', true ) && '' !== (string) $order->get_meta( '_rwsc_status', true ) ) {
+				if ( '' !== (string) $order->get_meta( '_rwsc_tracking', true )
+					&& '' !== (string) $order->get_meta( '_rwsc_status', true ) ) {
 					continue;
 				}
-				if ( self::sync( $order, array( 'notify' => false ) ) ) {
+				if ( self::sync( $order, array( 'notify' => false, 'history' => true ) ) ) {
 					++$synced;
 				}
 			}
+			++$run;
+			if ( count( $ids ) < $size ) {
+				++$index;
+				$page = 1;
+			} else {
+				++$page;
+			}
 		}
-		return array( 'scanned' => $scanned, 'synced' => $synced );
+
+		$complete = $index >= count( $slugs );
+		if ( $complete ) {
+			delete_option( 'rwsc_dispatch_backfill_cursor' );
+			update_option( 'rwsc_dispatch_backfill_done', time(), false );
+		} else {
+			update_option( 'rwsc_dispatch_backfill_cursor', array( 'courier' => $index, 'page' => $page ), false );
+			if ( ! wp_next_scheduled( 'rwsc_dispatch_backfill_batch' ) ) {
+				wp_schedule_single_event( time() + 60, 'rwsc_dispatch_backfill_batch' );
+			}
+		}
+		return array( 'scanned' => $scanned, 'synced' => $synced, 'complete' => $complete );
+	}
+
+	/** Background continuation when WP-Cron runs. */
+	public static function run_backfill() {
+		if ( ! get_option( 'rwsc_dispatch_backfill_done' ) ) {
+			self::backfill( 300 );
+		}
 	}
 }

@@ -18,6 +18,7 @@ final class RWSC_Dispatch_Admin {
 		add_action( 'admin_post_rwsc_d_save_settings', array( __CLASS__, 'save_settings' ) );
 				add_action( 'admin_post_rwsc_d_migrate_meta', array( __CLASS__, 'migrate_meta' ) );
 		add_action( 'admin_post_rwsc_d_import_legacy', array( __CLASS__, 'import_legacy' ) );
+		add_action( 'admin_post_rwsc_d_continue_backfill', array( __CLASS__, 'continue_backfill' ) );
 		add_action( 'admin_notices', array( __CLASS__, 'notices' ) );
 	}
 
@@ -46,9 +47,9 @@ final class RWSC_Dispatch_Admin {
 			return; // Do not nag on unrelated admin screens (plugins list, posts, ...).
 		}
 		if ( RWSC_Api_Settings::secrets_unreadable() ) {
-			echo '<div class="notice notice-warning"><p><strong>RAR Courier Suite:</strong> saved API secrets cannot be decrypted (WordPress salts changed). Re-enter them under Courier Suite → Settings.</p></div>';
+			echo '<div class="notice notice-warning"><p><strong>RAR Woo Smart Courier Pro:</strong> saved API secrets cannot be decrypted (WordPress salts changed). Re-enter them under Smart Courier → Courier APIs.</p></div>';
 		} elseif ( 0 === self::usable_count() && ! in_array( $page, array( self::PAGE_SETTINGS, self::PAGE_DASH ), true ) ) {
-			echo '<div class="notice notice-info"><p><strong>RAR Courier Suite</strong> has no connected courier yet. <a href="' . esc_url( admin_url( 'admin.php?page=' . self::PAGE_SETTINGS ) ) . '">Connect Pathao, RedX, SteadFast, Paperfly or Sundarban</a>.</p></div>';
+			echo '<div class="notice notice-info"><p><strong>RAR Woo Smart Courier Pro</strong> has no connected courier yet. <a href="' . esc_url( admin_url( 'admin.php?page=' . self::PAGE_SETTINGS ) ) . '">Connect Pathao, RedX, SteadFast, Paperfly or Sundarban</a>.</p></div>';
 		}
 	}
 
@@ -86,13 +87,13 @@ final class RWSC_Dispatch_Admin {
 	}
 
 	private static function foot() {
-		echo '<p class="rwsc-d-foot">' . esc_html__( 'RAR Courier Suite is an independent plugin by Ruhul Amin. Pathao, RedX, SteadFast, Paperfly and Sundarban Courier are names of their respective owners; this plugin is not affiliated with or endorsed by them.', 'rar-woo-smart-courier' ) . '</p></div>';
+		echo '<p class="rwsc-d-foot">' . esc_html__( 'RAR RAR Woo Smart Courier Pro is an independent plugin by Ruhul Amin. Pathao, RedX, SteadFast, Paperfly and Sundarban Courier are names of their respective owners; this plugin is not affiliated with or endorsed by them.', 'rar-woo-smart-courier' ) . '</p></div>';
 	}
 
 	/** Connection state of a courier for badges: array( key => ok|warn|off, text ). */
 	private static function state( $slug ) {
 		if ( 'pathao' === $slug ) {
-			return RWSC_Api_Settings::is_configured() ? array( 'ok', __( 'Connected', 'rar-woo-smart-courier' ) ) : array( 'off', __( 'Not connected', 'rar-woo-smart-courier' ) );
+			return RWSC_Api_Settings::is_configured() ? array( 'warn', __( 'Configured (test required)', 'rar-woo-smart-courier' ) ) : array( 'off', __( 'Not connected', 'rar-woo-smart-courier' ) );
 		}
 		$m = RWSC_Couriers::get( $slug );
 		if ( ! $m->enabled() ) {
@@ -372,6 +373,20 @@ final class RWSC_Dispatch_Admin {
 		exit;
 	}
 
+	/** Safe, nonce-protected manual continuation when WP-Cron is delayed. */
+	public static function continue_backfill() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'Not allowed.', 'rar-woo-smart-courier' ), 403 );
+		}
+		check_admin_referer( 'rwsc_d_continue_backfill' );
+		$result = RWSC_Bridge::backfill( 300 );
+		wp_safe_redirect( add_query_arg(
+			array( 'scanned' => (int) $result['scanned'], 'synced' => (int) $result['synced'] ),
+			admin_url( 'admin.php?page=' . self::PAGE_TOOLS )
+		) );
+		exit;
+	}
+
 	public static function migrate_meta() {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_die( esc_html__( 'Not allowed.', 'rar-woo-smart-courier' ), 403 );
@@ -380,9 +395,15 @@ final class RWSC_Dispatch_Admin {
 		global $wpdb;
 		$n = 0;
 		if ( RWSC_Pathao_Orders::hpos_enabled() ) {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$ids = $wpdb->get_col( "SELECT DISTINCT post_id FROM {$wpdb->postmeta} WHERE meta_key = 'ptc_consignment_id' AND meta_value <> '' LIMIT 500" );
-			foreach ( $ids as $id ) {
+			$after = (int) get_option( 'rwsc_pathao_postmeta_cursor', 0 );
+			// Read up to 500 NEW legacy postmeta orders every click, not the
+			// same first batch. WooCommerce CRUD writes to current HPOS storage.
+			$ids = $wpdb->get_col( $wpdb->prepare(
+				"SELECT DISTINCT post_id FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value <> '' AND post_id > %d ORDER BY post_id ASC LIMIT %d",
+				'ptc_consignment_id', $after, 500
+			) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			foreach ( (array) $ids as $id ) {
+				$after = max( $after, (int) $id );
 				$o = wc_get_order( (int) $id );
 				if ( $o && '' === (string) $o->get_meta( RWSC_Pathao_Orders::META_ID, true ) ) {
 					foreach ( array( RWSC_Pathao_Orders::META_ID, RWSC_Pathao_Orders::META_STATUS, RWSC_Pathao_Orders::META_FEE ) as $k ) {
@@ -392,8 +413,14 @@ final class RWSC_Dispatch_Admin {
 						}
 					}
 					$o->save_meta_data();
+					if ( class_exists( 'RWSC_Bridge' ) ) {
+						RWSC_Bridge::sync( $o, array( 'notify' => false, 'history' => true ) );
+					}
 					++$n;
 				}
+			}
+			if ( is_array( $ids ) ) {
+				update_option( 'rwsc_pathao_postmeta_cursor', $after, false );
 			}
 		}
 		wp_safe_redirect( add_query_arg( 'migrated', $n, admin_url( 'admin.php?page=' . self::PAGE_TOOLS ) ) );
@@ -414,6 +441,13 @@ final class RWSC_Dispatch_Admin {
 		$lastwh = (int) get_option( 'rwsc_last_webhook', 0 );
 		$lastsy = (int) get_option( 'rwsc_last_sync_run', 0 );
 		$next   = wp_next_scheduled( RWSC_Cron::HOOK_SYNC );
+		$backfill_done = (bool) get_option( 'rwsc_dispatch_backfill_done' );
+		$backfill_cursor = (array) get_option( 'rwsc_dispatch_backfill_cursor', array() );
+		$backfill_text = $backfill_done
+			? 'scan finished (verify counts and sample consignments before removing Suite)'
+			: sprintf( 'in progress: courier %d, page %d (WP-Cron or manual Continue)',
+				(int) ( $backfill_cursor['courier'] ?? 0 ) + 1,
+				(int) ( $backfill_cursor['page'] ?? 1 ) );
 		$redx   = RWSC_Couriers::get( 'redx' );
 		$sf     = RWSC_Couriers::get( 'steadfast' );
 		$pf     = RWSC_Couriers::get( 'paperfly' );
@@ -428,6 +462,7 @@ final class RWSC_Dispatch_Admin {
 				array( 'RAR Woo Smart Courier', RWSC_Order_Data::smart_courier_active() ? 'detected' : 'not active', true ),
 				array( 'RAR Advance Payment', class_exists( 'RAR_WAP_Order' ) ? 'detected (COD = balance due)' : 'not active', true ),
 				array( 'Status sync cron', $next ? 'next ' . wp_date( 'H:i', $next ) . ( $lastsy ? ', last run ' . human_time_diff( $lastsy ) . ' ago' : '' ) : 'not scheduled', (bool) $next ),
+				array( 'Suite parcel migration', $backfill_text, $backfill_done ),
 			),
 			'Pathao' => array(
 				array( 'Credentials', RWSC_Api_Settings::is_configured() ? 'configured (' . RWSC_Api_Settings::get( 'environment' ) . ')' : 'not configured', RWSC_Api_Settings::is_configured() ),
@@ -455,6 +490,9 @@ final class RWSC_Dispatch_Admin {
 		if ( isset( $_GET['migrated'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
 			echo '<div class="notice notice-success"><p>' . esc_html( sprintf( 'Migrated %d order(s).', absint( $_GET['migrated'] ) ) ) . '</p></div>'; // phpcs:ignore WordPress.Security.NonceVerification
 		}
+		if ( isset( $_GET['scanned'] ) && isset( $_GET['synced'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
+			echo '<div class="notice notice-info"><p>' . esc_html( sprintf( 'Migration batch: scanned %d, mirrored %d orders.', absint( $_GET['scanned'] ), absint( $_GET['synced'] ) ) ) . '</p></div>'; // phpcs:ignore WordPress.Security.NonceVerification
+		}
 		if ( isset( $_GET['imported'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
 			echo '<div class="notice notice-success"><p>' . esc_html( sprintf( 'Imported %d RedX / SteadFast parcel(s).', absint( $_GET['imported'] ) ) ) . '</p></div>'; // phpcs:ignore WordPress.Security.NonceVerification
 		}
@@ -481,15 +519,22 @@ final class RWSC_Dispatch_Admin {
 		}
 		echo '</tbody></table></div>';
 
+		if ( ! $backfill_done ) {
+			echo '<div class="rwsc-d-panel"><h2>' . esc_html__( 'Suite migration progress', 'rar-woo-smart-courier' ) . '</h2>';
+			echo '<p>' . esc_html( $backfill_text ) . '. Do not uninstall RAR Courier Suite until all old parcels and courier credentials have been verified.</p>';
+			echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="rwsc_d_continue_backfill">';
+			wp_nonce_field( 'rwsc_d_continue_backfill' );
+			echo '<button class="button button-primary">' . esc_html__( 'Continue parcel migration (up to 300)', 'rar-woo-smart-courier' ) . '</button></form></div>';
+		}
 		echo '<div class="rwsc-d-panel"><h2>' . esc_html__( 'Maintenance', 'rar-woo-smart-courier' ) . '</h2>'
 			. '<p><button type="button" class="button" id="rwsc-d-flush">' . esc_html__( 'Clear cached Pathao stores / cities / zones', 'rar-woo-smart-courier' ) . '</button> <span id="rwsc-d-flush-result" class="rwsc-d-muted"></span></p>'
 			. '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="rwsc_d_import_legacy">';
 		wp_nonce_field( 'rwsc_d_import_legacy' );
-		echo '<p>' . esc_html__( 'Import parcels created by the old "Redx for WooCommerce" / "SteadFast API" plugins so they show here and join status sync (500 per run, safe to repeat).', 'rar-woo-smart-courier' ) . '</p><button class="button">' . esc_html__( 'Import RedX / SteadFast parcels', 'rar-woo-smart-courier' ) . '</button></form>';
+		echo '<p>' . esc_html__( 'Import parcels created by the old "Redx for WooCommerce" / "SteadFast API" plugins so they show here and join status sync (500 new legacy records per run; press again to continue).', 'rar-woo-smart-courier' ) . '</p><button class="button">' . esc_html__( 'Import RedX / SteadFast parcels', 'rar-woo-smart-courier' ) . '</button></form>';
 		if ( RWSC_Pathao_Orders::hpos_enabled() ) {
 			echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="margin-top:14px"><input type="hidden" name="action" value="rwsc_d_migrate_meta">';
 			wp_nonce_field( 'rwsc_migrate' );
-			echo '<p>' . esc_html__( 'HPOS is on: copy Pathao data created by the original Pathao plugin from legacy post meta into order meta (500 per run, safe to repeat).', 'rar-woo-smart-courier' ) . '</p><button class="button">' . esc_html__( 'Migrate legacy parcel data', 'rar-woo-smart-courier' ) . '</button></form>';
+			echo '<p>' . esc_html__( 'HPOS is on: copy Pathao data created by the original Pathao plugin from legacy post meta into order meta (500 new legacy records per run; press again to continue).', 'rar-woo-smart-courier' ) . '</p><button class="button">' . esc_html__( 'Migrate legacy parcel data', 'rar-woo-smart-courier' ) . '</button></form>';
 		}
 		echo '</div>';
 

@@ -17,6 +17,15 @@ final class RWSC_Dispatch {
 		return class_exists( 'RPC_Plugin' ) || defined( 'RPC_VERSION' );
 	}
 
+	/** Stand-alone vendor integrations register overlapping order/REST handlers. */
+	public static function legacy_dispatch_active() {
+		return defined( 'PTC_PLUGIN_FILE' ) || defined( 'REDX_TRACKING_BASENAME' ) || defined( 'STDF_PLUGIN_FILE' );
+	}
+
+	public static function conflicting_dispatch_active() {
+		return self::suite_active() || self::legacy_dispatch_active();
+	}
+
 	public static function load() {
 		$dir   = RWSC_DIR . 'includes/dispatch/';
 		$files = array(
@@ -34,7 +43,7 @@ final class RWSC_Dispatch {
 	public static function boot() {
 		// The bridge listens to the engine's hooks, which the stand-alone Suite fires too.
 		RWSC_Bridge::init();
-		if ( self::suite_active() ) {
+		if ( self::conflicting_dispatch_active() ) {
 			add_action( 'admin_notices', array( __CLASS__, 'suite_notice' ) );
 			return;
 		}
@@ -53,11 +62,19 @@ final class RWSC_Dispatch {
 		if ( ! current_user_can( 'activate_plugins' ) ) {
 			return;
 		}
-		echo '<div class="notice notice-warning"><p><strong>RAR Woo Smart Courier:</strong> ' . esc_html__( 'RAR Courier Suite is still active, so its courier dispatch keeps running and the built-in dispatch module is paused. Everything it offers is now included here — deactivate and delete RAR Courier Suite (your settings are imported automatically; leave its "Delete data on uninstall" option off).', 'rar-woo-smart-courier' ) . '</p></div>';
+		echo '<div class="notice notice-warning"><p><strong>RAR Woo Smart Courier:</strong> ' . esc_html__(
+			self::suite_active()
+				? 'RAR Courier Suite is active. The built-in courier API dispatch is paused to avoid duplicates. Verify all migrated settings/parcels and stage a cutover before uninstalling Suite; keep its Delete data on uninstall option OFF.'
+				: 'A stand-alone Pathao, RedX or SteadFast integration is active. Built-in API dispatch is paused to prevent duplicate booking buttons and webhook handlers. Audit legacy parcels and deactivate overlapping integrations before enabling dispatch.',
+			'rar-woo-smart-courier'
+		) . '</p></div>';
 	}
 
 	public static function activate() {
-		if ( ! self::suite_active() && ! wp_next_scheduled( RWSC_Cron::HOOK_SYNC ) ) {
+		// Activation runs before init() has registered custom cron intervals.
+		// Register the interval here, otherwise wp_schedule_event may return false.
+		add_filter( 'cron_schedules', array( 'RWSC_Cron', 'schedules' ) );
+		if ( ! self::conflicting_dispatch_active() && ! wp_next_scheduled( RWSC_Cron::HOOK_SYNC ) ) {
 			wp_schedule_event( time() + 300, 'rwsc_30min', RWSC_Cron::HOOK_SYNC );
 		}
 	}
@@ -66,5 +83,6 @@ final class RWSC_Dispatch {
 		if ( class_exists( 'RWSC_Cron' ) ) {
 			RWSC_Cron::clear();
 		}
+		wp_clear_scheduled_hook( 'rwsc_dispatch_backfill_batch' );
 	}
 }

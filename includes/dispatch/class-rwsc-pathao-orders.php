@@ -311,7 +311,18 @@ final class RWSC_Pathao_Orders {
 				$rejected[ $order_id ] = __( 'Being sent by someone else.', 'rar-woo-smart-courier' );
 				continue;
 			}
-			$locked[]             = $order_id;
+			// The lock may have waited for a different courier request. Reload
+			// and enforce the same guards as individual dispatch before bulk API.
+			$order = wc_get_order( $order_id );
+			$other = RWSC_Couriers::sent_via( $order );
+			if ( self::is_sent( $order )
+				|| ( '' !== $other && RWSC_Api_Settings::yes( 'block_cross_courier' ) )
+				|| get_transient( 'rwsc_uncertain_' . $order_id ) ) {
+				$rejected[ $order_id ] = __( 'Already booked with a courier, or an earlier booking may have succeeded. Verify before retrying.', 'rar-woo-smart-courier' );
+				RWSC_Lock::release( 'send_' . $order_id );
+				continue;
+			}
+			$locked[]              = $order_id;
 			$payloads[ $order_id ] = RWSC_Order_Data::to_payload( $fields, $order );
 		}
 
@@ -324,7 +335,13 @@ final class RWSC_Pathao_Orders {
 
 		try {
 			if ( is_wp_error( $res ) ) {
-				do_action( 'pathao_send_bulk_orders_failed', $res->get_error_data(), 0, array( 'orders' => array_values( $payloads ) ) );
+				$data = $res->get_error_data();
+				if ( is_array( $data ) && ! empty( $data['uncertain'] ) ) {
+					foreach ( array_keys( $payloads ) as $order_id ) {
+						set_transient( 'rwsc_uncertain_' . $order_id, 'pathao_bulk', 10 * MINUTE_IN_SECONDS );
+					}
+				}
+				do_action( 'pathao_send_bulk_orders_failed', $data, 0, array( 'orders' => array_values( $payloads ) ) );
 				return $res;
 			}
 			foreach ( array_keys( $payloads ) as $order_id ) {
@@ -373,7 +390,9 @@ final class RWSC_Pathao_Orders {
 
 		$event_only = 'payment_invoice' === $new['slug'];
 		$stale      = $ts && $last_ts && $ts < $last_ts; // Out-of-order webhook delivery.
-		$changed    = ! $event_only && ! $stale && $new['slug'] !== $cur['slug'];
+		// Terminal states are immutable to automated sync/webhook events.
+		// Otherwise a late "in_transit" event reopens a delivered parcel.
+		$changed    = ! $event_only && ! $stale && ! $cur['final'] && $new['slug'] !== $cur['slug'];
 
 		if ( ! empty( $extra['consignment_id'] ) ) {
 			$existing = self::consignment( $order );

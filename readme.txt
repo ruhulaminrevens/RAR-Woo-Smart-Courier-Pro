@@ -6,9 +6,9 @@ Tested up to: 6.8
 Requires PHP: 7.4
 WC requires at least: 8.0
 WC tested up to: 10.1
-Stable tag: 3.0.0
-License: GPLv2 or later
-License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Stable tag: 3.1.0
+License: GPLv3 or later
+License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
 All-in-one courier suite for Bangladesh WooCommerce stores: smart checkout courier choice plus live Pathao, RedX, SteadFast, Paperfly and Sundarban booking, webhooks, status sync, labels, manifests and a courier dashboard.
 
@@ -27,7 +27,7 @@ Your team gets a Shipments board to book parcels and add tracking numbers, updat
 * Works with WooCommerce Free shipping, shipping tax, Local pickup and cash on delivery.
 * Classic checkout and the Cart/Checkout blocks. Safe Test Mode for rollout.
 
-= Courier API booking (new in 3.0) =
+= Courier API booking (v3.1 hardened) =
 * Book with Pathao, RedX, SteadFast and Paperfly from the Orders list (bulk supported); Sundarban by CN number.
 * One DB lock per order and one courier per order: no duplicate parcels, even after a timeout.
 * Signed Pathao webhooks, token-protected SteadFast webhook, 30-minute status sync, auto-send on order status.
@@ -42,12 +42,12 @@ Your team gets a Shipments board to book parcels and add tracking numbers, updat
 * Tracking email, a delivery card on the thank-you and My Account pages, a Track button, and courier details in order emails.
 * `[rwsc_tracking]` tracking page: customers enter their order number and phone number.
 
-The plugin uses the rates you enter from your courier contracts. It does not call courier APIs.
+Checkout pricing uses the merchant-defined rate table. The separate dispatch engine DOES call supported courier APIs when enabled; Sundarban uses manual CN entry. Live connection must be confirmed for each provider.
 
 == Installation ==
 
 1. Take a full backup of your site (files and database).
-2. Plugins → Add New → Upload Plugin → choose `rar-woo-smart-courier-v3.0.0.zip` → Install Now → Activate. When upgrading, choose "Replace current with uploaded".
+2. Plugins → Add New → Upload Plugin → choose `rar-woo-smart-courier-v3.1.0.zip` → Install Now → Activate. When upgrading, choose "Replace current with uploaded".
 3. WooCommerce → Settings → Shipping: make sure there is a zone for Bangladesh with a **Flat rate** method (and Free shipping if you use it).
 4. Smart Courier → Settings: enter your courier rates and ETAs, and pick your Nearby districts and areas.
 5. Keep Safe Test Mode ON and place a test order for an Inside Dhaka, a Nearby and an Outside Dhaka address.
@@ -59,10 +59,10 @@ The plugin uses the rates you enter from your courier contracts. It does not cal
 Either Safe Test Mode is on (only shop managers see couriers) or the address is not in Bangladesh. Smart Courier → Dashboard shows a setup check.
 
 = Does it book parcels with the courier automatically? =
-No. Book in the courier's merchant panel. The Shipments board makes it quick: "Copy parcel info", CSV export, and Enter-to-save tracking numbers.
+Yes, when the supported provider API is configured. Pathao, RedX, SteadFast and Paperfly booking modules are available but each must be tested with your merchant account; Sundarban remains manual. Auto-send is optional and off by default.
 
 = Will I lose data when I update or uninstall? =
-No. Settings and order data are kept. v1.x settings and orders are converted automatically.
+Order meta is kept by this plugin's uninstall handler. Its API credential settings can be deleted if you choose "Delete data on uninstall". Before removing the older Courier Suite, ensure its delete-data option is OFF and verify all imported parcels against the source records.
 
 == Screenshots ==
 
@@ -73,6 +73,11 @@ No. Settings and order data are kept. v1.x settings and orders are converted aut
 5. Parcel labels
 
 == Changelog ==
+
+= 3.1.0 =
+* Fix Suite settings merge and encrypted webhook secret; resumable multi-page parcel migration and legacy HPOS importer.
+* Enforce duplicate-send and uncertain-timeout guard for Pathao native bulk, protect terminal statuses and avoid duplicate customer tracking blocks.
+* Add regression tests and build-quality GitHub Actions workflow; live provider verification is still required.
 
 = 3.0.0 =
 * RAR Courier Suite merged in: live Pathao / RedX / SteadFast / Paperfly booking, Sundarban manual CN, webhooks, status sync, auto-send.

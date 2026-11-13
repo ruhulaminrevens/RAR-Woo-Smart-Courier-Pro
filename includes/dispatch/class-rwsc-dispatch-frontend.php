@@ -14,8 +14,21 @@ final class RWSC_Dispatch_Frontend {
 		add_action( 'woocommerce_email_after_order_table', array( __CLASS__, 'email' ), 20, 4 );
 	}
 
-	private static function block( WC_Order $order ) {
+	private static function parcel_rows( WC_Order $order ) {
 		$rows = RWSC_Couriers::rows( $order );
+		// The Pro delivery card/email already renders the mirrored parcel.
+		// Show only extra (e.g. legacy) consignments to avoid duplicate blocks.
+		$shipment = RWSC_Shipments::get( $order );
+		if ( '' !== (string) $shipment['tracking'] ) {
+			$rows = array_values( array_filter( $rows, static function ( $row ) use ( $shipment ) {
+				return (string) $row['id'] !== (string) $shipment['tracking'];
+			} ) );
+		}
+		return $rows;
+	}
+
+	private static function block( WC_Order $order ) {
+		$rows = self::parcel_rows( $order );
 		if ( ! $rows ) {
 			return '';
 		}
@@ -36,7 +49,10 @@ final class RWSC_Dispatch_Frontend {
 		if ( ! RWSC_Api_Settings::yes( 'show_my_account' ) || ! $order instanceof WC_Order ) {
 			return;
 		}
-		echo '<section class="rwsc-d-tracking">' . self::block( $order ) . '</section>'; // phpcs:ignore WordPress.Security.EscapeOutput
+		$block = self::block( $order );
+		if ( '' !== $block ) {
+			echo '<section class="rwsc-d-tracking">' . $block . '</section>'; // phpcs:ignore WordPress.Security.EscapeOutput
+		}
 	}
 
 	public static function email( $order, $sent_to_admin, $plain_text, $email ) {
@@ -44,7 +60,7 @@ final class RWSC_Dispatch_Frontend {
 			return;
 		}
 		if ( $plain_text ) {
-			foreach ( RWSC_Couriers::rows( $order ) as $r ) {
+			foreach ( self::parcel_rows( $order ) as $r ) {
 				echo "\n" . esc_html( sprintf( '%s consignment: %s', $r['courier'], $r['id'] ) ) . "\n" . ( ! empty( $r['url'] ) ? esc_url( $r['url'] ) . "\n" : '' );
 			}
 			return;
