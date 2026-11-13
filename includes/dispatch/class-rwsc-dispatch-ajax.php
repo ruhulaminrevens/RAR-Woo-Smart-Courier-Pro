@@ -79,7 +79,7 @@ final class RWSC_Dispatch_Ajax {
 	public static function handle_prepare() {
 		self::guard();
 		if ( ! RWSC_Api_Settings::is_configured() ) {
-			wp_send_json_error( array( 'message' => __( 'Pathao is not configured. Add your API credentials under Pathao Courier → Settings.', 'rar-woo-smart-courier' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'Pathao is not configured. Add your API credentials under Smart Courier → Courier APIs → Pathao.', 'rar-woo-smart-courier' ) ), 400 );
 		}
 		$ids = array_slice( self::post_ids( 'order_ids' ), 0, 100 );
 		if ( ! $ids ) {

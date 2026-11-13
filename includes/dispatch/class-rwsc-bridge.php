@@ -62,6 +62,24 @@ final class RWSC_Bridge {
 	}
 
 	/**
+	 * Customer-facing tracking value. SteadFast's public tracking page needs the
+	 * tracking_code (stored as sfc_ref), not the numeric consignment id.
+	 *
+	 * @param WC_Order $order Order.
+	 * @param array    $info  Courier info (courier, id).
+	 * @return string
+	 */
+	public static function tracking_value( WC_Order $order, array $info ) {
+		if ( 'steadfast' === $info['courier'] ) {
+			$ref = (string) $order->get_meta( 'sfc_ref', true );
+			if ( '' !== $ref ) {
+				return $ref;
+			}
+		}
+		return (string) $info['id'];
+	}
+
+	/**
 	 * Mirror the engine's parcel state into the shipment model.
 	 *
 	 * @param WC_Order $order  Order.
@@ -78,7 +96,7 @@ final class RWSC_Bridge {
 		}
 		$changes = array(
 			'courier'  => $info['courier'],
-			'tracking' => $info['id'],
+			'tracking' => self::tracking_value( $order, $info ),
 			'status'   => self::map_status( $info['group'], RWSC_Pathao_Status::slug( $info['raw'] ) ),
 		);
 		// A manual shipment-board edit to "delivered/returned" must not be undone by a stale sync.

@@ -38,6 +38,8 @@ final class RAR_Woo_Smart_Courier {
         }
 
         self::maybe_upgrade();
+        // Orders can only be queried once WooCommerce has registered its post types / order tables.
+        add_action( 'wp_loaded', array( __CLASS__, 'maybe_backfill_dispatch' ) );
 
         RWSC_Engine::init();
         RWSC_Shipments::init();
@@ -85,9 +87,9 @@ final class RAR_Woo_Smart_Courier {
             if ( '' === $stored || version_compare( $stored, '2.0.0', '<' ) ) {
                 delete_option( 'rwsc_backfill_done' );
             }
-            if ( '' === $stored || version_compare( $stored, '3.1.0', '<' ) ) {
-                // v3.0 incorrectly marked the first 300 orders as a complete
-                // migration. Restart the resumable scan once on upgrade.
+            if ( '' === $stored || version_compare( $stored, '3.1.2', '<' ) ) {
+                // Earlier builds could run the scan before WooCommerce registered
+                // orders (plugins_loaded) and mark it complete. Restart it once.
                 delete_option( 'rwsc_dispatch_backfill_done' );
                 delete_option( 'rwsc_dispatch_backfill_cursor' );
             }
@@ -96,7 +98,6 @@ final class RAR_Woo_Smart_Courier {
                 WC_Cache_Helper::get_transient_version( 'shipping', true );
             }
         }
-        self::maybe_backfill_dispatch();
     }
 
     /** Incrementally mirror Suite API parcels into the unified shipment board. */

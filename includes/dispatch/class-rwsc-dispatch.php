@@ -33,7 +33,7 @@ final class RWSC_Dispatch {
 			'class-rwsc-pathao-locations', 'class-rwsc-order-data', 'class-rwsc-pathao-orders', 'class-rwsc-courier-base',
 			'class-rwsc-redx', 'class-rwsc-steadfast', 'class-rwsc-paperfly', 'class-rwsc-sundarban', 'class-rwsc-couriers',
 			'class-rwsc-webhook', 'class-rwsc-cron', 'class-rwsc-dispatch-ajax', 'class-rwsc-dispatch-orders-ui',
-			'class-rwsc-dispatch-frontend', 'class-rwsc-bridge',
+			'class-rwsc-bridge',
 		);
 		foreach ( $files as $f ) {
 			require_once $dir . $f . '.php';
@@ -54,7 +54,6 @@ final class RWSC_Dispatch {
 		RWSC_Webhook::init();
 		RWSC_SteadFast::init();
 		RWSC_Cron::init();
-		RWSC_Dispatch_Frontend::init();
 		if ( is_admin() ) {
 			RWSC_Dispatch_Ajax::init();
 			RWSC_Dispatch_Orders_UI::init();

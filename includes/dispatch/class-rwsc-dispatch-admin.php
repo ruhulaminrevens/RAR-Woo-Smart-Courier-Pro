@@ -9,12 +9,17 @@ defined( 'ABSPATH' ) || exit;
 
 final class RWSC_Dispatch_Admin {
 
-	const PAGE_DASH     = 'rwsc-dashboard';   // Smart Courier top-level menu.
+	const PAGE_PARENT   = 'rwsc-dashboard';   // Smart Courier top-level menu.
+	const PAGE_DASH     = 'rwsc-api-overview';
+	const PAGE_ORDERS   = 'rwsc-parcels';
 	const PAGE_SETTINGS = 'rwsc-api';
 	const PAGE_TOOLS    = 'rwsc-tools';
+	const PARCEL_CAP    = 300;                // Newest parcels scanned for the cross-courier list.
 
 	public static function init() {
-		add_action( 'admin_menu', array( __CLASS__, 'menu' ), 20 );
+		add_action( 'admin_menu', array( __CLASS__, 'menu' ), 70 );
+		add_action( 'admin_post_rwsc_d_export_csv', array( __CLASS__, 'export_csv' ) );
+		add_action( 'admin_post_rwsc_d_import_suite', array( __CLASS__, 'import_suite' ) );
 		add_action( 'admin_post_rwsc_d_save_settings', array( __CLASS__, 'save_settings' ) );
 				add_action( 'admin_post_rwsc_d_migrate_meta', array( __CLASS__, 'migrate_meta' ) );
 		add_action( 'admin_post_rwsc_d_import_legacy', array( __CLASS__, 'import_legacy' ) );
@@ -35,8 +40,11 @@ final class RWSC_Dispatch_Admin {
 	}
 
 	public static function menu() {
-		add_submenu_page( self::PAGE_DASH, __( 'Courier APIs', 'rar-woo-smart-courier' ), __( 'Courier APIs', 'rar-woo-smart-courier' ), 'manage_options', self::PAGE_SETTINGS, array( __CLASS__, 'page_settings' ) );
-		add_submenu_page( self::PAGE_DASH, __( 'Tools & Health', 'rar-woo-smart-courier' ), __( 'Tools & Health', 'rar-woo-smart-courier' ), 'manage_options', self::PAGE_TOOLS, array( __CLASS__, 'page_tools' ) );
+		$cap = RWSC_Dispatch_Ajax::operator_cap();
+		add_submenu_page( self::PAGE_PARENT, __( 'API Overview', 'rar-woo-smart-courier' ), __( 'API Overview', 'rar-woo-smart-courier' ), $cap, self::PAGE_DASH, array( __CLASS__, 'page_dashboard' ) );
+		add_submenu_page( self::PAGE_PARENT, __( 'Parcels', 'rar-woo-smart-courier' ), __( 'Parcels', 'rar-woo-smart-courier' ), $cap, self::PAGE_ORDERS, array( __CLASS__, 'page_orders' ) );
+		add_submenu_page( self::PAGE_PARENT, __( 'Courier APIs', 'rar-woo-smart-courier' ), __( 'Courier APIs', 'rar-woo-smart-courier' ), 'manage_options', self::PAGE_SETTINGS, array( __CLASS__, 'page_settings' ) );
+		add_submenu_page( self::PAGE_PARENT, __( 'Tools & Health', 'rar-woo-smart-courier' ), __( 'Tools & Health', 'rar-woo-smart-courier' ), 'manage_options', self::PAGE_TOOLS, array( __CLASS__, 'page_tools' ) );
 	}
 
 	/** Number of couriers that can send right now. */
@@ -76,11 +84,15 @@ final class RWSC_Dispatch_Admin {
 	/** Hero banner + top navigation. Opens <div class="wrap rwsc-d-wrap">. */
 	private static function head( $active, $title, $sub, array $actions = array() ) {
 			$nav = array(
-			self::PAGE_DASH     => __( 'Dashboard', 'rar-woo-smart-courier' ),
-			'rwsc-shipments'    => __( 'Shipments', 'rar-woo-smart-courier' ),
-			self::PAGE_SETTINGS => __( 'Courier APIs', 'rar-woo-smart-courier' ),
-			self::PAGE_TOOLS    => __( 'Tools & Health', 'rar-woo-smart-courier' ),
+			self::PAGE_PARENT => __( 'Smart Courier', 'rar-woo-smart-courier' ),
+			'rwsc-shipments'  => __( 'Shipments', 'rar-woo-smart-courier' ),
+			self::PAGE_DASH   => __( 'API Overview', 'rar-woo-smart-courier' ),
+			self::PAGE_ORDERS => __( 'Parcels', 'rar-woo-smart-courier' ),
 		);
+		if ( current_user_can( 'manage_options' ) ) {
+			$nav[ self::PAGE_SETTINGS ] = __( 'Courier APIs', 'rar-woo-smart-courier' );
+			$nav[ self::PAGE_TOOLS ]    = __( 'Tools & Health', 'rar-woo-smart-courier' );
+		}
 		echo '<div class="wrap rwsc-d-wrap rwsc-d-js"><h1 class="screen-reader-text">' . esc_html( $title ) . '</h1><hr class="wp-header-end">';
 		echo '<div class="rwsc-d-hero"><img src="' . esc_url( RWSC_URL . 'assets/images/dispatch-logo.svg' ) . '" alt="">'
 			. '<div><h1>' . esc_html( $title ) . '<span class="rwsc-d-ver">v' . esc_html( RWSC_VERSION ) . '</span></h1><p>' . esc_html( $sub ) . '</p></div>';
@@ -91,7 +103,7 @@ final class RWSC_Dispatch_Admin {
 			}
 			echo '</div>';
 		}
-		echo '</div><nav class="rwsc-d-nav" aria-label="Courier Suite">';
+		echo '</div><nav class="rwsc-d-nav" aria-label="Courier APIs">';
 		foreach ( $nav as $slug => $label ) {
 			echo '<a href="' . esc_url( self::page_url( $slug ) ) . '"' . ( $slug === $active ? ' class="is-on" aria-current="page"' : '' ) . '>' . esc_html( $label ) . '</a>';
 		}
@@ -124,6 +136,468 @@ final class RWSC_Dispatch_Admin {
 
 	/* ------------------------------------------------------------------ *
 	 * Parcel collection (all couriers)
+	 * ------------------------------------------------------------------ */
+
+	private static function filters() {
+		// phpcs:disable WordPress.Security.NonceVerification
+		$view = isset( $_GET['view'] ) ? sanitize_key( wp_unslash( $_GET['view'] ) ) : 'unsent';
+		if ( ! isset( RWSC_Pathao_Status::groups()[ $view ] ) ) {
+			$view = 'unsent';
+		}
+		$courier = isset( $_GET['courier'] ) ? sanitize_key( wp_unslash( $_GET['courier'] ) ) : 'all';
+		if ( 'all' !== $courier && ! in_array( $courier, RWSC_Couriers::slugs(), true ) ) {
+			$courier = 'all';
+		}
+		$f = array(
+			'view'     => $view,
+			'courier'  => $courier,
+			's'        => isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : '',
+			'from'     => isset( $_GET['from'] ) ? sanitize_text_field( wp_unslash( $_GET['from'] ) ) : '',
+			'to'       => isset( $_GET['to'] ) ? sanitize_text_field( wp_unslash( $_GET['to'] ) ) : '',
+			'paged'    => isset( $_GET['paged'] ) ? max( 1, absint( $_GET['paged'] ) ) : 1,
+			'per_page' => isset( $_GET['per_page'] ) ? min( 100, max( 10, absint( $_GET['per_page'] ) ) ) : 25,
+		);
+		// phpcs:enable
+		return $f;
+	}
+
+	/** meta_query clause: "this courier holds a parcel". */
+	private static function sent_clause( $courier ) {
+		return array( 'key' => RWSC_Couriers::id_key( $courier ), 'value' => '', 'compare' => '!=' );
+	}
+
+	private static function base_args( array $f ) {
+		$args = array(
+			'type'    => 'shop_order',
+			'status'  => array_keys( wc_get_order_statuses() ),
+			'orderby' => 'date',
+			'order'   => 'DESC',
+		);
+		if ( $f['from'] && $f['to'] ) {
+			$args['date_created'] = $f['from'] . '...' . $f['to'];
+		} elseif ( $f['from'] ) {
+			$args['date_created'] = '>=' . $f['from'];
+		} elseif ( $f['to'] ) {
+			$args['date_created'] = '<=' . $f['to'];
+		}
+		return $args;
+	}
+
+	/** Order id whose consignment equals the search text, in any courier (0 = none). */
+	private static function search_consignment( $text ) {
+		$o = RWSC_Pathao_Orders::find_by_consignment( $text );
+		if ( $o ) {
+			return $o->get_id();
+		}
+		foreach ( RWSC_Couriers::modules() as $m ) {
+			$o = $m->find_by_consignment( $text );
+			if ( $o ) {
+				return $o->get_id();
+			}
+		}
+		return 0;
+	}
+
+	/**
+	 * Parcels for the list / dashboard / CSV.
+	 *
+	 * @param bool $all  true = no pagination (CSV).
+	 * @param int  $cap  Newest orders scanned for sent views.
+	 * @return array rows (array of order+info), total, pages, capped
+	 */
+	public static function collect( array $f, $all = false, $cap = self::PARCEL_CAP ) {
+		$out = array( 'rows' => array(), 'total' => 0, 'pages' => 1, 'capped' => false );
+
+		if ( 'unsent' === $f['view'] ) {
+			$args = self::base_args( $f );
+			$q    = (array) RWSC_Api_Settings::get( 'queue_statuses' );
+			if ( $q ) {
+				$args['status'] = $q;
+			}
+			// Keep the SQL cheap (a join per courier is costly on big shops): Pathao is pruned in SQL,
+			// the four other couriers with a plain NOT EXISTS, and sent_via() makes the final call in PHP.
+			$k_p  = RWSC_Couriers::id_key( 'pathao' );
+			$meta = array(
+				'relation' => 'AND',
+				array(
+					'relation' => 'OR',
+					array( 'key' => $k_p, 'compare' => 'NOT EXISTS' ),
+					array( 'key' => $k_p, 'value' => '', 'compare' => '=' ),
+				),
+			);
+			foreach ( RWSC_Couriers::modules() as $slug => $m ) {
+				$meta[] = array( 'key' => $m->key( 'id' ), 'compare' => 'NOT EXISTS' );
+			}
+			$args['meta_query'] = $meta; // phpcs:ignore WordPress.DB.SlowDBQuery
+			if ( '' !== $f['s'] ) {
+				$args['s'] = $f['s'];
+			}
+			$args['limit']    = $f['per_page'];
+			$args['paginate'] = true;
+			$pages            = $all ? 50 : 1;
+			for ( $p = 1; $p <= $pages; $p++ ) {
+				$args['paged'] = $all ? $p : $f['paged'];
+				$res           = RWSC_Pathao_Orders::query( $args );
+				foreach ( $res->orders as $o ) {
+					if ( '' === RWSC_Couriers::sent_via( $o ) ) {
+						$out['rows'][] = array( 'order' => $o, 'info' => null );
+					}
+				}
+				$out['total'] = isset( $res->total ) ? (int) $res->total : count( $out['rows'] );
+				$out['pages'] = max( 1, (int) $res->max_num_pages );
+				if ( $p >= (int) $res->max_num_pages ) {
+					break;
+				}
+			}
+			return $out;
+		}
+
+		$args          = self::base_args( $f );
+		$args['limit'] = $cap;
+		$args['return'] = 'ids';
+		$by_cid        = '' !== $f['s'] ? self::search_consignment( $f['s'] ) : 0;
+		$slugs         = 'all' === $f['courier'] ? RWSC_Couriers::slugs() : array( $f['courier'] );
+		$ids           = array();
+		$capped        = false;
+		if ( $by_cid ) {
+			$ids = array( $by_cid );
+		} else {
+			if ( '' !== $f['s'] ) {
+				$args['s'] = $f['s'];
+			}
+			// One cheap single-key query per courier, merged newest-first (order ids grow with time).
+			foreach ( $slugs as $slug ) {
+				$a                = $args;
+				$a['meta_query']  = array( self::sent_clause( $slug ) ); // phpcs:ignore WordPress.DB.SlowDBQuery
+				$got              = (array) RWSC_Pathao_Orders::query( $a );
+				$capped           = $capped || count( $got ) >= $cap;
+				$ids              = array_merge( $ids, array_map( 'absint', $got ) );
+			}
+			$ids = array_values( array_unique( $ids ) );
+			rsort( $ids );
+			$ids = array_slice( $ids, 0, $cap );
+		}
+		$out['capped'] = $capped;
+		$rows = array();
+		foreach ( $ids as $id ) {
+			$o = wc_get_order( $id );
+			if ( ! $o ) {
+				continue;
+			}
+			$i = RWSC_Couriers::parcel_info( $o );
+			if ( ! $i ) {
+				continue;
+			}
+			if ( 'all' !== $f['courier'] && $i['courier'] !== $f['courier'] ) {
+				continue;
+			}
+			if ( 'all' !== $f['view'] && $i['group'] !== $f['view'] ) {
+				continue;
+			}
+			$rows[] = array( 'order' => $o, 'info' => $i );
+		}
+		$out['total'] = count( $rows );
+		$out['pages'] = max( 1, (int) ceil( $out['total'] / max( 1, $f['per_page'] ) ) );
+		$out['rows']  = $all ? $rows : array_slice( $rows, ( $f['paged'] - 1 ) * $f['per_page'], $f['per_page'] );
+		return $out;
+	}
+
+	/* ------------------------------------------------------------------ *
+	 * Dashboard
+	 * ------------------------------------------------------------------ */
+
+	private static function checklist() {
+		$sum   = RWSC_Couriers::summary();
+		$sent  = 0;
+		foreach ( $sum as $r ) {
+			$sent += (int) $r['sent'];
+		}
+		$hook = (int) get_option( 'rwsc_last_webhook', 0 ) || (int) get_option( 'rwsc_last_webhook_sf', 0 );
+		return array(
+			array( __( 'Connect a courier', 'rar-woo-smart-courier' ), __( 'Add API credentials for Pathao, RedX, SteadFast or Paperfly — or enable Sundarban for manual CN entry.', 'rar-woo-smart-courier' ), self::usable_count() > 0, self::page_url( self::PAGE_SETTINGS ) ),
+			array( __( 'Receive live status updates', 'rar-woo-smart-courier' ), __( 'Paste the webhook URL into the courier panel (Pathao, SteadFast). Until then the 30-minute sync keeps statuses fresh.', 'rar-woo-smart-courier' ), $hook, self::page_url( self::PAGE_SETTINGS, array( 'tab' => 'general' ) ) ),
+			array( __( 'Choose automation', 'rar-woo-smart-courier' ), __( 'Pick the default courier, auto-send status and the WooCommerce status after sent / delivered / returned.', 'rar-woo-smart-courier' ), '' !== (string) RWSC_Api_Settings::get( 'auto_send_status' ) || '' !== (string) RWSC_Api_Settings::get( 'status_on_sent' ) || '' !== (string) RWSC_Api_Settings::get( 'status_on_delivered' ), self::page_url( self::PAGE_SETTINGS, array( 'tab' => 'general' ) ) ),
+			array( __( 'Send your first parcel', 'rar-woo-smart-courier' ), __( 'Open Parcels, pick one order and use the courier button — or the bulk bar for many.', 'rar-woo-smart-courier' ), $sent > 0, self::page_url( self::PAGE_ORDERS ) ),
+		);
+	}
+
+	public static function page_dashboard() {
+		if ( ! current_user_can( RWSC_Dispatch_Ajax::operator_cap() ) ) {
+			return;
+		}
+		$sum   = RWSC_Couriers::summary();
+		$tot   = array( 'sent' => 0, 'pending' => 0, 'transit' => 0, 'delivered' => 0, 'returned' => 0, 'attention' => 0, 'cod_open' => 0, 'fees' => 0 );
+		foreach ( $sum as $r ) {
+			foreach ( $tot as $k => $v ) {
+				$tot[ $k ] += $r[ $k ];
+			}
+		}
+		$fin = $tot['delivered'] + $tot['returned'];
+
+		self::head(
+			self::PAGE_DASH,
+			__( 'Courier APIs', 'rar-woo-smart-courier' ),
+			__( 'Pathao · RedX · SteadFast · Paperfly · Sundarban — one control centre', 'rar-woo-smart-courier' ),
+			array(
+				array( __( 'Send parcels', 'rar-woo-smart-courier' ), self::page_url( self::PAGE_ORDERS ), true ),
+				array( __( 'Needs attention', 'rar-woo-smart-courier' ), self::page_url( self::PAGE_ORDERS, array( 'view' => 'attention' ) ) ),
+			)
+		);
+
+		// Setup checklist (hidden once complete).
+		$steps = self::checklist();
+		$done  = 0;
+		foreach ( $steps as $st ) {
+			$done += $st[2] ? 1 : 0;
+		}
+		if ( $done < count( $steps ) && current_user_can( 'manage_options' ) ) {
+			echo '<div class="rwsc-d-panel"><h2>' . esc_html__( 'Get started', 'rar-woo-smart-courier' ) . ' <span class="rwsc-d-muted">' . esc_html( $done . '/' . count( $steps ) ) . '</span></h2>'
+				. '<div class="rwsc-d-meter"><i style="width:' . esc_attr( (int) round( 100 * $done / count( $steps ) ) ) . '%"></i></div><ul class="rwsc-d-steps">';
+			foreach ( $steps as $n => $st ) {
+				echo '<li class="' . ( $st[2] ? 'is-done' : '' ) . '"><span class="n">' . ( $st[2] ? '✓' : (int) ( $n + 1 ) ) . '</span><div><strong>' . esc_html( $st[0] ) . '</strong><div class="rwsc-d-muted">' . esc_html( $st[1] ) . '</div>'
+					. ( $st[2] ? '' : '<a href="' . esc_url( $st[3] ) . '">' . esc_html__( 'Open', 'rar-woo-smart-courier' ) . ' →</a>' ) . '</div></li>';
+			}
+			echo '</ul></div>';
+		}
+
+		// KPIs.
+		$pct = static function ( $n, $d ) {
+			return $d ? ' · ' . round( 100 * $n / $d ) . '%' : '';
+		};
+		$kpi = array(
+			array( __( 'Parcels (30 days)', 'rar-woo-smart-courier' ), $tot['sent'], '' ),
+			array( __( 'Pickup / transit', 'rar-woo-smart-courier' ), $tot['pending'] + $tot['transit'], '' ),
+			array( __( 'Delivered', 'rar-woo-smart-courier' ), $tot['delivered'], 'is-ok', $pct( $tot['delivered'], $fin ) ),
+			array( __( 'Returned', 'rar-woo-smart-courier' ), $tot['returned'], $tot['returned'] ? 'is-bad' : '', $pct( $tot['returned'], $fin ) ),
+			array( __( 'Needs attention', 'rar-woo-smart-courier' ), $tot['attention'], $tot['attention'] ? 'is-warn' : '' ),
+			array( __( 'COD still with couriers', 'rar-woo-smart-courier' ), '৳' . number_format_i18n( $tot['cod_open'] ), '' ),
+		);
+		echo '<div class="rwsc-d-kpis">';
+		foreach ( $kpi as $k ) {
+			echo '<div class="rwsc-d-kpi ' . esc_attr( $k[2] ) . '"><span>' . esc_html( $k[0] ) . '</span><strong>' . esc_html( (string) $k[1] ) . '</strong>' . ( ! empty( $k[3] ) ? '<small>' . esc_html( trim( $k[3], ' ·' ) ) . '</small>' : '' ) . '</div>';
+		}
+		echo '</div>';
+		if ( $tot['sent'] ) {
+			echo '<div class="rwsc-d-panel"><h2>' . esc_html__( 'Pipeline', 'rar-woo-smart-courier' ) . '</h2><div class="rwsc-d-bar" role="img" aria-label="' . esc_attr__( 'Parcel status distribution', 'rar-woo-smart-courier' ) . '">';
+			foreach ( array( 'pending', 'transit', 'delivered', 'returned', 'attention' ) as $g ) {
+				if ( $tot[ $g ] ) {
+					echo '<i class="b-' . esc_attr( $g ) . '" style="width:' . esc_attr( round( 100 * $tot[ $g ] / $tot['sent'], 2 ) ) . '%" title="' . esc_attr( $g . ': ' . $tot[ $g ] ) . '"></i>';
+				}
+			}
+			echo '</div><p class="rwsc-d-muted">' . esc_html__( 'Pending · In transit · Delivered · Returned · Needs attention — last 30 days, all couriers.', 'rar-woo-smart-courier' ) . '</p></div>';
+		}
+
+		// Courier cards.
+		echo '<div class="rwsc-d-cards">';
+		foreach ( RWSC_Couriers::slugs() as $slug ) {
+			$st  = self::state( $slug );
+			$r   = $sum[ $slug ];
+			$fn  = $r['delivered'] + $r['returned'];
+			echo '<div class="rwsc-d-ccard ' . ( 'off' === $st[0] ? 'is-off' : '' ) . '"><div class="rwsc-d-ccard-h">' . RWSC_Couriers::chip( $slug ) . self::state_pill( $slug ) . '</div>'
+				. '<div class="rwsc-d-ccard-n"><div><b>' . (int) $r['sent'] . '</b><span>' . esc_html__( 'sent', 'rar-woo-smart-courier' ) . '</span></div><div><b>' . (int) $r['delivered'] . '</b><span>' . esc_html__( 'delivered', 'rar-woo-smart-courier' ) . '</span></div><div><b>' . (int) $r['returned'] . '</b><span>' . esc_html__( 'returned', 'rar-woo-smart-courier' ) . '</span></div></div>'
+				. '<div class="rwsc-d-muted">' . esc_html( $fn ? sprintf( /* translators: %d: percent */ __( 'Delivery success %d%%', 'rar-woo-smart-courier' ), round( 100 * $r['delivered'] / $fn ) ) : __( 'No finished parcels yet', 'rar-woo-smart-courier' ) ) . '</div>'
+				. '<div class="rwsc-d-ccard-f"><a class="button button-small" href="' . esc_url( self::page_url( self::PAGE_ORDERS, array( 'view' => 'all', 'courier' => $slug ) ) ) . '">' . esc_html__( 'Parcels', 'rar-woo-smart-courier' ) . '</a>'
+				. ( current_user_can( 'manage_options' ) ? ' <a class="button button-small" href="' . esc_url( self::page_url( self::PAGE_SETTINGS, array( 'tab' => $slug ) ) ) . '">' . esc_html__( 'Settings', 'rar-woo-smart-courier' ) . '</a>' : '' ) . '</div></div>';
+		}
+		echo '</div>';
+
+		// Attention + recent parcels (one scan of the newest 100 parcels).
+		$f    = array( 'view' => 'all', 'courier' => 'all', 's' => '', 'from' => '', 'to' => '', 'paged' => 1, 'per_page' => 100 );
+		$scan = self::collect( $f, false, 100 );
+		$att  = array();
+		foreach ( $scan['rows'] as $row ) {
+			if ( 'attention' === $row['info']['group'] ) {
+				$att[] = $row;
+			}
+		}
+		self::mini_table( __( 'Needs attention', 'rar-woo-smart-courier' ), __( 'Failed pickups, delivery failures and holds — act on these first.', 'rar-woo-smart-courier' ), array_slice( $att, 0, 8 ), __( 'Nothing needs attention. 🎉', 'rar-woo-smart-courier' ) );
+		self::mini_table( __( 'Recent parcels', 'rar-woo-smart-courier' ), '', array_slice( $scan['rows'], 0, 8 ), __( 'No parcels yet.', 'rar-woo-smart-courier' ) );
+
+		// Performance table.
+		echo '<div class="rwsc-d-panel"><h2>' . esc_html__( 'Courier performance — last 30 days', 'rar-woo-smart-courier' ) . '</h2><p class="rwsc-d-panel-sub">' . esc_html__( 'Success rate = delivered ÷ (delivered + returned). Open COD = amount to collect on parcels not yet finished.', 'rar-woo-smart-courier' ) . '</p>'
+			. '<table class="widefat striped rwsc-d-table"><thead><tr><th>' . esc_html__( 'Courier', 'rar-woo-smart-courier' ) . '</th><th>' . esc_html__( 'Sent', 'rar-woo-smart-courier' ) . '</th><th>' . esc_html__( 'In progress', 'rar-woo-smart-courier' ) . '</th><th>' . esc_html__( 'Delivered', 'rar-woo-smart-courier' ) . '</th><th>' . esc_html__( 'Returned', 'rar-woo-smart-courier' ) . '</th><th>' . esc_html__( 'Success rate', 'rar-woo-smart-courier' ) . '</th><th>' . esc_html__( 'Attention', 'rar-woo-smart-courier' ) . '</th><th>' . esc_html__( 'Open COD (৳)', 'rar-woo-smart-courier' ) . '</th></tr></thead><tbody>';
+		foreach ( $sum as $slug => $r ) {
+			$fn = $r['delivered'] + $r['returned'];
+			echo '<tr><td>' . RWSC_Couriers::chip( $slug ) . '</td><td>' . (int) $r['sent'] . '</td><td>' . (int) ( $r['pending'] + $r['transit'] ) . '</td><td>' . (int) $r['delivered'] . '</td><td>' . (int) $r['returned'] . '</td><td>' . ( $fn ? esc_html( round( 100 * $r['delivered'] / $fn ) . '%' ) : '—' ) . '</td><td>' . (int) $r['attention'] . '</td><td>' . esc_html( number_format_i18n( (int) $r['cod_open'] ) ) . '</td></tr>';
+		}
+		echo '</tbody></table>';
+		if ( ! empty( $sum['pathao']['fees'] ) ) {
+			echo '<p class="rwsc-d-muted">' . esc_html( sprintf( /* translators: %s: amount */ __( 'Pathao delivery fees recorded: ৳%s (only Pathao returns a fee).', 'rar-woo-smart-courier' ), number_format_i18n( $sum['pathao']['fees'] ) ) ) . '</p>';
+		}
+		foreach ( $sum as $r ) {
+			if ( ! empty( $r['capped'] ) ) {
+				echo '<p class="rwsc-d-muted">' . esc_html__( 'Statistics use the latest 500 parcels per courier of the last 30 days.', 'rar-woo-smart-courier' ) . '</p>';
+				break;
+			}
+		}
+		echo '</div>';
+		self::foot();
+	}
+
+	private static function mini_table( $title, $sub, array $rows, $empty ) {
+		echo '<div class="rwsc-d-panel"><h2>' . esc_html( $title ) . '</h2>' . ( $sub ? '<p class="rwsc-d-panel-sub">' . esc_html( $sub ) . '</p>' : '' );
+		if ( ! $rows ) {
+			echo '<p class="rwsc-d-muted">' . esc_html( $empty ) . '</p></div>';
+			return;
+		}
+		echo '<table class="widefat striped rwsc-d-table"><tbody>';
+		foreach ( $rows as $row ) {
+			$o = $row['order'];
+			$i = $row['info'];
+			echo '<tr><td><a href="' . esc_url( $o->get_edit_order_url() ) . '"><strong>#' . esc_html( $o->get_order_number() ) . '</strong></a></td><td>' . esc_html( RWSC_Order_Data::recipient_name( $o ) ) . '</td><td>' . RWSC_Couriers::chip( $i['courier'] ) . ' <span class="rwsc-d-cid">' . esc_html( $i['id'] ) . '</span></td><td>' . esc_html( $i['label'] ) . '</td></tr>';
+		}
+		echo '</tbody></table></div>';
+	}
+
+	/* ------------------------------------------------------------------ *
+	 * Parcels (all couriers)
+	 * ------------------------------------------------------------------ */
+
+	public static function page_orders() {
+		if ( ! current_user_can( RWSC_Dispatch_Ajax::operator_cap() ) ) {
+			return;
+		}
+		$f    = self::filters();
+		$res  = self::collect( $f );
+		$base = self::page_url( self::PAGE_ORDERS );
+
+		self::head(
+			self::PAGE_ORDERS,
+			__( 'Parcels', 'rar-woo-smart-courier' ),
+			__( 'Every order and parcel across all couriers — send, track, refresh and export.', 'rar-woo-smart-courier' )
+		);
+
+		// Status views.
+		echo '<div class="rwsc-d-seg">';
+		foreach ( RWSC_Pathao_Status::groups() as $key => $label ) {
+			echo '<a href="' . esc_url( add_query_arg( array( 'view' => $key, 'courier' => $f['courier'] ), $base ) ) . '"' . ( $key === $f['view'] ? ' class="is-on"' : '' ) . '>' . esc_html( $label ) . '</a>';
+		}
+		echo '</div>';
+		// Courier filter (sent views only).
+		if ( 'unsent' !== $f['view'] ) {
+			echo '<div class="rwsc-d-seg">';
+			echo '<a href="' . esc_url( add_query_arg( array( 'view' => $f['view'], 'courier' => 'all' ), $base ) ) . '"' . ( 'all' === $f['courier'] ? ' class="is-on"' : '' ) . '>' . esc_html__( 'All couriers', 'rar-woo-smart-courier' ) . '</a>';
+			foreach ( RWSC_Couriers::slugs() as $slug ) {
+				echo '<a href="' . esc_url( add_query_arg( array( 'view' => $f['view'], 'courier' => $slug ), $base ) ) . '"' . ( $slug === $f['courier'] ? ' class="is-on"' : '' ) . '>' . esc_html( RWSC_Couriers::label( $slug ) ) . '</a>';
+			}
+			echo '</div>';
+		}
+
+		echo '<form method="get" class="rwsc-d-filter"><input type="hidden" name="page" value="' . esc_attr( self::PAGE_ORDERS ) . '"><input type="hidden" name="view" value="' . esc_attr( $f['view'] ) . '"><input type="hidden" name="courier" value="' . esc_attr( $f['courier'] ) . '">'
+			. '<input type="search" name="s" value="' . esc_attr( $f['s'] ) . '" placeholder="' . esc_attr__( 'Order #, name, phone, consignment', 'rar-woo-smart-courier' ) . '"> '
+			. '<input type="date" name="from" value="' . esc_attr( $f['from'] ) . '"> <input type="date" name="to" value="' . esc_attr( $f['to'] ) . '"> '
+			. '<select name="per_page">';
+		foreach ( array( 25, 50, 100 ) as $n ) {
+			echo '<option value="' . esc_attr( $n ) . '"' . selected( $f['per_page'], $n, false ) . '>' . esc_html( $n ) . '</option>';
+		}
+		echo '</select> <button class="button">' . esc_html__( 'Filter', 'rar-woo-smart-courier' ) . '</button> '
+			. '<a class="button" href="' . esc_url( wp_nonce_url( add_query_arg( array_merge( $f, array( 'action' => 'rwsc_d_export_csv' ) ), admin_url( 'admin-post.php' ) ), 'rwsc_export' ) ) . '">' . esc_html__( 'Export CSV', 'rar-woo-smart-courier' ) . '</a></form>';
+
+		// Bulk bar.
+		$opts = '';
+		foreach ( RWSC_Couriers::slugs() as $slug ) {
+			$m = RWSC_Couriers::get( $slug );
+			if ( RWSC_Couriers::usable( $slug ) && ( ! $m || ! $m->manual() ) ) {
+				$opts .= '<option value="' . esc_attr( $slug ) . '">' . esc_html( RWSC_Couriers::label( $slug ) ) . '</option>';
+			}
+		}
+		echo '<div class="rwsc-d-bulkbar">';
+		if ( '' !== $opts ) {
+			echo '<select id="rwsc-d-bulk-courier" aria-label="' . esc_attr__( 'Courier', 'rar-woo-smart-courier' ) . '">' . $opts . '</select> <button type="button" class="button button-primary" id="rwsc-d-bulk-send">' . esc_html__( 'Send selected', 'rar-woo-smart-courier' ) . '</button> '; // phpcs:ignore WordPress.Security.EscapeOutput
+		}
+		echo '<button type="button" class="button" id="rwsc-d-bulk-refresh">' . esc_html__( 'Refresh selected', 'rar-woo-smart-courier' ) . '</button> <span class="rwsc-d-muted" id="rwsc-d-bulk-out"></span></div>';
+
+		echo '<table class="wp-list-table widefat striped rwsc-d-table"><thead><tr><td class="check-column"><input type="checkbox" id="rwsc-d-check-all"></td>'
+			. '<th>' . esc_html__( 'Order', 'rar-woo-smart-courier' ) . '</th><th>' . esc_html__( 'Customer', 'rar-woo-smart-courier' ) . '</th><th>' . esc_html__( 'District', 'rar-woo-smart-courier' ) . '</th>'
+			. '<th>' . esc_html__( 'Total', 'rar-woo-smart-courier' ) . '</th><th>' . esc_html__( 'Courier / parcel', 'rar-woo-smart-courier' ) . '</th></tr></thead><tbody>';
+		if ( ! $res['rows'] ) {
+			echo '<tr><td colspan="6">' . esc_html__( 'No orders match.', 'rar-woo-smart-courier' ) . '</td></tr>';
+		}
+		foreach ( $res['rows'] as $row ) {
+			$o     = $row['order'];
+			$id    = $o->get_id();
+			$state = $o->get_shipping_state() ? $o->get_shipping_state() : $o->get_billing_state();
+			echo '<tr><th class="check-column"><input type="checkbox" class="rwsc-d-check" value="' . esc_attr( $id ) . '" data-courier="' . esc_attr( $row['info'] ? $row['info']['courier'] : '' ) . '"></th>'
+				. '<td><a href="' . esc_url( $o->get_edit_order_url() ) . '"><strong>#' . esc_html( $o->get_order_number() ) . '</strong></a><div class="rwsc-d-muted">' . esc_html( $o->get_date_created() ? $o->get_date_created()->date_i18n( 'd M Y' ) : '' ) . ' · ' . esc_html( wc_get_order_status_name( $o->get_status() ) ) . '</div></td>'
+				. '<td>' . esc_html( RWSC_Order_Data::recipient_name( $o ) ) . '<div class="rwsc-d-muted">' . esc_html( RWSC_Order_Data::recipient_phone( $o ) ) . '</div></td>'
+				. '<td>' . esc_html( RWSC_Pathao_Locations::state_label( $state ) ) . '</td>'
+				. '<td>' . wp_kses_post( $o->get_formatted_order_total() ) . '</td>'
+				. '<td>' . RWSC_Couriers::cell_wrap( $o ) . '</td></tr>'; // phpcs:ignore WordPress.Security.EscapeOutput
+		}
+		echo '</tbody></table>';
+
+		echo '<p class="rwsc-d-muted">' . esc_html( sprintf( /* translators: %d: count */ _n( '%d parcel / order in this view.', '%d parcels / orders in this view.', $res['total'], 'rar-woo-smart-courier' ), $res['total'] ) );
+		if ( $res['capped'] ) {
+			echo ' ' . esc_html( sprintf( /* translators: %d: cap */ __( 'Only the newest %d orders with a parcel are scanned — narrow the dates to see older ones.', 'rar-woo-smart-courier' ), self::PARCEL_CAP ) );
+		}
+		echo '</p>';
+
+		if ( $res['pages'] > 1 ) {
+			echo '<div class="tablenav"><div class="tablenav-pages">' . wp_kses_post(
+				paginate_links(
+					array(
+						'base'    => add_query_arg( 'paged', '%#%' ),
+						'format'  => '',
+						'current' => $f['paged'],
+						'total'   => $res['pages'],
+					)
+				)
+			) . '</div></div>';
+		}
+		self::foot();
+	}
+
+	public static function export_csv() {
+		if ( ! current_user_can( RWSC_Dispatch_Ajax::operator_cap() ) ) {
+			wp_die( esc_html__( 'Not allowed.', 'rar-woo-smart-courier' ), 403 );
+		}
+		check_admin_referer( 'rwsc_export' );
+		$f = self::filters();
+		@set_time_limit( 120 ); // phpcs:ignore WordPress.PHP.NoSilencedErrors, Squiz.PHP.DiscouragedFunctions
+		$res = self::collect( $f, true );
+		nocache_headers();
+		header( 'Content-Type: text/csv; charset=utf-8' );
+		header( 'Content-Disposition: attachment; filename=courier-parcels-' . gmdate( 'Ymd-His' ) . '.csv' );
+		$out = fopen( 'php://output', 'w' ); // phpcs:ignore WordPress.WP.AlternativeFunctions
+		fwrite( $out, "\xEF\xBB\xBF" ); // phpcs:ignore WordPress.WP.AlternativeFunctions
+		fputcsv( $out, array( 'Order', 'Date', 'Name', 'Phone', 'District', 'Address', 'Order total', 'COD collect', 'Courier', 'Consignment', 'Status', 'Group', 'Delivery fee', 'Sent at' ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions
+		$guard = static function ( $v ) {
+			$v = (string) $v;
+			return ( '' !== $v && in_array( $v[0], array( '=', '+', '-', '@', "\t", "\r" ), true ) ) ? "'" . $v : $v; // Spreadsheet formula injection.
+		};
+		foreach ( $res['rows'] as $row ) {
+			$o     = $row['order'];
+			$i     = $row['info'];
+			$state = $o->get_shipping_state() ? $o->get_shipping_state() : $o->get_billing_state();
+			fputcsv( // phpcs:ignore WordPress.WP.AlternativeFunctions
+				$out,
+				array_map(
+					$guard,
+					array(
+						$o->get_order_number(),
+						$o->get_date_created() ? $o->get_date_created()->date( 'Y-m-d H:i' ) : '',
+						RWSC_Order_Data::recipient_name( $o ),
+						RWSC_Order_Data::recipient_phone( $o ),
+						RWSC_Pathao_Locations::state_label( $state ),
+						RWSC_Order_Data::recipient_address( $o ),
+						$o->get_total(),
+						$i ? $i['amount'] : '',
+						$i ? RWSC_Couriers::label( $i['courier'] ) : '',
+						$i ? $i['id'] : '',
+						$i ? $i['raw'] : '',
+						$i ? $i['group'] : '',
+						$i && $i['fee'] ? $i['fee'] : '',
+						$i && $i['sent_at'] ? wp_date( 'Y-m-d H:i', $i['sent_at'] ) : '',
+					)
+				)
+			);
+		}
+		fclose( $out ); // phpcs:ignore WordPress.WP.AlternativeFunctions
+		exit;
+	}
+
+	/* ------------------------------------------------------------------ *
+	 * Settings
 	 * ------------------------------------------------------------------ */
 
 	public static function save_settings() {
@@ -255,7 +729,7 @@ final class RWSC_Dispatch_Admin {
 		$h .= self::panel(
 			__( 'Customer & advanced', 'rar-woo-smart-courier' ),
 			'',
-			self::row( __( 'Tracking display', 'rar-woo-smart-courier' ), self::check( 'show_my_account', 'Show on My Account / order details' ) . '<br>' . self::check( 'show_in_emails', 'Include in customer e-mails' ) )
+			self::row( __( 'Customer tracking', 'rar-woo-smart-courier' ), '<span class="rwsc-d-muted">' . esc_html__( 'Customer tracking (My Account, e-mails, [rwsc_tracking]) is handled by the Smart Courier settings.', 'rar-woo-smart-courier' ) . '</span>' )
 			. self::row( __( 'Debug log', 'rar-woo-smart-courier' ), self::check( 'debug_log', 'Log API calls to WooCommerce → Status → Logs (secrets redacted)' ) )
 			. self::row( __( 'Uninstall', 'rar-woo-smart-courier' ), self::check( 'delete_data_on_uninstall', 'Delete settings and tokens when the plugin is deleted (order data is always kept)' ) )
 		);
@@ -373,6 +847,18 @@ final class RWSC_Dispatch_Admin {
 				self::row( __( 'Status', 'rar-woo-smart-courier' ), self::check( 'enable_sundarban', 'Enable Sundarban (record CN numbers, set status by hand)' ) )
 				. self::row( __( 'Tracking URL', 'rar-woo-smart-courier' ), self::text( 'sd_tracking_template', $s, 'large-text' ), 'Token: {id} (the CN). Default opens Sundarban’s public tracking page.' )
 			);
+	}
+
+	/** Pull settings from RAR Courier Suite into the built-in engine (fills blanks, never overwrites). */
+	public static function import_suite() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'Not allowed.', 'rar-woo-smart-courier' ), 403 );
+		}
+		check_admin_referer( 'rwsc_d_import_suite' );
+		$ok = RWSC_Api_Settings::maybe_import_suite( true );
+		RWSC_Bridge::backfill( 300 );
+		wp_safe_redirect( add_query_arg( 'suite_imported', $ok ? '1' : '0', admin_url( 'admin.php?page=' . self::PAGE_TOOLS ) ) );
+		exit;
 	}
 
 	public static function import_legacy() {
@@ -499,6 +985,9 @@ final class RWSC_Dispatch_Admin {
 		);
 
 		self::head( self::PAGE_TOOLS, __( 'Tools & Health', 'rar-woo-smart-courier' ), __( 'Diagnostics, maintenance and import tools. Nothing here changes a parcel unless you press a button.', 'rar-woo-smart-courier' ) );
+		if ( isset( $_GET['suite_imported'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
+			echo '<div class="notice notice-' . ( '1' === $_GET['suite_imported'] ? 'success' : 'info' ) . '"><p>' . esc_html( '1' === $_GET['suite_imported'] ? __( 'RAR Courier Suite settings imported and existing parcels synced to the Shipments board.', 'rar-woo-smart-courier' ) : __( 'No RAR Courier Suite settings found to import.', 'rar-woo-smart-courier' ) ) . '</p></div>'; // phpcs:ignore WordPress.Security.NonceVerification, WordPress.Security.EscapeOutput
+		}
 		if ( isset( $_GET['migrated'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
 			echo '<div class="notice notice-success"><p>' . esc_html( sprintf( 'Migrated %d order(s).', absint( $_GET['migrated'] ) ) ) . '</p></div>'; // phpcs:ignore WordPress.Security.NonceVerification
 		}
@@ -538,6 +1027,10 @@ final class RWSC_Dispatch_Admin {
 			wp_nonce_field( 'rwsc_d_continue_backfill' );
 			echo '<button class="button button-primary">' . esc_html__( 'Continue parcel migration (up to 300)', 'rar-woo-smart-courier' ) . '</button></form></div>';
 		}
+		echo '<div class="rwsc-d-panel"><h2>' . esc_html__( 'Migrate from RAR Courier Suite', 'rar-woo-smart-courier' ) . '</h2><form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="rwsc_d_import_suite">';
+		wp_nonce_field( 'rwsc_d_import_suite' );
+		echo '<p>' . esc_html__( 'Copies the credentials and options of RAR Courier Suite that are still empty here, and mirrors existing parcels into the Shipments board. Safe to repeat; nothing is overwritten. Do this before deleting the Suite.', 'rar-woo-smart-courier' ) . '</p><button class="button button-primary">' . esc_html__( 'Import from RAR Courier Suite', 'rar-woo-smart-courier' ) . '</button> <span class="rwsc-d-muted">' . ( get_option( 'rwsc_suite_imported' ) ? esc_html( sprintf( /* translators: %s: time */ __( 'Last imported %s ago.', 'rar-woo-smart-courier' ), human_time_diff( (int) get_option( 'rwsc_suite_imported' ) ) ) ) : esc_html__( 'Not imported yet.', 'rar-woo-smart-courier' ) ) . '</span></form></div>';
+
 		echo '<div class="rwsc-d-panel"><h2>' . esc_html__( 'Maintenance', 'rar-woo-smart-courier' ) . '</h2>'
 			. '<p><button type="button" class="button" id="rwsc-d-flush">' . esc_html__( 'Clear cached Pathao stores / cities / zones', 'rar-woo-smart-courier' ) . '</button> <span id="rwsc-d-flush-result" class="rwsc-d-muted"></span></p>'
 			. '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="rwsc_d_import_legacy">';

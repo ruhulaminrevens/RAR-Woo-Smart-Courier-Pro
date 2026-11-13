@@ -1,5 +1,22 @@
 # Changelog
 
+## 3.1.2 — 2026-11-14
+
+Integration-tested on WordPress 7.1.4 + WooCommerce 11.3.0 (SQLite), legacy and HPOS order storage, with RAR Courier Suite active and inactive; courier HTTP calls mocked.
+
+### Fixed
+- Suite parcel migration ran from `maybe_upgrade()` at `plugins_loaded`, before WooCommerce registers order types (WooCommerce "called incorrectly" notice). It could scan nothing and record completion. It now runs only on `wp_loaded`; upgrading to 3.1.2 resets the cursor once.
+- SteadFast tracking mirrored the numeric consignment id. The bridge now uses the `tracking_code` (`sfc_ref`), which the public tracking page needs.
+- Auto-send and courier-module bulk bookings were not mirrored to the Shipments board (tracking / status left empty).
+- An auto-assigned (`_rwsc_source = auto`) recommendation was treated as the customer's choice and overrode the auto-send courier from Settings.
+- Removed the unused duplicate dispatch front-end class (customer tracking is rendered once by the core plugin).
+
+### Added
+- Tools & Health: repeatable **Import from RAR Courier Suite** (settings fill-blank-only + parcel mirror) next to *Continue parcel migration*.
+
+### Changed
+- `WC tested up to` 11.3, `Tested up to` 7.1.
+
 ## 3.1.1 — 2026-11-14
 
 - Regression fix: Courier APIs and Tools & Health remain accessible while Suite/original vendor plugins own dispatch, enabling pre-uninstall settings and historic-parcel verification.

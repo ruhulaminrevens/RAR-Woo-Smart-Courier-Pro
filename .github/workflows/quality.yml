@@ -49,19 +49,19 @@ jobs:
           mkdir -p dist/rar-woo-smart-courier
           cp rar-woo-smart-courier.php readme.txt uninstall.php LICENSE NOTICE.txt dist/rar-woo-smart-courier/
           cp -R includes assets languages dist/rar-woo-smart-courier/
-          (cd dist && zip -qr ../rar-woo-smart-courier-v3.1.1.zip rar-woo-smart-courier)
-          unzip -t rar-woo-smart-courier-v3.1.1.zip
-          sha256sum rar-woo-smart-courier-v3.1.1.zip > rar-woo-smart-courier-v3.1.1.zip.sha256
+          (cd dist && zip -qr ../rar-woo-smart-courier-v3.1.2.zip rar-woo-smart-courier)
+          unzip -t rar-woo-smart-courier-v3.1.2.zip
+          sha256sum rar-woo-smart-courier-v3.1.2.zip > rar-woo-smart-courier-v3.1.2.zip.sha256
       - uses: actions/upload-artifact@v4
         with:
-          name: rar-woo-smart-courier-v3.1.1-installable
+          name: rar-woo-smart-courier-v3.1.2-installable
           path: |
-            rar-woo-smart-courier-v3.1.1.zip
-            rar-woo-smart-courier-v3.1.1.zip.sha256
+            rar-woo-smart-courier-v3.1.2.zip
+            rar-woo-smart-courier-v3.1.2.zip.sha256
           retention-days: 90
 
   publish:
-    name: Publish tested v3.1.1 GitHub Release
+    name: Publish tested v3.1.2 GitHub Release
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: [php, package]
     runs-on: ubuntu-latest
@@ -71,25 +71,25 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
-          name: rar-woo-smart-courier-v3.1.1-installable
+          name: rar-woo-smart-courier-v3.1.2-installable
           path: release-dist
       - name: Verify artifact
         run: |
           cd release-dist
-          sha256sum -c rar-woo-smart-courier-v3.1.1.zip.sha256
-          unzip -t rar-woo-smart-courier-v3.1.1.zip
+          sha256sum -c rar-woo-smart-courier-v3.1.2.zip.sha256
+          unzip -t rar-woo-smart-courier-v3.1.2.zip
       - name: Create GitHub release once after all checks pass
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if gh release view v3.1.1 >/dev/null 2>&1; then
-            echo "v3.1.1 already released; not changing an existing release"
+          if gh release view v3.1.2 >/dev/null 2>&1; then
+            echo "v3.1.2 already released; not changing an existing release"
             exit 0
           fi
-          gh release create v3.1.1 \
-            release-dist/rar-woo-smart-courier-v3.1.1.zip \
-            release-dist/rar-woo-smart-courier-v3.1.1.zip.sha256 \
+          gh release create v3.1.2 \
+            release-dist/rar-woo-smart-courier-v3.1.2.zip \
+            release-dist/rar-woo-smart-courier-v3.1.2.zip.sha256 \
             --target "$GITHUB_SHA" \
-            --title "RAR Woo Smart Courier Pro v3.1.1" \
-            --notes-file docs/RELEASE_NOTES_3.1.1.md \
+            --title "RAR Woo Smart Courier Pro v3.1.2" \
+            --notes-file docs/RELEASE_NOTES_3.1.2.md \
             --latest

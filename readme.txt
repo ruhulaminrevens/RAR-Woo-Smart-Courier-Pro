@@ -2,11 +2,11 @@
 Contributors: ruhulaminrevens
 Tags: woocommerce, shipping, courier, bangladesh, tracking
 Requires at least: 6.2
-Tested up to: 6.8
+Tested up to: 7.1
 Requires PHP: 7.4
 WC requires at least: 8.0
-WC tested up to: 10.1
-Stable tag: 3.1.1
+WC tested up to: 11.3
+Stable tag: 3.1.2
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -47,7 +47,7 @@ Checkout pricing uses the merchant-defined rate table. The separate dispatch eng
 == Installation ==
 
 1. Take a full backup of your site (files and database).
-2. Plugins → Add New → Upload Plugin → choose `rar-woo-smart-courier-v3.1.1.zip` → Install Now → Activate. When upgrading, choose "Replace current with uploaded".
+2. Plugins → Add New → Upload Plugin → choose `rar-woo-smart-courier-v3.1.2.zip` → Install Now → Activate. When upgrading, choose "Replace current with uploaded".
 3. WooCommerce → Settings → Shipping: make sure there is a zone for Bangladesh with a **Flat rate** method (and Free shipping if you use it).
 4. Smart Courier → Settings: enter your courier rates and ETAs, and pick your Nearby districts and areas.
 5. Keep Safe Test Mode ON and place a test order for an Inside Dhaka, a Nearby and an Outside Dhaka address.
@@ -73,6 +73,13 @@ Order meta is kept by this plugin's uninstall handler. Its API credential settin
 5. Parcel labels
 
 == Changelog ==
+
+= 3.1.2 =
+* Suite parcel migration now runs after WooCommerce loads, so it can no longer finish empty; restarts once on upgrade.
+* SteadFast tracking uses the real tracking code.
+* Auto-send and bulk bookings appear on the Shipments board.
+* Auto-recommended courier no longer overrides the courier chosen in Settings / at checkout.
+* Repeatable "Import from RAR Courier Suite" tool. Tested with WordPress 7.1 and WooCommerce 11.3.
 
 = 3.1.1 =
 * Courier APIs and Tools & Health remain available while Suite is active; connection checks are read-only and booking handlers remain disabled.

@@ -98,7 +98,7 @@ final class RWSC_Couriers {
 	 * @return string Slug, or '' to skip.
 	 */
 	public static function pick_for_auto( WC_Order $order ) {
-		$chosen_text = RWSC_Order_Data::selected_courier( $order );
+		$chosen_text = RWSC_Order_Data::chosen_courier( $order );
 		if ( '' !== $chosen_text ) {
 			$slug = self::detect( $chosen_text );
 			return ( '' !== $slug && self::usable( $slug ) && ! ( self::get( $slug ) && self::get( $slug )->manual() ) ) ? $slug : ''; // Unsupported courier chosen: leave it to staff.
