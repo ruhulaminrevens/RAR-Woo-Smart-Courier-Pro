@@ -6,11 +6,11 @@ Tested up to: 6.8
 Requires PHP: 7.4
 WC requires at least: 8.0
 WC tested up to: 10.1
-Stable tag: 2.0.0
+Stable tag: 3.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Multi-courier shipping and dispatch for Bangladesh WooCommerce stores: zone and weight pricing, delivery dates, badges, tracking, labels, manifests and a courier dashboard.
+All-in-one courier suite for Bangladesh WooCommerce stores: smart checkout courier choice plus live Pathao, RedX, SteadFast, Paperfly and Sundarban booking, webhooks, status sync, labels, manifests and a courier dashboard.
 
 == Description ==
 
@@ -27,6 +27,12 @@ Your team gets a Shipments board to book parcels and add tracking numbers, updat
 * Works with WooCommerce Free shipping, shipping tax, Local pickup and cash on delivery.
 * Classic checkout and the Cart/Checkout blocks. Safe Test Mode for rollout.
 
+= Courier API booking (new in 3.0) =
+* Book with Pathao, RedX, SteadFast and Paperfly from the Orders list (bulk supported); Sundarban by CN number.
+* One DB lock per order and one courier per order: no duplicate parcels, even after a timeout.
+* Signed Pathao webhooks, token-protected SteadFast webhook, 30-minute status sync, auto-send on order status.
+* COD-aware amounts, encrypted API secrets, redacted logs. Replaces the stand-alone RAR Courier Suite plugin.
+
 = Dispatch =
 * Shipments board with status tabs, search, filters, inline courier, tracking and status editing, and bulk actions.
 * Code 128 parcel labels (A4, 4×6 in, A6), a hand-over manifest and a UTF-8 CSV export.
@@ -41,7 +47,7 @@ The plugin uses the rates you enter from your courier contracts. It does not cal
 == Installation ==
 
 1. Take a full backup of your site (files and database).
-2. Plugins → Add New → Upload Plugin → choose `rar-woo-smart-courier-v2.0.0.zip` → Install Now → Activate. When upgrading, choose "Replace current with uploaded".
+2. Plugins → Add New → Upload Plugin → choose `rar-woo-smart-courier-v3.0.0.zip` → Install Now → Activate. When upgrading, choose "Replace current with uploaded".
 3. WooCommerce → Settings → Shipping: make sure there is a zone for Bangladesh with a **Flat rate** method (and Free shipping if you use it).
 4. Smart Courier → Settings: enter your courier rates and ETAs, and pick your Nearby districts and areas.
 5. Keep Safe Test Mode ON and place a test order for an Inside Dhaka, a Nearby and an Outside Dhaka address.
@@ -67,6 +73,11 @@ No. Settings and order data are kept. v1.x settings and orders are converted aut
 5. Parcel labels
 
 == Changelog ==
+
+= 3.0.0 =
+* RAR Courier Suite merged in: live Pathao / RedX / SteadFast / Paperfly booking, Sundarban manual CN, webhooks, status sync, auto-send.
+* Bridge mirrors API parcels into the Shipments board, Dashboard, labels and tracking.
+* Automatic import of RAR Courier Suite settings and parcels. See README for the removal steps.
 
 = 2.0.0 =
 * Fixed Dhaka/Nearby detection (BD-13 codes), weight unit conversion, tax per courier, pickup handling and rate caching.

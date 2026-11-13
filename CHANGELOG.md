@@ -1,5 +1,29 @@
 # Changelog
 
+## 3.0.0 — 2026-11-14
+
+**RAR Courier Suite is now built in.** Everything the stand-alone Suite did is included, so you can deactivate and delete it. Settings and parcels are imported automatically.
+
+### Added — live courier APIs
+- Book parcels straight from the WooCommerce Orders list (single, bulk and a native Pathao bulk call) with **Pathao** (v3 engine: token lifecycle, stores, cities / zones / areas, price estimate), **RedX**, **SteadFast** and **Paperfly**; **Sundarban** works as manual CN entry.
+- One named database lock per order across all couriers, and one courier per order. A timed-out ("uncertain") send blocks every courier for 10 minutes, so a parcel is never booked twice.
+- Idempotent, ordered status updates that never reopen a delivered / returned parcel.
+- Hardened webhooks: Pathao `X-PATHAO-Signature` (`hash_equals`) and handshake header, SteadFast Bearer token, de-duplication, unknown orders acknowledged. Webhook URLs are unchanged from the Suite (`/wp-json/ptc/v1/webhook`, `/wp-json/ptc/v1/steadfast`), so nothing needs re-registering.
+- 30-minute status-sync safety net (WP-Cron / Action Scheduler) and optional auto-send when an order reaches a chosen status, with courier routing.
+- COD- and advance-payment-aware amounts (RAR Advance Payment and prepaid gateways).
+- API secrets encrypted at rest (AES-256-CBC + HMAC), optional `wp-config.php` constants, secret-redacting WooCommerce log.
+- Order list **Dispatch** column, bulk actions, order-screen box with timeline, customer tracking block in My Account and e-mails.
+- New admin pages: **Courier APIs** (settings per courier) and **Tools & Health** (diagnostics, 30-day summary, cache flush, legacy RedX / SteadFast import, log tail).
+- **Bridge**: every booking and status change made through an API is mirrored into the Smart Courier shipment model, so the Shipments board, Dashboard, labels, manifests, reports and `[rwsc_tracking]` always show the courier's real state.
+
+### Migration
+- On first load the Suite's settings (`pt_hms_settings`, encrypted values copied as-is, same key) and Pathao token are imported into `rwsc_api`; existing parcels are mirrored into the shipment board once, silently (no customer e-mails).
+- While the Suite is still active the dispatch module pauses (no duplicate webhooks or cron) and a notice explains how to remove it.
+- Order meta (`ptc_*`, `rdx_*`, `sfc_*`, `pf_*`, `sdb_*`) is untouched, so old parcels keep working.
+
+### Changed
+- Version 3.0.0; description and docs updated. Uninstall also clears the new cron hooks and, only if you ticked "Delete data on uninstall", the API settings. Order data is never deleted.
+
 ## 2.0.0 — 2026-09-25
 
 ### Fixed

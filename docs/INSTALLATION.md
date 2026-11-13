@@ -1,4 +1,4 @@
-# Installation & Production Checklist (v2.0.0)
+# Installation & Production Checklist (v3.0.0)
 
 ## 1. Before you start
 
@@ -9,7 +9,7 @@
 ## 2. Install or upgrade
 
 1. WordPress Admin → Plugins → Add New → Upload Plugin.
-2. Choose `rar-woo-smart-courier-v2.0.0.zip` → Install Now.
+2. Choose `rar-woo-smart-courier-v3.0.0.zip` → Install Now.
    - **Upgrading from 1.x:** choose **Replace current with uploaded**.
 3. Activate. A new **Smart Courier** menu appears (Dashboard · Shipments · Settings).
 
@@ -83,3 +83,21 @@ Smart Courier → Settings → Checkout display → turn **Safe Test Mode OFF** 
 4. Print the labels and the **manifest**. Get the manifest signed at pickup.
 5. Update statuses as parcels move: Picked up → In transit → Delivered / Returned. Use bulk actions for many orders.
 6. Check the **Dashboard** for delivery success and return rates, parcels waiting to be booked, and COD still with couriers.
+
+## 7. Courier APIs (Pathao, RedX, SteadFast, Paperfly, Sundarban)
+
+1. **Smart Courier → Courier APIs**: open each courier tab, enter credentials, press **Test connection**, save (one Save button covers every tab). Secrets are stored encrypted; you can also define them in `wp-config.php` (`PATHAO_CLIENT_ID`, `PATHAO_CLIENT_SECRET`, `PATHAO_ENVIRONMENT`).
+2. Register the webhooks in the courier panels:
+   - Pathao: `https://YOUR-SITE/wp-json/ptc/v1/webhook` (secret = your client secret unless you set one).
+   - SteadFast: `https://YOUR-SITE/wp-json/ptc/v1/steadfast` with the Bearer token you set under the SteadFast tab.
+3. **WooCommerce → Orders**: select orders → *Send with <courier>* (or use the **Dispatch** column / order-screen box). Statuses return by webhook and a 30-minute sync.
+4. **Smart Courier → Tools & Health** shows a live health table (environment, locks, cron, last webhook, URLs).
+
+### Replacing the RAR Courier Suite plugin
+
+1. Install/activate v3.0.0 first. If the Suite is still active, dispatch pauses and a notice reminds you; nothing is duplicated.
+2. Check **Courier APIs**: credentials and options were imported automatically (the encrypted values use the same key, so they work as they are).
+3. Confirm the webhook URLs above (unchanged from the Suite).
+4. In the Suite's settings keep **Delete data on uninstall = No**. Deactivate, then delete **RAR Courier Suite**.
+5. Old parcels keep working (order meta is shared) and were mirrored into the Shipments board silently.
+

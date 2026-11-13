@@ -2,8 +2,8 @@
 /**
  * Plugin Name:       RAR Woo Smart Courier
  * Plugin URI:        https://github.com/ruhulaminrevens/RAR-Woo-Smart-Courier-Pro
- * Description:       Smart multi-courier shipping for WooCommerce (Bangladesh): zone + weight pricing, ETA and delivery-date estimates, recommendation badges, shipment tracking, dispatch board, courier dashboard, labels, manifests and CSV export.
- * Version:           2.0.0
+ * Description:       All-in-one courier suite for WooCommerce (Bangladesh): smart checkout courier selection, zone + weight pricing, ETA, plus live API booking and tracking for Pathao, RedX, SteadFast, Paperfly and Sundarban — dispatch board, webhooks, status sync, labels, manifests and reports.
+ * Version:           3.0.0
  * Author:            Ruhul Amin
  * Author URI:        https://github.com/ruhulaminrevens
  * Text Domain:       rar-woo-smart-courier
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-define( 'RWSC_VERSION', '2.0.0' );
+define( 'RWSC_VERSION', '3.0.0' );
 define( 'RWSC_FILE', __FILE__ );
 define( 'RWSC_DIR', plugin_dir_path( __FILE__ ) );
 define( 'RWSC_URL', plugin_dir_url( __FILE__ ) );
@@ -35,6 +35,8 @@ require_once RWSC_DIR . 'includes/class-rwsc-admin.php';
 require_once RWSC_DIR . 'includes/class-rwsc-ajax.php';
 require_once RWSC_DIR . 'includes/class-rwsc-print.php';
 require_once RWSC_DIR . 'includes/class-rwsc-frontend.php';
+require_once RWSC_DIR . 'includes/dispatch/class-rwsc-dispatch.php';
+require_once RWSC_DIR . 'includes/dispatch/class-rwsc-dispatch-admin.php';
 require_once RWSC_DIR . 'includes/class-rwsc-plugin.php';
 require_once RWSC_DIR . 'includes/functions.php';
 
@@ -53,5 +55,6 @@ add_action(
 );
 
 register_activation_hook( RWSC_FILE, array( 'RAR_Woo_Smart_Courier', 'activate' ) );
+register_deactivation_hook( RWSC_FILE, array( 'RAR_Woo_Smart_Courier', 'deactivate' ) );
 
 RAR_Woo_Smart_Courier::instance();

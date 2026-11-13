@@ -47,6 +47,13 @@ final class RAR_Woo_Smart_Courier {
         RWSC_Print::init();
         RWSC_Frontend::init();
 
+        // API courier dispatch (Pathao / RedX / SteadFast / Paperfly / Sundarban).
+        RWSC_Dispatch::load();
+        RWSC_Dispatch::boot();
+        if ( is_admin() && ! RWSC_Dispatch::suite_active() ) {
+            RWSC_Dispatch_Admin::init();
+        }
+
         foreach ( array( 'woocommerce_new_order', 'woocommerce_update_order', 'woocommerce_order_status_changed', 'rwsc_shipment_updated', 'rwsc_settings_saved' ) as $hook ) {
             add_action( $hook, array( 'RWSC_Reports', 'bust' ) );
         }
@@ -60,21 +67,44 @@ final class RAR_Woo_Smart_Courier {
         if ( false === get_option( RWSC_Settings::OPTION, false ) ) {
             add_option( RWSC_Settings::OPTION, array( 'version' => RWSC_VERSION ), '', false );
         }
+        RWSC_Dispatch::load();
+        RWSC_Dispatch::activate();
+    }
+
+    public static function deactivate() {
+        RWSC_Dispatch::load();
+        RWSC_Dispatch::deactivate();
     }
 
     public static function maybe_upgrade() {
         RWSC_Settings::migrate(); // Idempotent: returns at once when settings are already v2.
         $stored = (string) get_option( 'rwsc_version', '' );
+        self::maybe_backfill_dispatch();
         if ( RWSC_VERSION === $stored ) {
             return;
         }
         if ( '' === $stored || version_compare( $stored, '2.0.0', '<' ) ) {
             delete_option( 'rwsc_backfill_done' );
         }
+        if ( '' === $stored || version_compare( $stored, '3.0.0', '<' ) ) {
+            // v3: dispatch engine arrives. Pull in RAR Courier Suite settings and mirror its parcels once.
+            delete_option( 'rwsc_dispatch_backfill_done' );
+        }
         update_option( 'rwsc_version', RWSC_VERSION, false );
         if ( class_exists( 'WC_Cache_Helper' ) ) {
             WC_Cache_Helper::get_transient_version( 'shipping', true );
         }
+    }
+
+    /** One-time: mirror existing API parcels (e.g. from RAR Courier Suite) into the shipment board. */
+    public static function maybe_backfill_dispatch() {
+        if ( ! is_admin() || get_option( 'rwsc_dispatch_backfill_done' ) || ! class_exists( 'RWSC_Dispatch' ) ) {
+            return;
+        }
+        RWSC_Dispatch::load();
+        RWSC_Api_Settings::maybe_import_suite();
+        RWSC_Bridge::backfill( 300 );
+        update_option( 'rwsc_dispatch_backfill_done', time(), false );
     }
 
     public function missing_wc_notice() {
