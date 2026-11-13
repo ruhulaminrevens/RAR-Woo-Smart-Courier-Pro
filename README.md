@@ -38,7 +38,7 @@ Version 3 merges the stand-alone **RAR Courier Suite** into this plugin. One plu
 ### Replacing RAR Courier Suite — safe cutover checklist
 
 1. **Back up all WordPress files and the database.** Export/check the source Suite settings (`pt_hms_settings`), the Pro API settings (`rwsc_api`), and the original order parcel meta (`ptc_*`, `rdx_*`, `sfc_*`, `pf_*`, `sdb_*`, `_rwsc_*`). Never upload unmasked API credentials.
-2. Install **v3.1.0 on staging** with Suite still active: its dispatch functions remain paused to avoid two copies registering webhooks and cron jobs.
+2. Install **v3.1.0 on staging** with Suite still active: its dispatch functions remain paused to avoid two copies registering webhooks and cron jobs. Legacy original Pathao/RedX/SteadFast plugins also pause embedded dispatch if detected; deactivate overlapping integration plugins only after confirming their parcels are retained.
 3. At **Smart Courier → Courier APIs**, confirm migrated credentials and run each connected provider's **Test connection**. A field saying *Configured* proves only stored credentials, not a live successful booking.
 4. Under **Smart Courier → Tools & Health**, use **Continue parcel migration** as needed until the Suite import scans all records. Compare counts and IDs/statuses of old and new parcels, including oldest and newest orders. Run dedicated RedX/SteadFast legacy importer and HPOS old-Pathao meta migration repeatedly if relevant.
 5. **On staging only**, deactivate Suite (do not delete), then test one controlled parcel for each courier enabled: single/bulk booking, duplicate-submit lock, COD, tracking, customer email, webhook, cron, terminal statuses, label and manifest.
