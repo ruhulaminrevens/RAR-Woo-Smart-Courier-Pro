@@ -1,6 +1,6 @@
 # RAR Woo Smart Courier Pro
 
-![Version](https://img.shields.io/badge/version-3.1.0-6366f1) ![WordPress](https://img.shields.io/badge/WordPress-6.2%2B-21759b) ![WooCommerce](https://img.shields.io/badge/WooCommerce-8.0%2B%20·%20tested%2010.1-7f54b3) ![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4) ![HPOS](https://img.shields.io/badge/HPOS-compatible-16a34a) ![Blocks](https://img.shields.io/badge/Checkout%20blocks-compatible-16a34a) ![License](https://img.shields.io/badge/license-GPL--3.0--or--later-lightgrey)
+![Version](https://img.shields.io/badge/version-3.1.1-6366f1) ![WordPress](https://img.shields.io/badge/WordPress-6.2%2B-21759b) ![WooCommerce](https://img.shields.io/badge/WooCommerce-8.0%2B%20·%20tested%2010.1-7f54b3) ![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4) ![HPOS](https://img.shields.io/badge/HPOS-compatible-16a34a) ![Blocks](https://img.shields.io/badge/Checkout%20blocks-compatible-16a34a) ![License](https://img.shields.io/badge/license-GPL--3.0--or--later-lightgrey)
 
 Multi-courier shipping and dispatch for WooCommerce stores in Bangladesh. It gives customers one courier choice per company at checkout, each with a price, a delivery time and an estimated arrival date. Behind the scenes it gives your team a dispatch board, parcel labels, hand-over manifests, tracking and a courier performance dashboard.
 
@@ -8,7 +8,7 @@ Multi-courier shipping and dispatch for WooCommerce stores in Bangladesh. It giv
 
 ## Download
 
-### [Download RAR Woo Smart Courier v3.1.0 installable ZIP](https://github.com/ruhulaminrevens/RAR-Woo-Smart-Courier-Pro/releases/latest/download/rar-woo-smart-courier-v3.1.0.zip)
+### [Download RAR Woo Smart Courier v3.1.1 installable ZIP](https://github.com/ruhulaminrevens/RAR-Woo-Smart-Courier-Pro/releases/latest/download/rar-woo-smart-courier-v3.1.1.zip)
 
 - **Installable ZIP:** [GitHub Releases](https://github.com/ruhulaminrevens/RAR-Woo-Smart-Courier-Pro/releases) (published only after CI passes). The release ZIP has one installable `rar-woo-smart-courier` folder.
 - **Build/CI logs:** [GitHub Actions](https://github.com/ruhulaminrevens/RAR-Woo-Smart-Courier-Pro/actions/workflows/quality.yml): PHP 7.4/8.2/8.3 syntax and regression tests, JavaScript syntax, ZIP/sha256. CI is not proof of live courier booking or HPOS integration.
@@ -17,7 +17,7 @@ Multi-courier shipping and dispatch for WooCommerce stores in Bangladesh. It giv
 ### Install in 1 minute
 
 1. Take a **full backup** of your site (files + database).
-2. WordPress → **Plugins → Add New → Upload Plugin** → choose `rar-woo-smart-courier-v3.1.0.zip` → **Install Now** → **Activate**.
+2. WordPress → **Plugins → Add New → Upload Plugin** → choose `rar-woo-smart-courier-v3.1.1.zip` → **Install Now** → **Activate**.
 3. **Already using v1.x?** Choose **Replace current with uploaded**. Your settings and older orders are converted automatically; see [Upgrading from 1.x](#upgrading-from-1x).
 4. Open **Smart Courier → Settings**, enter your courier rates, and test with **Safe Test Mode ON** before going live.
 
@@ -38,7 +38,7 @@ Version 3 merges the stand-alone **RAR Courier Suite** into this plugin. One plu
 ### Replacing RAR Courier Suite — safe cutover checklist
 
 1. **Back up all WordPress files and the database.** Export/check the source Suite settings (`pt_hms_settings`), the Pro API settings (`rwsc_api`), and the original order parcel meta (`ptc_*`, `rdx_*`, `sfc_*`, `pf_*`, `sdb_*`, `_rwsc_*`). Never upload unmasked API credentials.
-2. Install **v3.1.0 on staging** with Suite still active: its dispatch functions remain paused to avoid two copies registering webhooks and cron jobs. Legacy original Pathao/RedX/SteadFast plugins also pause embedded dispatch if detected; deactivate overlapping integration plugins only after confirming their parcels are retained.
+2. Install **v3.1.1 on staging** with Suite still active: its dispatch functions remain paused to avoid two copies registering webhooks and cron jobs. Legacy original Pathao/RedX/SteadFast plugins also pause embedded dispatch if detected; deactivate overlapping integration plugins only after confirming their parcels are retained.
 3. At **Smart Courier → Courier APIs**, confirm migrated credentials and run each connected provider's **Test connection**. A field saying *Configured* proves only stored credentials, not a live successful booking.
 4. Under **Smart Courier → Tools & Health**, use **Continue parcel migration** as needed until the Suite import scans all records. Compare counts and IDs/statuses of old and new parcels, including oldest and newest orders. Run dedicated RedX/SteadFast legacy importer and HPOS old-Pathao meta migration repeatedly if relevant.
 5. **On staging only**, deactivate Suite (do not delete), then test one controlled parcel for each courier enabled: single/bulk booking, duplicate-submit lock, COD, tracking, customer email, webhook, cron, terminal statuses, label and manifest.
@@ -210,7 +210,7 @@ releases/                          Installable ZIPs
 
 ## Version
 
-**v3.1.0 — 2026-11-14 (CI checked; staging and provider tests required).** See [CHANGELOG.md](CHANGELOG.md).
+**v3.1.1 — 2026-11-14 (CI checked; staging and provider tests required).** See [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 
