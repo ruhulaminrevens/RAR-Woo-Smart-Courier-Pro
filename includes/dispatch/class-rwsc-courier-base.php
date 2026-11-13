@@ -261,8 +261,8 @@ abstract class RWSC_Courier_Base {
 		if ( $ts && $last_ts && $ts < $last_ts ) {
 			return false; // Out-of-order event.
 		}
-		if ( '' !== $cur_raw && $cur['final'] && ! $new['final'] && 'manual_edit' !== $source ) {
-			return false; // Never reopen a finished parcel.
+		if ( '' !== $cur_raw && $cur['final'] && $cur['slug'] !== $new['slug'] && 'manual_edit' !== $source ) {
+			return false; // Never silently change a terminal parcel, including final-to-final.
 		}
 		if ( $cur_raw === $raw ) {
 			if ( $ts && $ts > $last_ts ) {
