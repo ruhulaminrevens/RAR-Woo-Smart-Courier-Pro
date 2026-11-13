@@ -46,9 +46,9 @@ final class RWSC_Dispatch_Admin {
 			return; // Do not nag on unrelated admin screens (plugins list, posts, ...).
 		}
 		if ( RWSC_Api_Settings::secrets_unreadable() ) {
-			echo '<div class="notice notice-warning"><p><strong>RAR Courier Suite:</strong> saved API secrets cannot be decrypted (WordPress salts changed). Re-enter them under Courier Suite → Settings.</p></div>';
+			echo '<div class="notice notice-warning"><p><strong>RAR Woo Smart Courier Pro:</strong> saved API secrets cannot be decrypted (WordPress salts changed). Re-enter them under Smart Courier → Courier APIs.</p></div>';
 		} elseif ( 0 === self::usable_count() && ! in_array( $page, array( self::PAGE_SETTINGS, self::PAGE_DASH ), true ) ) {
-			echo '<div class="notice notice-info"><p><strong>RAR Courier Suite</strong> has no connected courier yet. <a href="' . esc_url( admin_url( 'admin.php?page=' . self::PAGE_SETTINGS ) ) . '">Connect Pathao, RedX, SteadFast, Paperfly or Sundarban</a>.</p></div>';
+			echo '<div class="notice notice-info"><p><strong>RAR Woo Smart Courier Pro</strong> has no connected courier yet. <a href="' . esc_url( admin_url( 'admin.php?page=' . self::PAGE_SETTINGS ) ) . '">Connect Pathao, RedX, SteadFast, Paperfly or Sundarban</a>.</p></div>';
 		}
 	}
 
@@ -86,13 +86,13 @@ final class RWSC_Dispatch_Admin {
 	}
 
 	private static function foot() {
-		echo '<p class="rwsc-d-foot">' . esc_html__( 'RAR Courier Suite is an independent plugin by Ruhul Amin. Pathao, RedX, SteadFast, Paperfly and Sundarban Courier are names of their respective owners; this plugin is not affiliated with or endorsed by them.', 'rar-woo-smart-courier' ) . '</p></div>';
+		echo '<p class="rwsc-d-foot">' . esc_html__( 'RAR RAR Woo Smart Courier Pro is an independent plugin by Ruhul Amin. Pathao, RedX, SteadFast, Paperfly and Sundarban Courier are names of their respective owners; this plugin is not affiliated with or endorsed by them.', 'rar-woo-smart-courier' ) . '</p></div>';
 	}
 
 	/** Connection state of a courier for badges: array( key => ok|warn|off, text ). */
 	private static function state( $slug ) {
 		if ( 'pathao' === $slug ) {
-			return RWSC_Api_Settings::is_configured() ? array( 'ok', __( 'Connected', 'rar-woo-smart-courier' ) ) : array( 'off', __( 'Not connected', 'rar-woo-smart-courier' ) );
+			return RWSC_Api_Settings::is_configured() ? array( 'warn', __( 'Configured (test required)', 'rar-woo-smart-courier' ) ) : array( 'off', __( 'Not connected', 'rar-woo-smart-courier' ) );
 		}
 		$m = RWSC_Couriers::get( $slug );
 		if ( ! $m->enabled() ) {
