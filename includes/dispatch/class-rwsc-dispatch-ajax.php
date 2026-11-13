@@ -12,8 +12,12 @@ final class RWSC_Dispatch_Ajax {
 
 	const NONCE = 'rwsc_dispatch';
 
-	public static function init() {
-		$actions = array( 'prepare', 'locations', 'price', 'send', 'send_native', 'refresh', 'test', 'reset_token', 'flush_cache', 'courier_send', 'courier_refresh', 'courier_test', 'courier_status' );
+	public static function init( $read_only = false ) {
+		// When Suite or a vendor plugin still owns dispatch, allow only non-
+		// mutating connection/lookup checks. Never register send/refresh handlers.
+		$actions = $read_only
+			? array( 'locations', 'price', 'test', 'courier_test' )
+			: array( 'prepare', 'locations', 'price', 'send', 'send_native', 'refresh', 'test', 'reset_token', 'flush_cache', 'courier_send', 'courier_refresh', 'courier_test', 'courier_status' );
 		foreach ( $actions as $a ) {
 			add_action( 'wp_ajax_rwsc_d_' . $a, array( __CLASS__, 'handle_' . $a ) );
 		}
