@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.1.1 — 2026-11-14
+
+- Regression fix: Courier APIs and Tools & Health remain accessible while Suite/original vendor plugins own dispatch, enabling pre-uninstall settings and historic-parcel verification.
+- Coexistence AJAX handlers allow only non-mutating API connection/lookup checks; create/refresh/status mutation and bulk booking remain disabled until conflicting plugins are deactivated.
+- Added an ownership/coactivation regression test to the PHP CI matrix and rebuilt installable package.
+
 ## 3.1.0 — 2026-11-14
 
 **Safety and migration hardening** of the v3.0 Suite consolidation; not a claimed live-provider certification.
