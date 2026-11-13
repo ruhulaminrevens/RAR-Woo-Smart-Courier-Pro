@@ -19,4 +19,26 @@ foreach ( array( 'wp_ajax_rwsc_d_send', 'wp_ajax_rwsc_d_send_native', 'wp_ajax_r
         exit( 1 );
     }
 }
-echo 'Dispatch ownership: safe read-only coexistence, and normal booking actions present' . PHP_EOL;
+class RWSC_Dispatch {
+    public static function conflicting_dispatch_active() { return true; }
+}
+class RWSC_Dispatch_Orders_UI {
+    public static $assets_count = 0;
+    public static function assets() { ++self::$assets_count; }
+}
+function wp_unslash( $v ) { return $v; }
+function sanitize_key( $v ) { return preg_replace( '/[^a-z0-9_-]/', '', strtolower( $v ) ); }
+require dirname( __DIR__ ) . '/includes/dispatch/class-rwsc-dispatch-admin.php';
+$GLOBALS['hooks'] = array();
+RWSC_Dispatch_Admin::init();
+if ( ! in_array( 'admin_menu', $GLOBALS['hooks'], true ) || ! in_array( 'admin_enqueue_scripts', $GLOBALS['hooks'], true ) ) {
+    throw new RuntimeException( 'Migration menus and assets must be registered during Suite coexistence' );
+}
+$_GET['page'] = 'rwsc-tools';
+RWSC_Dispatch_Admin::assets_when_conflicted();
+$_GET['page'] = 'wc-orders';
+RWSC_Dispatch_Admin::assets_when_conflicted();
+if ( 1 !== RWSC_Dispatch_Orders_UI::$assets_count ) {
+    throw new RuntimeException( 'Coexistence must load assets only for tools/settings, not WooCommerce orders' );
+}
+echo 'Dispatch ownership: safe read-only coexistence, accessible tools/assets, and normal booking actions present' . PHP_EOL;
