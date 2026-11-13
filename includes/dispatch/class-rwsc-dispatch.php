@@ -57,6 +57,9 @@ final class RWSC_Dispatch {
 	}
 
 	public static function activate() {
+		// Activation runs before init() has registered custom cron intervals.
+		// Register the interval here, otherwise wp_schedule_event may return false.
+		add_filter( 'cron_schedules', array( 'RWSC_Cron', 'schedules' ) );
 		if ( ! self::suite_active() && ! wp_next_scheduled( RWSC_Cron::HOOK_SYNC ) ) {
 			wp_schedule_event( time() + 300, 'rwsc_30min', RWSC_Cron::HOOK_SYNC );
 		}
@@ -66,5 +69,6 @@ final class RWSC_Dispatch {
 		if ( class_exists( 'RWSC_Cron' ) ) {
 			RWSC_Cron::clear();
 		}
+		wp_clear_scheduled_hook( 'rwsc_dispatch_backfill_batch' );
 	}
 }
