@@ -386,7 +386,7 @@ final class RWSC_Shipments {
      * @return array|WP_Error
      */
     public static function update( WC_Order $order, array $changes, array $args = array() ) {
-        $args    = wp_parse_args( $args, array( 'notify' => null, 'save' => true ) );
+        $args    = wp_parse_args( $args, array( 'notify' => null, 'save' => true, 'source' => '', 'history' => false ) );
         $before  = self::get( $order );
         $changed = array();
         $notes   = array();
@@ -396,7 +396,17 @@ final class RWSC_Shipments {
             if ( 'auto' === $key ) {
                 $r = self::auto_assign( $order, true );
             } elseif ( RWSC_Settings::courier( $key ) ) {
-                $r = $key === $before['courier'] ? $before : self::auto_assign( $order, true, $key );
+                if ( 'api' === $args['source'] ) {
+                    // Booking is authoritative. Do not recompute a checkout quote
+                    // when mirroring historical/API consignments: an old shipping
+                    // address or disabled checkout rate may be unresolvable.
+                    $order->update_meta_data( '_rwsc_courier', $key );
+                    $order->update_meta_data( '_rwsc_selected_courier', RWSC_Settings::courier_name( $key ) );
+                    $order->update_meta_data( '_rwsc_source', 'courier_api' );
+                    $r = self::get( $order );
+                } else {
+                    $r = $key === $before['courier'] ? $before : self::auto_assign( $order, true, $key );
+                }
             } else {
                 $r = new WP_Error( 'rwsc_courier', __( 'Unknown courier.', 'rar-woo-smart-courier' ) );
             }
@@ -477,7 +487,7 @@ final class RWSC_Shipments {
             return $before;
         }
 
-        if ( $notes ) {
+        if ( $notes && ! $args['history'] ) {
             $order->add_order_note( 'Smart Courier: ' . implode( ' · ', $notes ) . ' (' . self::actor() . ')', 0, true );
         }
 
@@ -488,12 +498,12 @@ final class RWSC_Shipments {
 
         // Tell the customer when a tracking number is first added / changed.
         $notify = null === $args['notify'] ? RWSC_Settings::on( 'notify_tracking' ) : (bool) $args['notify'];
-        if ( $notify && in_array( 'tracking', $changed, true ) && '' !== $after['tracking'] ) {
+        if ( ! $args['history'] && $notify && in_array( 'tracking', $changed, true ) && '' !== $after['tracking'] ) {
             $order->add_order_note( self::customer_message( $order, $after ), 1, false );
         }
 
         // Keep the WooCommerce order status in step (optional).
-        if ( in_array( 'status', $changed, true ) ) {
+        if ( ! $args['history'] && in_array( 'status', $changed, true ) ) {
             if ( 'delivered' === $after['status'] && RWSC_Settings::on( 'auto_complete' ) && ! $order->has_status( array( 'completed', 'cancelled', 'refunded' ) ) ) {
                 $order->update_status( 'completed', __( 'Smart Courier: parcel delivered.', 'rar-woo-smart-courier' ) );
             }
@@ -504,7 +514,11 @@ final class RWSC_Shipments {
             do_action( 'rwsc_shipment_status_changed', $order, $after['status'], $before['status'], $after );
         }
 
-        do_action( 'rwsc_shipment_updated', $order, $after, $before, $changed );
+        if ( ! $args['history'] ) {
+            do_action( 'rwsc_shipment_updated', $order, $after, $before, $changed );
+        } else {
+            RWSC_Reports::bust();
+        }
         return $after;
     }
 
