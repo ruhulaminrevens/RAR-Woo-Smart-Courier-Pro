@@ -50,7 +50,9 @@ final class RAR_Woo_Smart_Courier {
         // API courier dispatch (Pathao / RedX / SteadFast / Paperfly / Sundarban).
         RWSC_Dispatch::load();
         RWSC_Dispatch::boot();
-        if ( is_admin() && ! RWSC_Dispatch::conflicting_dispatch_active() ) {
+        if ( is_admin() ) {
+            // Settings, migration progress and health tools must stay available
+            // while Suite is active. Booking actions are paused separately.
             RWSC_Dispatch_Admin::init();
         }
 
