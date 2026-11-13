@@ -1,0 +1,28 @@
+RAR Woo Smart Courier Pro (incorporating RAR Courier Suite) — notice and credits
+======================================
+
+RAR Woo Smart Courier Pro (incorporating RAR Courier Suite) is an independent WooCommerce plugin written for nabiad.com
+by Ruhul Amin and released under the GNU General Public License v3 (see
+LICENSE).
+
+Third-party names
+-----------------
+"Pathao", "RedX", "SteadFast", "Paperfly" and "Sundarban Courier" are names and
+trademarks of their respective owners. They are used here only to identify the
+services this plugin can talk to. RAR Woo Smart Courier Pro (incorporating RAR Courier Suite) is not affiliated with,
+sponsored by or endorsed by any of these companies, and ships none of their
+logos.
+
+Credits (GPL reference material)
+--------------------------------
+During development the public, GPL-licensed WordPress plugins "Pathao Courier",
+"Redx for WooCommerce" and "SteadFast API" were studied to learn the data
+formats of their APIs (field names, endpoints, webhook behaviour, order meta
+keys used for backwards compatibility). The current code base is a new
+implementation with a different architecture, but acknowledges that origin
+because GPL work that was adapted must stay attributed. Legacy order-meta keys
+(ptc_*, _redx_tracking_id, steadfast_*) are read so parcels created by those
+plugins keep working.
+
+Paperfly and Sundarban modules are based on publicly available community
+documentation / manual workflow only; no vendor code is included.
