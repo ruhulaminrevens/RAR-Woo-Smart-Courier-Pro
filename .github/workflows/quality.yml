@@ -45,7 +45,7 @@ jobs:
       - name: Package plugin directory without dev and legacy files
         run: |
           mkdir -p dist/rar-woo-smart-courier
-          cp rar-woo-smart-courier.php readme.txt uninstall.php LICENSE dist/rar-woo-smart-courier/
+          cp rar-woo-smart-courier.php readme.txt uninstall.php LICENSE NOTICE.txt dist/rar-woo-smart-courier/
           cp -R includes assets languages dist/rar-woo-smart-courier/
           (cd dist && zip -qr ../rar-woo-smart-courier-v3.1.0.zip rar-woo-smart-courier)
           unzip -t rar-woo-smart-courier-v3.1.0.zip
