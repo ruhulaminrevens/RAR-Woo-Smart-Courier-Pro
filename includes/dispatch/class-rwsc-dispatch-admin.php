@@ -395,9 +395,15 @@ final class RWSC_Dispatch_Admin {
 		global $wpdb;
 		$n = 0;
 		if ( RWSC_Pathao_Orders::hpos_enabled() ) {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$ids = $wpdb->get_col( "SELECT DISTINCT post_id FROM {$wpdb->postmeta} WHERE meta_key = 'ptc_consignment_id' AND meta_value <> '' LIMIT 500" );
-			foreach ( $ids as $id ) {
+			$after = (int) get_option( 'rwsc_pathao_postmeta_cursor', 0 );
+			// Read up to 500 NEW legacy postmeta orders every click, not the
+			// same first batch. WooCommerce CRUD writes to current HPOS storage.
+			$ids = $wpdb->get_col( $wpdb->prepare(
+				"SELECT DISTINCT post_id FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value <> '' AND post_id > %d ORDER BY post_id ASC LIMIT %d",
+				'ptc_consignment_id', $after, 500
+			) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			foreach ( (array) $ids as $id ) {
+				$after = max( $after, (int) $id );
 				$o = wc_get_order( (int) $id );
 				if ( $o && '' === (string) $o->get_meta( RWSC_Pathao_Orders::META_ID, true ) ) {
 					foreach ( array( RWSC_Pathao_Orders::META_ID, RWSC_Pathao_Orders::META_STATUS, RWSC_Pathao_Orders::META_FEE ) as $k ) {
@@ -407,8 +413,14 @@ final class RWSC_Dispatch_Admin {
 						}
 					}
 					$o->save_meta_data();
+					if ( class_exists( 'RWSC_Bridge' ) ) {
+						RWSC_Bridge::sync( $o, array( 'notify' => false, 'history' => true ) );
+					}
 					++$n;
 				}
+			}
+			if ( is_array( $ids ) ) {
+				update_option( 'rwsc_pathao_postmeta_cursor', $after, false );
 			}
 		}
 		wp_safe_redirect( add_query_arg( 'migrated', $n, admin_url( 'admin.php?page=' . self::PAGE_TOOLS ) ) );
@@ -518,11 +530,11 @@ final class RWSC_Dispatch_Admin {
 			. '<p><button type="button" class="button" id="rwsc-d-flush">' . esc_html__( 'Clear cached Pathao stores / cities / zones', 'rar-woo-smart-courier' ) . '</button> <span id="rwsc-d-flush-result" class="rwsc-d-muted"></span></p>'
 			. '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="rwsc_d_import_legacy">';
 		wp_nonce_field( 'rwsc_d_import_legacy' );
-		echo '<p>' . esc_html__( 'Import parcels created by the old "Redx for WooCommerce" / "SteadFast API" plugins so they show here and join status sync (500 per run, safe to repeat).', 'rar-woo-smart-courier' ) . '</p><button class="button">' . esc_html__( 'Import RedX / SteadFast parcels', 'rar-woo-smart-courier' ) . '</button></form>';
+		echo '<p>' . esc_html__( 'Import parcels created by the old "Redx for WooCommerce" / "SteadFast API" plugins so they show here and join status sync (500 new legacy records per run; press again to continue).', 'rar-woo-smart-courier' ) . '</p><button class="button">' . esc_html__( 'Import RedX / SteadFast parcels', 'rar-woo-smart-courier' ) . '</button></form>';
 		if ( RWSC_Pathao_Orders::hpos_enabled() ) {
 			echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="margin-top:14px"><input type="hidden" name="action" value="rwsc_d_migrate_meta">';
 			wp_nonce_field( 'rwsc_migrate' );
-			echo '<p>' . esc_html__( 'HPOS is on: copy Pathao data created by the original Pathao plugin from legacy post meta into order meta (500 per run, safe to repeat).', 'rar-woo-smart-courier' ) . '</p><button class="button">' . esc_html__( 'Migrate legacy parcel data', 'rar-woo-smart-courier' ) . '</button></form>';
+			echo '<p>' . esc_html__( 'HPOS is on: copy Pathao data created by the original Pathao plugin from legacy post meta into order meta (500 new legacy records per run; press again to continue).', 'rar-woo-smart-courier' ) . '</p><button class="button">' . esc_html__( 'Migrate legacy parcel data', 'rar-woo-smart-courier' ) . '</button></form>';
 		}
 		echo '</div>';
 
