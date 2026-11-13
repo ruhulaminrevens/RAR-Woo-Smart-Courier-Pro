@@ -17,7 +17,7 @@ final class RWSC_Api_Settings {
 	const SUITE_TOKEN  = 'pt_hms_token_data';
 
 	/** Fields stored encrypted at rest. */
-	const SECRETS = array( 'client_secret', 'password', 'redx_token', 'sf_api_key', 'sf_secret_key', 'sf_webhook_token', 'pf_password', 'pf_key' );
+	const SECRETS = array( 'client_secret', 'password', 'webhook_secret', 'redx_token', 'sf_api_key', 'sf_secret_key', 'sf_webhook_token', 'pf_password', 'pf_key' );
 
 	/** @var array|null */
 	private static $cache = null;
@@ -143,20 +143,41 @@ final class RWSC_Api_Settings {
 			return false;
 		}
 		$done  = true;
-		$own   = get_option( self::OPTION, null );
 		$suite = get_option( self::SUITE_OPTION, null );
-		if ( ( ! $force && null !== $own ) || ! is_array( $suite ) || empty( $suite ) ) {
+		if ( ! is_array( $suite ) || ! $suite ) {
 			return false;
 		}
-		$merged = is_array( $own ) ? array_merge( $suite, array_filter( $own, 'strlen' ) ) : $suite;
-		update_option( self::OPTION, $merged, false );
+
+		$own    = get_option( self::OPTION, null );
+		$merged = is_array( $own ) ? $own : array();
+		$changed = false;
+		foreach ( $suite as $key => $value ) {
+			// Preserve explicitly configured Pro values. Do not call strlen() on
+			// arrays (e.g. queue_statuses), which throws TypeError on PHP 8.
+			if ( ! array_key_exists( $key, $merged ) || null === $merged[ $key ] || '' === $merged[ $key ] ) {
+				$merged[ $key ] = $value;
+				$changed = true;
+			}
+		}
+		// The original Suite stores most secrets as rpc1: ciphertext. The
+		// webhook secret was plaintext; secure it during migration as well.
+		if ( ! empty( $merged['webhook_secret'] ) && 0 !== strpos( (string) $merged['webhook_secret'], 'rpc1:' ) ) {
+			$merged['webhook_secret'] = self::encrypt( (string) $merged['webhook_secret'] );
+			$changed = true;
+		}
+		if ( $changed ) {
+			update_option( self::OPTION, $merged, false );
+			self::$cache = null;
+		}
 		$token = get_option( self::SUITE_TOKEN, null );
 		if ( $token && false === get_option( RWSC_Pathao_API::TOKEN_OPTION, false ) ) {
 			update_option( RWSC_Pathao_API::TOKEN_OPTION, $token, false );
+			$changed = true;
 		}
-		update_option( 'rwsc_suite_imported', time(), false );
-		self::$cache = null;
-		return true;
+		if ( $changed || false === get_option( 'rwsc_suite_imported', false ) ) {
+			update_option( 'rwsc_suite_imported', time(), false );
+		}
+		return $changed;
 	}
 
 	public static function get( $key, $default = null ) {
