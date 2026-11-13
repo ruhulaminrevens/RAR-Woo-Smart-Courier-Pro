@@ -18,6 +18,7 @@ final class RWSC_Dispatch_Admin {
 		add_action( 'admin_post_rwsc_d_save_settings', array( __CLASS__, 'save_settings' ) );
 				add_action( 'admin_post_rwsc_d_migrate_meta', array( __CLASS__, 'migrate_meta' ) );
 		add_action( 'admin_post_rwsc_d_import_legacy', array( __CLASS__, 'import_legacy' ) );
+		add_action( 'admin_post_rwsc_d_continue_backfill', array( __CLASS__, 'continue_backfill' ) );
 		add_action( 'admin_notices', array( __CLASS__, 'notices' ) );
 	}
 
@@ -372,6 +373,20 @@ final class RWSC_Dispatch_Admin {
 		exit;
 	}
 
+	/** Safe, nonce-protected manual continuation when WP-Cron is delayed. */
+	public static function continue_backfill() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'Not allowed.', 'rar-woo-smart-courier' ), 403 );
+		}
+		check_admin_referer( 'rwsc_d_continue_backfill' );
+		$result = RWSC_Bridge::backfill( 300 );
+		wp_safe_redirect( add_query_arg(
+			array( 'scanned' => (int) $result['scanned'], 'synced' => (int) $result['synced'] ),
+			admin_url( 'admin.php?page=' . self::PAGE_TOOLS )
+		) );
+		exit;
+	}
+
 	public static function migrate_meta() {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_die( esc_html__( 'Not allowed.', 'rar-woo-smart-courier' ), 403 );
@@ -414,6 +429,13 @@ final class RWSC_Dispatch_Admin {
 		$lastwh = (int) get_option( 'rwsc_last_webhook', 0 );
 		$lastsy = (int) get_option( 'rwsc_last_sync_run', 0 );
 		$next   = wp_next_scheduled( RWSC_Cron::HOOK_SYNC );
+		$backfill_done = (bool) get_option( 'rwsc_dispatch_backfill_done' );
+		$backfill_cursor = (array) get_option( 'rwsc_dispatch_backfill_cursor', array() );
+		$backfill_text = $backfill_done
+			? 'scan finished (verify counts and sample consignments before removing Suite)'
+			: sprintf( 'in progress: courier %d, page %d (WP-Cron or manual Continue)',
+				(int) ( $backfill_cursor['courier'] ?? 0 ) + 1,
+				(int) ( $backfill_cursor['page'] ?? 1 ) );
 		$redx   = RWSC_Couriers::get( 'redx' );
 		$sf     = RWSC_Couriers::get( 'steadfast' );
 		$pf     = RWSC_Couriers::get( 'paperfly' );
@@ -428,6 +450,7 @@ final class RWSC_Dispatch_Admin {
 				array( 'RAR Woo Smart Courier', RWSC_Order_Data::smart_courier_active() ? 'detected' : 'not active', true ),
 				array( 'RAR Advance Payment', class_exists( 'RAR_WAP_Order' ) ? 'detected (COD = balance due)' : 'not active', true ),
 				array( 'Status sync cron', $next ? 'next ' . wp_date( 'H:i', $next ) . ( $lastsy ? ', last run ' . human_time_diff( $lastsy ) . ' ago' : '' ) : 'not scheduled', (bool) $next ),
+				array( 'Suite parcel migration', $backfill_text, $backfill_done ),
 			),
 			'Pathao' => array(
 				array( 'Credentials', RWSC_Api_Settings::is_configured() ? 'configured (' . RWSC_Api_Settings::get( 'environment' ) . ')' : 'not configured', RWSC_Api_Settings::is_configured() ),
@@ -455,6 +478,9 @@ final class RWSC_Dispatch_Admin {
 		if ( isset( $_GET['migrated'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
 			echo '<div class="notice notice-success"><p>' . esc_html( sprintf( 'Migrated %d order(s).', absint( $_GET['migrated'] ) ) ) . '</p></div>'; // phpcs:ignore WordPress.Security.NonceVerification
 		}
+		if ( isset( $_GET['scanned'] ) && isset( $_GET['synced'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
+			echo '<div class="notice notice-info"><p>' . esc_html( sprintf( 'Migration batch: scanned %d, mirrored %d orders.', absint( $_GET['scanned'] ), absint( $_GET['synced'] ) ) ) . '</p></div>'; // phpcs:ignore WordPress.Security.NonceVerification
+		}
 		if ( isset( $_GET['imported'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
 			echo '<div class="notice notice-success"><p>' . esc_html( sprintf( 'Imported %d RedX / SteadFast parcel(s).', absint( $_GET['imported'] ) ) ) . '</p></div>'; // phpcs:ignore WordPress.Security.NonceVerification
 		}
@@ -481,6 +507,13 @@ final class RWSC_Dispatch_Admin {
 		}
 		echo '</tbody></table></div>';
 
+		if ( ! $backfill_done ) {
+			echo '<div class="rwsc-d-panel"><h2>' . esc_html__( 'Suite migration progress', 'rar-woo-smart-courier' ) . '</h2>';
+			echo '<p>' . esc_html( $backfill_text ) . '. Do not uninstall RAR Courier Suite until all old parcels and courier credentials have been verified.</p>';
+			echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="rwsc_d_continue_backfill">';
+			wp_nonce_field( 'rwsc_d_continue_backfill' );
+			echo '<button class="button button-primary">' . esc_html__( 'Continue parcel migration (up to 300)', 'rar-woo-smart-courier' ) . '</button></form></div>';
+		}
 		echo '<div class="rwsc-d-panel"><h2>' . esc_html__( 'Maintenance', 'rar-woo-smart-courier' ) . '</h2>'
 			. '<p><button type="button" class="button" id="rwsc-d-flush">' . esc_html__( 'Clear cached Pathao stores / cities / zones', 'rar-woo-smart-courier' ) . '</button> <span id="rwsc-d-flush-result" class="rwsc-d-muted"></span></p>'
 			. '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="rwsc_d_import_legacy">';
