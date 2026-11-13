@@ -20,10 +20,11 @@ foreach ( array( 'rwsc_dash_1', 'rwsc_dash_7', 'rwsc_dash_30', 'rwsc_dash_90', '
 
 wp_clear_scheduled_hook( 'rwsc_sync_statuses' );
 wp_clear_scheduled_hook( 'rwsc_auto_send_order' );
+wp_clear_scheduled_hook( 'rwsc_dispatch_backfill_batch' );
 
 $rwsc_api = get_option( 'rwsc_api', array() );
 if ( is_array( $rwsc_api ) && isset( $rwsc_api['delete_data_on_uninstall'] ) && 'yes' === $rwsc_api['delete_data_on_uninstall'] ) {
-    foreach ( array( 'rwsc_api', 'rwsc_pathao_token', 'rwsc_suite_imported', 'rwsc_dispatch_backfill_done', 'rwsc_last_webhook', 'rwsc_last_webhook_sf', 'rwsc_last_sync_run' ) as $rwsc_option ) {
+    foreach ( array( 'rwsc_api', 'rwsc_pathao_token', 'rwsc_suite_imported', 'rwsc_dispatch_backfill_done', 'rwsc_dispatch_backfill_cursor', 'rwsc_last_webhook', 'rwsc_last_webhook_sf', 'rwsc_last_sync_run' ) as $rwsc_option ) {
         delete_option( $rwsc_option );
     }
 }
