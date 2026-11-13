@@ -1,8 +1,29 @@
 # Changelog
 
+## 3.1.0 — 2026-11-14
+
+**Safety and migration hardening** of the v3.0 Suite consolidation; not a claimed live-provider certification.
+
+### Fixed
+- Suite settings importer handles array-valued settings (PHP 8 compatible), fills blank Pro values without overwriting existing configuration, and preserves provider credentials and tokens.
+- Encrypts historical plaintext webhook secret (when OpenSSL is available) and includes webhook secret in encrypted settings.
+- Paginated resumable Suite parcel migration with an explicit completion status and manual continuation. Historic imports do not send tracking notifications or trigger WooCommerce status automations.
+- API shipment bridge writes the true courier without re-quoting checkout shipping for old orders; terminal states cannot silently reverse.
+- Native Pathao bulk now checks all-courier duplicate and uncertain-timeout guards under the order lock. Transport uncertainty prevents unsafe retries.
+- Pathao, RedX, SteadFast, Paperfly and Sundarban automated terminal status changes are protected against late events.
+- Registers custom 30-minute WP-Cron interval before activation scheduling and cleans up migration tasks on deactivation.
+- Deduplicates customer-facing tracking cards and emails across Pro and its ported dispatch module.
+- Legacy RedX/SteadFast and HPOS old-Pathao postmeta migration actions now scan additional batches instead of repeatedly reading the first 500.
+- Clarifies configured credentials versus verified connection; removes stale Suite branding in tools.
+
+### Validation
+- PHP 7.4/8.2/8.3 syntax, standalone logic/migration/backfill regressions, JS syntax, and checked installable ZIP in GitHub Actions.
+- **Still unverified:** WordPress/WooCommerce end-to-end operation on a live site, third-party provider API behavior, webhook delivery and real COD reconciliation. Do not uninstall Suite without a staging and production acceptance check.
+
+
 ## 3.0.0 — 2026-11-14
 
-**RAR Courier Suite is now built in.** Everything the stand-alone Suite did is included, so you can deactivate and delete it. Settings and parcels are imported automatically.
+**The RAR Courier Suite source engine was ported.** The v3.0 unconditional removal statement was premature; follow the verified v3.1 migration checklist.
 
 ### Added — live courier APIs
 - Book parcels straight from the WooCommerce Orders list (single, bulk and a native Pathao bulk call) with **Pathao** (v3 engine: token lifecycle, stores, cities / zones / areas, price estimate), **RedX**, **SteadFast** and **Paperfly**; **Sundarban** works as manual CN entry.
