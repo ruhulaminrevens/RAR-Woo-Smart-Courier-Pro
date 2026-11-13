@@ -20,6 +20,18 @@ final class RWSC_Dispatch_Admin {
 		add_action( 'admin_post_rwsc_d_import_legacy', array( __CLASS__, 'import_legacy' ) );
 		add_action( 'admin_post_rwsc_d_continue_backfill', array( __CLASS__, 'continue_backfill' ) );
 		add_action( 'admin_notices', array( __CLASS__, 'notices' ) );
+		if ( RWSC_Dispatch::conflicting_dispatch_active() ) {
+			add_action( 'admin_enqueue_scripts', array( __CLASS__, 'assets_when_conflicted' ) );
+		}
+	}
+
+
+	/** Keep diagnostic settings CSS/JS, but never load dispatch UI on order screens while Suite owns bookings. */
+	public static function assets_when_conflicted() {
+		$page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
+		if ( in_array( $page, array( self::PAGE_SETTINGS, self::PAGE_TOOLS ), true ) ) {
+			RWSC_Dispatch_Orders_UI::assets();
+		}
 	}
 
 	public static function menu() {
@@ -87,7 +99,7 @@ final class RWSC_Dispatch_Admin {
 	}
 
 	private static function foot() {
-		echo '<p class="rwsc-d-foot">' . esc_html__( 'RAR RAR Woo Smart Courier Pro is an independent plugin by Ruhul Amin. Pathao, RedX, SteadFast, Paperfly and Sundarban Courier are names of their respective owners; this plugin is not affiliated with or endorsed by them.', 'rar-woo-smart-courier' ) . '</p></div>';
+		echo '<p class="rwsc-d-foot">' . esc_html__( 'RAR Woo Smart Courier Pro is an independent plugin by Ruhul Amin. Pathao, RedX, SteadFast, Paperfly and Sundarban Courier are names of their respective owners; this plugin is not affiliated with or endorsed by them.', 'rar-woo-smart-courier' ) . '</p></div>';
 	}
 
 	/** Connection state of a courier for badges: array( key => ok|warn|off, text ). */
@@ -102,7 +114,7 @@ final class RWSC_Dispatch_Admin {
 		if ( $m->manual() ) {
 			return array( 'ok', __( 'Manual · active', 'rar-woo-smart-courier' ) );
 		}
-		return $m->configured() ? array( 'ok', __( 'Connected', 'rar-woo-smart-courier' ) ) : array( 'warn', __( 'Needs credentials', 'rar-woo-smart-courier' ) );
+		return $m->configured() ? array( 'warn', __( 'Configured (test required)', 'rar-woo-smart-courier' ) ) : array( 'warn', __( 'Needs credentials', 'rar-woo-smart-courier' ) );
 	}
 
 	private static function state_pill( $slug ) {
