@@ -32,6 +32,8 @@ jobs:
         run: php tests/migration-test.php
       - name: Resumable parcel backfill regression
         run: php tests/backfill-test.php
+      - name: Dispatch ownership and read-only coactivation regression
+        run: php tests/ownership-test.php
       - name: Browser asset syntax
         run: |
           for file in assets/js/*.js; do node --check "$file"; done
