@@ -1,6 +1,6 @@
 # RAR Woo Smart Courier Pro
 
-![Version](https://img.shields.io/badge/version-3.1.0-6366f1) ![WordPress](https://img.shields.io/badge/WordPress-6.2%2B-21759b) ![WooCommerce](https://img.shields.io/badge/WooCommerce-8.0%2B%20·%20tested%2010.1-7f54b3) ![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4) ![HPOS](https://img.shields.io/badge/HPOS-compatible-16a34a) ![Blocks](https://img.shields.io/badge/Checkout%20blocks-compatible-16a34a) ![License](https://img.shields.io/badge/license-GPL--2.0--or--later-lightgrey)
+![Version](https://img.shields.io/badge/version-3.1.0-6366f1) ![WordPress](https://img.shields.io/badge/WordPress-6.2%2B-21759b) ![WooCommerce](https://img.shields.io/badge/WooCommerce-8.0%2B%20·%20tested%2010.1-7f54b3) ![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4) ![HPOS](https://img.shields.io/badge/HPOS-compatible-16a34a) ![Blocks](https://img.shields.io/badge/Checkout%20blocks-compatible-16a34a) ![License](https://img.shields.io/badge/license-GPL--3.0--or--later-lightgrey)
 
 Multi-courier shipping and dispatch for WooCommerce stores in Bangladesh. It gives customers one courier choice per company at checkout, each with a price, a delivery time and an estimated arrival date. Behind the scenes it gives your team a dispatch board, parcel labels, hand-over manifests, tracking and a courier performance dashboard.
 
@@ -214,4 +214,4 @@ releases/                          Installable ZIPs
 
 ## License
 
-GPL-2.0-or-later
+GPL-3.0-or-later
