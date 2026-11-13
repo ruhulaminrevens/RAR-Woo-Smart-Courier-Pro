@@ -1,0 +1,59 @@
+name: PHP quality checks and installable ZIP
+on:
+  push:
+    branches: [main, 'fix/**']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  php:
+    name: PHP ${{ matrix.php }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['7.4', '8.2', '8.3']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          tools: none
+          coverage: none
+          extensions: openssl
+      - name: PHP syntax
+        run: find . -name '*.php' -not -path './releases/*' -print0 | xargs -0 -n1 php -l
+      - name: Logic assertions
+        run: php tests/logic-test.php
+      - name: Legacy settings regression
+        run: php tests/migration-test.php
+      - name: Resumable parcel backfill regression
+        run: php tests/backfill-test.php
+      - name: Browser asset syntax
+        run: |
+          for file in assets/js/*.js; do node --check "$file"; done
+
+  package:
+    name: Installable WordPress ZIP
+    needs: php
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Package plugin directory without dev and legacy files
+        run: |
+          mkdir -p dist/rar-woo-smart-courier
+          cp rar-woo-smart-courier.php readme.txt uninstall.php LICENSE dist/rar-woo-smart-courier/
+          cp -R includes assets languages dist/rar-woo-smart-courier/
+          (cd dist && zip -qr ../rar-woo-smart-courier-v3.1.0.zip rar-woo-smart-courier)
+          unzip -t rar-woo-smart-courier-v3.1.0.zip
+          sha256sum rar-woo-smart-courier-v3.1.0.zip > rar-woo-smart-courier-v3.1.0.zip.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rar-woo-smart-courier-v3.1.0-installable
+          path: |
+            rar-woo-smart-courier-v3.1.0.zip
+            rar-woo-smart-courier-v3.1.0.zip.sha256
+          retention-days: 90
