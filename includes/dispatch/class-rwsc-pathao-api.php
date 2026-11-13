@@ -492,6 +492,10 @@ final class RWSC_Pathao_API {
 	public static function create_bulk( array $payloads ) {
 		$res = self::request( 'POST', '/aladdin/api/v1/orders/bulk', array( 'orders' => array_values( $payloads ) ), false );
 		if ( is_wp_error( $res ) ) {
+			if ( 'rwsc_transport' === $res->get_error_code() ) {
+				// Pathao may have queued all orders before the connection dropped.
+				return new WP_Error( 'rwsc_uncertain', $res->get_error_message(), array( 'uncertain' => true ) );
+			}
 			return $res;
 		}
 		return $res['body'];
