@@ -1,5 +1,9 @@
 GNU GENERAL PUBLIC LICENSE
-Version 2, June 1991
+Version 3, 29 June 2007
 
-This project is licensed under the GNU GPL v2 or later.
-See https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html for the full license text.
+This combined distribution is licensed under the GNU GPL version 3 or later.
+The imported RAR Courier Suite is GPLv3, so its code cannot be distributed
+as GPLv2-only. See the full official text:
+https://www.gnu.org/licenses/gpl-3.0.html
+
+Copyright (c) the respective contributors; see NOTICE and repository history.
