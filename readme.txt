@@ -7,8 +7,8 @@ Requires PHP: 7.4
 WC requires at least: 8.0
 WC tested up to: 10.1
 Stable tag: 3.1.0
-License: GPLv2 or later
-License URI: https://www.gnu.org/licenses/gpl-2.0.html
+License: GPLv3 or later
+License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
 All-in-one courier suite for Bangladesh WooCommerce stores: smart checkout courier choice plus live Pathao, RedX, SteadFast, Paperfly and Sundarban booking, webhooks, status sync, labels, manifests and a courier dashboard.
 
