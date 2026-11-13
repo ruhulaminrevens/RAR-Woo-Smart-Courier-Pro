@@ -1,4 +1,4 @@
-# Installation & Production Checklist (v3.1.2)
+# Installation & Production Checklist (v3.2.0)
 
 ## 1. Before you start
 
@@ -9,9 +9,9 @@
 ## 2. Install or upgrade
 
 1. WordPress Admin → Plugins → Add New → Upload Plugin.
-2. Choose `rar-woo-smart-courier-v3.1.2.zip` → Install Now.
+2. Choose `rar-woo-smart-courier-v3.2.0.zip` → Install Now.
    - **Upgrading from 1.x:** choose **Replace current with uploaded**.
-3. Activate. A new **Smart Courier** menu appears (Dashboard · Shipments · Settings).
+3. Activate. A new **Smart Courier** menu appears (Dashboard · Shipments · Book Parcels · API Overview · Rates & Checkout · Courier APIs · Tools & Health).
 
 What happens when upgrading from 1.x:
 - Settings are converted automatically. Nearby district names become WooCommerce codes, and "nearby cities" become "nearby areas". Your rates and ETAs are kept.
@@ -34,7 +34,7 @@ If cash on delivery is limited to certain shipping methods, keep **Flat rate** s
 
 ## 4. Configure
 
-Smart Courier → Settings:
+Smart Courier → Rates & Checkout:
 
 1. **Couriers & rates:**
    - Enable your couriers.
@@ -73,7 +73,7 @@ While testing, only shop managers see courier options.
 
 ## 6. Go live
 
-Smart Courier → Settings → Checkout display → turn **Safe Test Mode OFF** → Save.
+Smart Courier → Rates & Checkout → Checkout display → turn **Safe Test Mode OFF** → Save.
 
 ## Daily workflow
 
@@ -98,7 +98,7 @@ Smart Courier → Settings → Checkout display → turn **Safe Test Mode OFF** 
 **Do not uninstall Suite before all acceptance checks pass.** If installed alongside Pro, its dispatch module pauses while Suite handles webhooks/cron.
 
 1. Back up plugin files and full DB. Record an export/count of courier API settings and every old consignment/status grouped by provider. Retain a sample of old/new order IDs.
-2. Install v3.1.2 on staging. Smart Courier → Courier APIs: ensure credentials were imported and test each configured courier. A displayed credential is not proof of access.
+2. Install v3.2.0 on staging. Smart Courier → Courier APIs: ensure credentials were imported and test each configured courier. A displayed credential is not proof of access.
 3. Smart Courier → Tools & Health: check Suite parcel migration. Use **Continue parcel migration (up to 300)** until the scan is complete; WP-Cron can continue automatically. This does not automatically prove count parity.
 4. If legacy RedX/SteadFast plugins or original Pathao postmeta were used, click their import tool repeatedly for successive 500-ID batches; verify order IDs and status values. With HPOS, use WooCommerce CRUD-based order details, not raw wp_postmeta assumptions.
 5. Validate 10+ historical orders spanning all couriers and oldest/newest dates. The Pro Shipments board, order meta, tracking ID/status and WooCommerce order status must match the originals. If counts do not match, keep Suite installed and investigate.

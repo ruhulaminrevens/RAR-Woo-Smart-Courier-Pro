@@ -156,11 +156,26 @@ final class RWSC_Pathao_API {
 				return $new;
 			}
 			update_option( self::TOKEN_OPTION, $new, false );
+			RWSC_Api_Settings::mark_verified( 'pathao', 'token' );
 			RWSC_Logger::debug( 'New API token stored', array( 'expires_at' => $new['expires_at'], 'mode' => $new['mode'] ) );
 			return $new['access_token'];
 		} finally {
 			RWSC_Lock::release( 'token' );
 		}
+	}
+
+	/** True when a non-expired token for the saved credentials is stored (proves they work). */
+	public static function has_valid_token() {
+		$fp = self::fingerprint(
+			array(
+				'client_id'     => RWSC_Api_Settings::get( 'client_id' ),
+				'client_secret' => RWSC_Api_Settings::get( 'client_secret' ),
+				'environment'   => RWSC_Api_Settings::get( 'environment' ),
+				'username'      => RWSC_Api_Settings::get( 'username' ),
+			)
+		);
+		$data = get_option( self::TOKEN_OPTION );
+		return self::token_valid( $data, $fp ) && ! empty( $data['fp'] );
 	}
 
 	private static function token_valid( $data, $fp ) {

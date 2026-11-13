@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: RAR Woo Smart Courier 3.1.2\n"
+"Project-Id-Version: RAR Woo Smart Courier 3.2.0\n"
 "Report-Msgid-Bugs-To: https://github.com/ruhulaminrevens/RAR-Woo-Smart-Courier-Pro/issues\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-13T22:45:20+00:00\n"
+"POT-Creation-Date: 2026-11-13T23:35:05+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Domain: rar-woo-smart-courier\n"
 
@@ -18,669 +18,681 @@ msgstr ""
 msgid "RAR Woo Smart Courier"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:36 includes/class-rwsc-admin.php:288 includes/class-rwsc-admin.php:307 includes/class-rwsc-orders-admin.php:54 includes/dispatch/class-rwsc-dispatch-admin.php:87
+#: includes/class-rwsc-admin.php:37 includes/class-rwsc-admin.php:348 includes/class-rwsc-admin.php:364 includes/class-rwsc-orders-admin.php:54 includes/dispatch/class-rwsc-dispatch-admin.php:97
 msgid "Smart Courier"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:37
+#: includes/class-rwsc-admin.php:38
 msgid "Courier Dashboard"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:37 includes/class-rwsc-admin.php:268 includes/class-rwsc-plugin.php:123
+#: includes/class-rwsc-admin.php:38 includes/class-rwsc-admin.php:111 includes/class-rwsc-plugin.php:136
 msgid "Dashboard"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:40 includes/class-rwsc-admin.php:269 includes/class-rwsc-admin.php:318 includes/dispatch/class-rwsc-dispatch-admin.php:88
+#: includes/class-rwsc-admin.php:41 includes/class-rwsc-admin.php:112 includes/class-rwsc-admin.php:375
 msgid "Shipments"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:41
-msgid "Smart Courier Settings"
+#: includes/class-rwsc-admin.php:42 includes/class-rwsc-admin.php:115
+msgid "Rates & Checkout"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:41 includes/class-rwsc-admin.php:270 includes/class-rwsc-plugin.php:124 includes/dispatch/class-rwsc-dispatch-admin.php:400 includes/dispatch/class-rwsc-dispatch-admin.php:676
-msgid "Settings"
+#: includes/class-rwsc-admin.php:113 includes/dispatch/class-rwsc-dispatch-admin.php:45 includes/dispatch/class-rwsc-dispatch-admin.php:477
+msgid "Book Parcels"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:164
+#: includes/class-rwsc-admin.php:114 includes/dispatch/class-rwsc-dispatch-admin.php:44 includes/dispatch/class-rwsc-dispatch-admin.php:349
+msgid "API Overview"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:116 includes/dispatch/class-rwsc-dispatch-admin.php:46 includes/dispatch/class-rwsc-dispatch-admin.php:687
+msgid "Courier APIs"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:117 includes/dispatch/class-rwsc-dispatch-admin.php:47 includes/dispatch/class-rwsc-dispatch-admin.php:999
+msgid "Tools & Health"
+msgstr ""
+
+#: includes/class-rwsc-admin.php:228
 msgid "Courier engine is OFF"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:164
+#: includes/class-rwsc-admin.php:228
 msgid "Customers see your normal WooCommerce shipping methods."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:166
+#: includes/class-rwsc-admin.php:230
 msgid "Safe Test Mode is ON"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:166
+#: includes/class-rwsc-admin.php:230
 msgid "Only shop managers see courier options at checkout. Turn it off when you are happy with the rates."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:169
+#: includes/class-rwsc-admin.php:233
 msgid "No courier is enabled"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:169
+#: includes/class-rwsc-admin.php:233
 msgid "Enable at least one courier and give it a name."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:204
+#: includes/class-rwsc-admin.php:268
 msgid "No shipping method for Bangladesh"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:205
+#: includes/class-rwsc-admin.php:269
 msgid "Your Bangladesh zone only has pickup. Add a \"Flat rate\" method – couriers replace it at checkout."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:205
+#: includes/class-rwsc-admin.php:269
 msgid "Create a WooCommerce shipping zone for Bangladesh with a \"Flat rate\" method (and optionally \"Free shipping\"). Couriers replace the flat rate at checkout."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:211
+#: includes/class-rwsc-admin.php:275
 msgid "Bangladesh is not a shipping country"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:211
+#: includes/class-rwsc-admin.php:275
 msgid "WooCommerce → Settings → General → \"Shipping location(s)\" must include Bangladesh."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:217
+#: includes/class-rwsc-admin.php:281
 msgid "Product weights are in %s"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:217
+#: includes/class-rwsc-admin.php:281
 msgid "They are converted to kg automatically for courier pricing."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:222
+#: includes/class-rwsc-admin.php:286
 msgid "%d product has no weight"
 msgid_plural "%d products have no weight"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/class-rwsc-admin.php:222
+#: includes/class-rwsc-admin.php:286
 msgid "The fallback weight (%s kg per item) is used for them."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:253
+#: includes/class-rwsc-admin.php:317
 msgid "Safe Test Mode is ON – only shop managers see courier options at checkout."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:253
+#: includes/class-rwsc-admin.php:317
 msgid "Review settings"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:263
+#: includes/class-rwsc-admin.php:327
 msgid "Live at checkout"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:264 includes/class-rwsc-admin.php:530
+#: includes/class-rwsc-admin.php:328 includes/class-rwsc-admin.php:587
 msgid "Safe Test Mode"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:265
+#: includes/class-rwsc-admin.php:329
 msgid "Engine off"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:304 includes/class-rwsc-admin.php:315 includes/class-rwsc-admin.php:392
+#: includes/class-rwsc-admin.php:361 includes/class-rwsc-admin.php:372 includes/class-rwsc-admin.php:449
 msgid "You do not have permission to view this page."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:307
+#: includes/class-rwsc-admin.php:364
 msgid "Courier performance, dispatch queue and live rate calculator"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:308
+#: includes/class-rwsc-admin.php:365
 msgid "Loading dashboard…"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:309
+#: includes/class-rwsc-admin.php:366
 msgid "Please enable JavaScript to use the dashboard."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:318
+#: includes/class-rwsc-admin.php:375
 msgid "Book, track and hand over parcels courier by courier"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:319
+#: includes/class-rwsc-admin.php:376
 msgid "Loading shipments…"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:346
+#: includes/class-rwsc-admin.php:403
 msgid "Enabled"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:347
+#: includes/class-rwsc-admin.php:404
 msgid "Colour"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:348
+#: includes/class-rwsc-admin.php:405
 msgid "Courier name"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:349
+#: includes/class-rwsc-admin.php:406
 msgid "Priority"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:352
+#: includes/class-rwsc-admin.php:409
 msgid "Remove courier"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:358 includes/class-rwsc-orders-admin.php:89
+#: includes/class-rwsc-admin.php:415 includes/class-rwsc-orders-admin.php:98
 msgid "Zone"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:359
+#: includes/class-rwsc-admin.php:416
 msgid "On"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:360
+#: includes/class-rwsc-admin.php:417
 msgid "+ per kg"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:361
+#: includes/class-rwsc-admin.php:418
 msgid "Delivery time (ETA)"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:378
+#: includes/class-rwsc-admin.php:435
 msgid "Tracking link"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:381
+#: includes/class-rwsc-admin.php:438
 msgid "Max weight (kg, 0 = no limit)"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:398
+#: includes/class-rwsc-admin.php:455
 msgid "Settings saved. Checkout rates were refreshed."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:399
+#: includes/class-rwsc-admin.php:456
 msgid "Settings imported."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:400
+#: includes/class-rwsc-admin.php:457
 msgid "Settings reset to defaults."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:401
+#: includes/class-rwsc-admin.php:458
 msgid "Import failed: that is not a valid Smart Courier settings export."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:402
+#: includes/class-rwsc-admin.php:459
 msgid "Tracking page created."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:405 includes/class-rwsc-admin.php:443
+#: includes/class-rwsc-admin.php:462 includes/class-rwsc-admin.php:500
 msgid "Couriers & rates"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:406
+#: includes/class-rwsc-admin.php:463
 msgid "Zones & weight"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:407 includes/class-rwsc-admin.php:524
+#: includes/class-rwsc-admin.php:464 includes/class-rwsc-admin.php:581
 msgid "Checkout display"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:408 includes/class-rwsc-admin.php:576
+#: includes/class-rwsc-admin.php:465 includes/class-rwsc-admin.php:633
 msgid "Delivery dates"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:409 includes/class-rwsc-admin.php:608
+#: includes/class-rwsc-admin.php:466 includes/class-rwsc-admin.php:665
 msgid "Tracking & automation"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:410 includes/class-rwsc-admin.php:680
+#: includes/class-rwsc-admin.php:467 includes/class-rwsc-admin.php:737
 msgid "Tools"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:424
+#: includes/class-rwsc-admin.php:481
 msgid "Smart Courier settings"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:424
+#: includes/class-rwsc-admin.php:481
 msgid "Rates, zones, delivery dates, checkout display and automation"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:444
+#: includes/class-rwsc-admin.php:501
 msgid "Charges per parcel by zone and weight: up to 1 kg, up to 2 kg, then an extra amount for every started kg above 2 kg. Use the rates from your own courier contracts."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:445
+#: includes/class-rwsc-admin.php:502
 msgid "Add courier"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:455
+#: includes/class-rwsc-admin.php:512
 msgid "A zone with no \"≤ 1 kg\" price (0) is not offered for that courier. Use WooCommerce Free shipping for free delivery."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:456
+#: includes/class-rwsc-admin.php:513
 msgid "Tracking link placeholders: {tracking} = tracking / consignment number, {phone} = customer phone (01XXXXXXXXX), {order} = order number."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:461
+#: includes/class-rwsc-admin.php:518
 msgid "Delivery zones"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:462
+#: includes/class-rwsc-admin.php:519
 msgid "Dhaka district = Inside Dhaka. Pick the districts that get the Nearby rate, and the areas inside Dhaka district (Savar, Keraniganj …) that couriers charge as Nearby."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:465
+#: includes/class-rwsc-admin.php:522
 msgid "Nearby districts"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:467
+#: includes/class-rwsc-admin.php:524
 msgid "Search districts (English or বাংলা)…"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:474 includes/class-rwsc-locations.php:297
+#: includes/class-rwsc-admin.php:531 includes/class-rwsc-locations.php:297
 msgid "Inside Dhaka"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:484
+#: includes/class-rwsc-admin.php:541
 msgid "Nearby areas inside Dhaka district"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:486
+#: includes/class-rwsc-admin.php:543
 msgid "Add area and press Enter"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:487
+#: includes/class-rwsc-admin.php:544
 msgid "Matched against the Town / City (and address lines when enabled below). English and বাংলা both work."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:490
+#: includes/class-rwsc-admin.php:547
 msgid "Always \"Inside Dhaka\" areas"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:492
+#: includes/class-rwsc-admin.php:549
 msgid "e.g. Tongi, Uttara"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:493
+#: includes/class-rwsc-admin.php:550
 msgid "Optional. Areas outside Dhaka district that your couriers charge at the Inside Dhaka rate."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:499
+#: includes/class-rwsc-admin.php:556
 msgid "Address matching"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:500
+#: includes/class-rwsc-admin.php:557
 msgid "Also look for area names in the address lines"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:500
+#: includes/class-rwsc-admin.php:557
 msgid "Recommended – many customers write \"Savar\" in the address and \"Dhaka\" as the city."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:501
+#: includes/class-rwsc-admin.php:558
 msgid "Only for Bangladesh addresses"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:501
+#: includes/class-rwsc-admin.php:558
 msgid "Other countries keep your normal WooCommerce rates."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:504
+#: includes/class-rwsc-admin.php:561
 msgid "Parcel weight"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:506
+#: includes/class-rwsc-admin.php:563
 msgid "Fallback weight per item (kg)"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:508
+#: includes/class-rwsc-admin.php:565
 msgid "Packaging weight per parcel (kg)"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:512
+#: includes/class-rwsc-admin.php:569
 msgid "Product weights are read in your store unit (%s) and converted to kg."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:517
+#: includes/class-rwsc-admin.php:574
 msgid "Test an address"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:517
+#: includes/class-rwsc-admin.php:574
 msgid "(uses saved settings)"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:525
+#: includes/class-rwsc-admin.php:582
 msgid "How courier choices look and which one is pre-selected for the customer."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:528
+#: includes/class-rwsc-admin.php:585
 msgid "Engine"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:529
+#: includes/class-rwsc-admin.php:586
 msgid "Show courier choices at checkout"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:529
+#: includes/class-rwsc-admin.php:586
 msgid "Replaces the zone's flat rate with one option per courier."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:530
+#: includes/class-rwsc-admin.php:587
 msgid "Only shop managers see the couriers. Customers keep the normal shipping until you switch this off."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:531
+#: includes/class-rwsc-admin.php:588
 msgid "Keep \"Local pickup\" as an extra option"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:534
+#: includes/class-rwsc-admin.php:591
 msgid "Recommendation"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:537
+#: includes/class-rwsc-admin.php:594
 msgid "Smart"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:537
+#: includes/class-rwsc-admin.php:594
 msgid "Fastest delivery first, then lower price, then your priority."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:538 includes/class-rwsc-admin.php:559
+#: includes/class-rwsc-admin.php:595 includes/class-rwsc-admin.php:616
 msgid "Cheapest"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:538
+#: includes/class-rwsc-admin.php:595
 msgid "Lowest price first, then faster delivery."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:539
+#: includes/class-rwsc-admin.php:596
 msgid "My priority"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:539
+#: includes/class-rwsc-admin.php:596
 msgid "Your priority numbers decide (lower = first)."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:545
+#: includes/class-rwsc-admin.php:602
 msgid "The recommended courier is listed first and pre-selected."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:550
+#: includes/class-rwsc-admin.php:607
 msgid "Label"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:551
+#: includes/class-rwsc-admin.php:608
 msgid "Detailed"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:551
+#: includes/class-rwsc-admin.php:608
 msgid "Colour dot, badges, price, and a second line with ETA + delivery date."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:552
+#: includes/class-rwsc-admin.php:609
 msgid "Compact"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:553
+#: includes/class-rwsc-admin.php:610
 msgid "Show delivery time (ETA)"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:554
+#: includes/class-rwsc-admin.php:611
 msgid "Show estimated delivery date"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:554
+#: includes/class-rwsc-admin.php:611
 msgid "e.g. \"Arrives Sat 27 – Sun 28 Sep\" – uses your weekend, holidays and cut-off time."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:555
+#: includes/class-rwsc-admin.php:612
 msgid "Show badges"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:557
+#: includes/class-rwsc-admin.php:614
 msgid "Recommended"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:558
+#: includes/class-rwsc-admin.php:615
 msgid "Fastest"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:561
+#: includes/class-rwsc-admin.php:618
 msgid "Leave a badge text empty to hide that badge."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:564
+#: includes/class-rwsc-admin.php:621
 msgid "Free shipping"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:565
+#: includes/class-rwsc-admin.php:622
 msgid "When WooCommerce \"Free shipping\" applies (e.g. minimum order amount), couriers become free and the normal price is shown struck through."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:566
+#: includes/class-rwsc-admin.php:623
 msgid "Every courier is free"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:567
+#: includes/class-rwsc-admin.php:624
 msgid "Only the recommended courier is free"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:567
+#: includes/class-rwsc-admin.php:624
 msgid "Customers can still pay for another courier."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:568
+#: includes/class-rwsc-admin.php:625
 msgid "Preview"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:568
+#: includes/class-rwsc-admin.php:625
 msgid "Inside Dhaka, 1 kg"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:577
+#: includes/class-rwsc-admin.php:634
 msgid "Estimated delivery dates count business days from the day the parcel can be handed over."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:580
+#: includes/class-rwsc-admin.php:637
 msgid "Weekly off-days"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:590
+#: includes/class-rwsc-admin.php:647
 msgid "Same-day hand-over cut-off"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:592
+#: includes/class-rwsc-admin.php:649
 msgid "Orders after this time are counted from the next business day."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:594
+#: includes/class-rwsc-admin.php:651
 msgid "An order placed now is handed over on %s."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:597
+#: includes/class-rwsc-admin.php:654
 msgid "Holidays"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:600
+#: includes/class-rwsc-admin.php:657
 msgid "One per line: YYYY-MM-DD and an optional name. Add Eid and other moon-dependent holidays when they are announced."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:601
+#: includes/class-rwsc-admin.php:658
 msgid "Add fixed-date national holidays for next 12 months"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:609
+#: includes/class-rwsc-admin.php:666
 msgid "What the customer sees, and what happens automatically as parcels move."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:612 includes/class-rwsc-print.php:268 includes/dispatch/class-rwsc-dispatch-admin.php:511
+#: includes/class-rwsc-admin.php:669 includes/class-rwsc-print.php:268 includes/dispatch/class-rwsc-dispatch-admin.php:522
 msgid "Customer"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:613
+#: includes/class-rwsc-admin.php:670
 msgid "Email the customer when a tracking number is added"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:613
+#: includes/class-rwsc-admin.php:670
 msgid "Sent as a WooCommerce customer note with the tracking link and delivery estimate."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:614
+#: includes/class-rwsc-admin.php:671
 msgid "Show courier & tracking on the order page"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:614
+#: includes/class-rwsc-admin.php:671
 msgid "Thank-you page, My Account → Orders, plus a \"Track\" button."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:615
+#: includes/class-rwsc-admin.php:672
 msgid "Add courier & tracking to order emails"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:617
+#: includes/class-rwsc-admin.php:674
 msgid "Public tracking page shortcode:"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:619
+#: includes/class-rwsc-admin.php:676
 msgid "View tracking page"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:621
+#: includes/class-rwsc-admin.php:678
 msgid "Create a \"Track your order\" page"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:626 includes/dispatch/class-rwsc-dispatch-admin.php:718
+#: includes/class-rwsc-admin.php:683 includes/dispatch/class-rwsc-dispatch-admin.php:729
 msgid "Automation"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:627
+#: includes/class-rwsc-admin.php:684
 msgid "Auto-assign the recommended courier"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:627
+#: includes/class-rwsc-admin.php:684
 msgid "For orders created by phone, admin or the staff app, when they reach a \"ready\" status."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:629
+#: includes/class-rwsc-admin.php:686
 msgid "Ready to ship when the order is"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:635
+#: includes/class-rwsc-admin.php:692
 msgid "Mark the order Completed when the parcel is Delivered"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:636
+#: includes/class-rwsc-admin.php:693
 msgid "When a parcel is Returned, set the order to"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:638
+#: includes/class-rwsc-admin.php:695
 msgid "— leave the order status —"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:643
+#: includes/class-rwsc-admin.php:700
 msgid "Warn when a parcel waits for booking longer than (days)"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:649
+#: includes/class-rwsc-admin.php:706
 msgid "Cash on delivery"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:651
+#: includes/class-rwsc-admin.php:708
 msgid "Orders paid with these methods show the amount to collect on labels, manifests and CSV."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:662
+#: includes/class-rwsc-admin.php:719
 msgid "Sender on labels"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:664
+#: includes/class-rwsc-admin.php:721
 msgid "Shop name"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:665 includes/class-rwsc-print.php:268
+#: includes/class-rwsc-admin.php:722 includes/class-rwsc-print.php:268
 msgid "Phone"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:667
+#: includes/class-rwsc-admin.php:724
 msgid "Return address"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:673
+#: includes/class-rwsc-admin.php:730
 msgid "Unsaved changes"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:674 includes/dispatch/class-rwsc-dispatch-admin.php:698
+#: includes/class-rwsc-admin.php:731 includes/dispatch/class-rwsc-dispatch-admin.php:709
 msgid "Save settings"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:680
+#: includes/class-rwsc-admin.php:737
 msgid "Backup, move settings between sites, and check your setup."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:683
+#: includes/class-rwsc-admin.php:740
 msgid "Export settings"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:685 includes/dispatch/class-rwsc-dispatch-admin.php:648
+#: includes/class-rwsc-admin.php:742 includes/dispatch/class-rwsc-dispatch-admin.php:659
 msgid "Copy"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:685
+#: includes/class-rwsc-admin.php:742
 msgid "Download .json"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:688
+#: includes/class-rwsc-admin.php:745
 msgid "Import settings"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:693
+#: includes/class-rwsc-admin.php:750
 msgid "Import"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:695
+#: includes/class-rwsc-admin.php:752
 msgid "Reset every Smart Courier setting to defaults?"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:698
+#: includes/class-rwsc-admin.php:755
 msgid "Reset to defaults"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:703
+#: includes/class-rwsc-admin.php:760
 msgid "Setup check"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:706
+#: includes/class-rwsc-admin.php:763
 msgid "Plugin"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:709
+#: includes/class-rwsc-admin.php:766
 msgid "Order storage"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:710
+#: includes/class-rwsc-admin.php:767
 msgid "Weight unit / currency"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:711
+#: includes/class-rwsc-admin.php:768
 msgid "Timezone"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:712
+#: includes/class-rwsc-admin.php:769
 msgid "v1.x order upgrade"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:712 includes/dispatch/class-rwsc-dispatch-orders-ui.php:231
+#: includes/class-rwsc-admin.php:769 includes/dispatch/class-rwsc-dispatch-orders-ui.php:183
 msgid "Done"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:712
+#: includes/class-rwsc-admin.php:769
 msgid "Running in the background"
 msgstr ""
 
-#: includes/class-rwsc-admin.php:733 includes/class-rwsc-admin.php:745 includes/class-rwsc-admin.php:771 includes/class-rwsc-admin.php:780 includes/class-rwsc-print.php:76 includes/dispatch/class-rwsc-dispatch-admin.php:552 includes/dispatch/class-rwsc-dispatch-admin.php:605 includes/dispatch/class-rwsc-dispatch-admin.php:855 includes/dispatch/class-rwsc-dispatch-admin.php:866 includes/dispatch/class-rwsc-dispatch-admin.php:877 includes/dispatch/class-rwsc-dispatch-admin.php:890
+#: includes/class-rwsc-admin.php:790 includes/class-rwsc-admin.php:802 includes/class-rwsc-admin.php:828 includes/class-rwsc-admin.php:837 includes/class-rwsc-print.php:76 includes/dispatch/class-rwsc-dispatch-admin.php:563 includes/dispatch/class-rwsc-dispatch-admin.php:616 includes/dispatch/class-rwsc-dispatch-admin.php:867 includes/dispatch/class-rwsc-dispatch-admin.php:878 includes/dispatch/class-rwsc-dispatch-admin.php:889 includes/dispatch/class-rwsc-dispatch-admin.php:902
 msgid "Not allowed."
 msgstr ""
 
-#: includes/class-rwsc-admin.php:789 includes/class-rwsc-frontend.php:156
+#: includes/class-rwsc-admin.php:846 includes/class-rwsc-frontend.php:156
 msgid "Track your order"
 msgstr ""
 
@@ -730,11 +742,11 @@ msgstr ""
 msgid "On the way"
 msgstr ""
 
-#: includes/class-rwsc-frontend.php:47 includes/class-rwsc-shipments.php:45 includes/dispatch/class-rwsc-dispatch-admin.php:371 includes/dispatch/class-rwsc-dispatch-admin.php:418 includes/dispatch/class-rwsc-pathao-status.php:94
+#: includes/class-rwsc-frontend.php:47 includes/class-rwsc-shipments.php:45 includes/dispatch/class-rwsc-dispatch-admin.php:382 includes/dispatch/class-rwsc-dispatch-admin.php:429 includes/dispatch/class-rwsc-pathao-status.php:94
 msgid "Returned"
 msgstr ""
 
-#: includes/class-rwsc-frontend.php:47 includes/class-rwsc-shipments.php:44 includes/dispatch/class-rwsc-dispatch-admin.php:370 includes/dispatch/class-rwsc-dispatch-admin.php:418 includes/dispatch/class-rwsc-pathao-status.php:93
+#: includes/class-rwsc-frontend.php:47 includes/class-rwsc-shipments.php:44 includes/dispatch/class-rwsc-dispatch-admin.php:381 includes/dispatch/class-rwsc-dispatch-admin.php:429 includes/dispatch/class-rwsc-pathao-status.php:93
 msgid "Delivered"
 msgstr ""
 
@@ -770,7 +782,7 @@ msgstr ""
 msgid "Track on %s"
 msgstr ""
 
-#: includes/class-rwsc-frontend.php:92 includes/class-rwsc-orders-admin.php:100 includes/class-rwsc-orders-admin.php:194 includes/class-rwsc-orders-admin.php:198 includes/class-rwsc-orders-admin.php:244 includes/class-rwsc-orders-admin.php:379 includes/class-rwsc-print.php:203 includes/dispatch/class-rwsc-dispatch-admin.php:418 includes/dispatch/class-rwsc-dispatch-admin.php:506
+#: includes/class-rwsc-frontend.php:92 includes/class-rwsc-orders-admin.php:117 includes/class-rwsc-orders-admin.php:212 includes/class-rwsc-orders-admin.php:216 includes/class-rwsc-orders-admin.php:271 includes/class-rwsc-orders-admin.php:406 includes/class-rwsc-print.php:203 includes/dispatch/class-rwsc-dispatch-admin.php:429 includes/dispatch/class-rwsc-dispatch-admin.php:517
 msgid "Courier"
 msgstr ""
 
@@ -778,7 +790,7 @@ msgstr ""
 msgid "Shipment"
 msgstr ""
 
-#: includes/class-rwsc-frontend.php:111 includes/class-rwsc-frontend.php:136 includes/class-rwsc-frontend.php:198 includes/dispatch/class-rwsc-dispatch-orders-ui.php:153 includes/dispatch/class-rwsc-dispatch-orders-ui.php:166
+#: includes/class-rwsc-frontend.php:111 includes/class-rwsc-frontend.php:136 includes/class-rwsc-frontend.php:198
 msgid "Track"
 msgstr ""
 
@@ -814,120 +826,136 @@ msgstr ""
 msgid "Outside Dhaka"
 msgstr ""
 
-#: includes/class-rwsc-orders-admin.php:90
+#: includes/class-rwsc-orders-admin.php:99
 msgid "ETA"
 msgstr ""
 
-#: includes/class-rwsc-orders-admin.php:91
+#: includes/class-rwsc-orders-admin.php:100
 msgid "Estimated"
 msgstr ""
 
-#: includes/class-rwsc-orders-admin.php:92
+#: includes/class-rwsc-orders-admin.php:101
 msgid "Weight"
 msgstr ""
 
-#: includes/class-rwsc-orders-admin.php:94
+#: includes/class-rwsc-orders-admin.php:103
 msgid "Free ship"
 msgstr ""
 
-#: includes/class-rwsc-orders-admin.php:94
+#: includes/class-rwsc-orders-admin.php:103
 msgid "Yes – normal"
 msgstr ""
 
-#: includes/class-rwsc-orders-admin.php:97
+#: includes/class-rwsc-orders-admin.php:106
 msgid "No courier yet. Pick one below (or \"Recommended\") and update the order."
 msgstr ""
 
-#: includes/class-rwsc-orders-admin.php:102
-msgid "— keep —"
-msgstr ""
-
-#: includes/class-rwsc-orders-admin.php:103
-msgid "★ Recommended for this address"
-msgstr ""
-
-#: includes/class-rwsc-orders-admin.php:105
-msgid "disabled"
-msgstr ""
-
-#: includes/class-rwsc-orders-admin.php:109
-msgid "Tracking / consignment no."
+#: includes/class-rwsc-orders-admin.php:113
+msgid "Edit manually (override)"
 msgstr ""
 
 #: includes/class-rwsc-orders-admin.php:113
-msgid "Open tracking page ↗"
+msgid "Courier & tracking"
 msgstr ""
 
-#: includes/class-rwsc-orders-admin.php:115 includes/class-rwsc-orders-admin.php:252
-msgid "Shipment status"
+#: includes/class-rwsc-orders-admin.php:115
+msgid "This parcel is managed through the courier API; its status updates automatically. Change these only to correct a mistake."
+msgstr ""
+
+#: includes/class-rwsc-orders-admin.php:119
+msgid "— keep —"
+msgstr ""
+
+#: includes/class-rwsc-orders-admin.php:120
+msgid "★ Recommended for this address"
 msgstr ""
 
 #: includes/class-rwsc-orders-admin.php:122
+msgid "disabled"
+msgstr ""
+
+#: includes/class-rwsc-orders-admin.php:126
+msgid "Tracking / consignment no."
+msgstr ""
+
+#: includes/class-rwsc-orders-admin.php:130
+msgid "Open tracking page ↗"
+msgstr ""
+
+#: includes/class-rwsc-orders-admin.php:132 includes/class-rwsc-orders-admin.php:279
+msgid "Shipment status"
+msgstr ""
+
+#: includes/class-rwsc-orders-admin.php:139
 msgid "Note for courier / label"
 msgstr ""
 
-#: includes/class-rwsc-orders-admin.php:125
+#: includes/class-rwsc-orders-admin.php:142
 msgid "Email the customer when tracking is added"
 msgstr ""
 
-#: includes/class-rwsc-orders-admin.php:127
+#: includes/class-rwsc-orders-admin.php:145
 msgid "Print label"
 msgstr ""
 
-#: includes/class-rwsc-orders-admin.php:128
+#: includes/class-rwsc-orders-admin.php:146
 msgid "Shipments board"
 msgstr ""
 
-#: includes/class-rwsc-orders-admin.php:131
+#: includes/class-rwsc-orders-admin.php:149
 msgid "Timeline"
 msgstr ""
 
-#: includes/class-rwsc-orders-admin.php:244 includes/dispatch/class-rwsc-dispatch-admin.php:479
+#: includes/class-rwsc-orders-admin.php:271 includes/dispatch/class-rwsc-dispatch-admin.php:490
 msgid "All couriers"
 msgstr ""
 
-#: includes/class-rwsc-orders-admin.php:245
+#: includes/class-rwsc-orders-admin.php:272
 msgid "No courier"
 msgstr ""
 
-#: includes/class-rwsc-orders-admin.php:252
+#: includes/class-rwsc-orders-admin.php:279
 msgid "Any shipment status"
 msgstr ""
 
-#: includes/class-rwsc-orders-admin.php:312
+#: includes/class-rwsc-orders-admin.php:339
 msgid "Courier: assign recommended"
 msgstr ""
 
-#: includes/class-rwsc-orders-admin.php:315
+#: includes/class-rwsc-orders-admin.php:342
 msgid "Shipment: mark %s"
 msgstr ""
 
-#: includes/class-rwsc-orders-admin.php:317
+#: includes/class-rwsc-orders-admin.php:344
 msgid "Courier: print labels"
 msgstr ""
 
-#: includes/class-rwsc-orders-admin.php:318
+#: includes/class-rwsc-orders-admin.php:345
 msgid "Courier: hand-over manifest"
 msgstr ""
 
-#: includes/class-rwsc-orders-admin.php:319
+#: includes/class-rwsc-orders-admin.php:346
 msgid "Courier: export CSV"
 msgstr ""
 
-#: includes/class-rwsc-orders-admin.php:363
+#: includes/class-rwsc-orders-admin.php:390
 msgid "Smart Courier updated %d order."
 msgid_plural "Smart Courier updated %d orders."
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/class-rwsc-orders-admin.php:366
+#: includes/class-rwsc-orders-admin.php:393
 msgid "%d order could not be updated."
 msgid_plural "%d orders could not be updated."
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/class-rwsc-plugin.php:118
+#: includes/class-rwsc-plugin.php:131
 msgid "needs WooCommerce to be installed and active."
+msgstr ""
+
+#: includes/class-rwsc-plugin.php:137 includes/dispatch/class-rwsc-dispatch-admin.php:411
+msgid "Settings"
 msgstr ""
 
 #: includes/class-rwsc-print.php:158 includes/class-rwsc-print.php:161
@@ -987,7 +1015,7 @@ msgstr ""
 msgid "%1$d parcels · COD %2$s · %3$s kg"
 msgstr ""
 
-#: includes/class-rwsc-print.php:268 includes/dispatch/class-rwsc-dispatch-admin.php:511
+#: includes/class-rwsc-print.php:268 includes/dispatch/class-rwsc-dispatch-admin.php:522
 msgid "Order"
 msgstr ""
 
@@ -1003,7 +1031,7 @@ msgstr ""
 msgid "Tracking"
 msgstr ""
 
-#: includes/class-rwsc-print.php:268 includes/dispatch/class-rwsc-dispatch-admin.php:791 includes/dispatch/class-rwsc-dispatch-admin.php:806 includes/dispatch/class-rwsc-dispatch-admin.php:823 includes/dispatch/class-rwsc-dispatch-admin.php:847
+#: includes/class-rwsc-print.php:268 includes/dispatch/class-rwsc-dispatch-admin.php:803 includes/dispatch/class-rwsc-dispatch-admin.php:818 includes/dispatch/class-rwsc-dispatch-admin.php:835 includes/dispatch/class-rwsc-dispatch-admin.php:859
 msgid "Status"
 msgstr ""
 
@@ -1011,7 +1039,7 @@ msgstr ""
 msgid "Paid"
 msgstr ""
 
-#: includes/class-rwsc-print.php:294 includes/dispatch/class-rwsc-dispatch-admin.php:512
+#: includes/class-rwsc-print.php:294 includes/dispatch/class-rwsc-dispatch-admin.php:523
 msgid "Total"
 msgstr ""
 
@@ -1063,63 +1091,63 @@ msgstr ""
 msgid "Customer chose %s at checkout"
 msgstr ""
 
-#: includes/class-rwsc-shipments.php:325
+#: includes/class-rwsc-shipments.php:365
 msgid "This order has no items that need shipping."
 msgstr ""
 
-#: includes/class-rwsc-shipments.php:335
+#: includes/class-rwsc-shipments.php:375
 msgid "Delivery address is outside Bangladesh or could not be resolved."
 msgstr ""
 
-#: includes/class-rwsc-shipments.php:359
+#: includes/class-rwsc-shipments.php:399
 msgid "No enabled courier is available for this address and weight."
 msgstr ""
 
-#: includes/class-rwsc-shipments.php:411 includes/dispatch/class-rwsc-dispatch-ajax.php:241
+#: includes/class-rwsc-shipments.php:458 includes/dispatch/class-rwsc-dispatch-ajax.php:241
 msgid "Unknown courier."
 msgstr ""
 
-#: includes/class-rwsc-shipments.php:421
+#: includes/class-rwsc-shipments.php:468
 msgid "Courier set to %s"
 msgstr ""
 
-#: includes/class-rwsc-shipments.php:433
+#: includes/class-rwsc-shipments.php:480
 msgid "Tracking number %s"
 msgstr ""
 
-#: includes/class-rwsc-shipments.php:433
+#: includes/class-rwsc-shipments.php:480
 msgid "Tracking number removed"
 msgstr ""
 
-#: includes/class-rwsc-shipments.php:448
+#: includes/class-rwsc-shipments.php:495
 msgid "Unknown shipment status."
 msgstr ""
 
-#: includes/class-rwsc-shipments.php:473
+#: includes/class-rwsc-shipments.php:520
 msgid "Shipment %s"
 msgstr ""
 
-#: includes/class-rwsc-shipments.php:508
+#: includes/class-rwsc-shipments.php:555
 msgid "Smart Courier: parcel delivered."
 msgstr ""
 
-#: includes/class-rwsc-shipments.php:512
+#: includes/class-rwsc-shipments.php:559
 msgid "Smart Courier: parcel returned."
 msgstr ""
 
-#: includes/class-rwsc-shipments.php:528
+#: includes/class-rwsc-shipments.php:575
 msgid "Your parcel has been handed to %1$s. Tracking number: %2$s."
 msgstr ""
 
-#: includes/class-rwsc-shipments.php:531
+#: includes/class-rwsc-shipments.php:578
 msgid "Track it here: %s"
 msgstr ""
 
-#: includes/class-rwsc-shipments.php:535
+#: includes/class-rwsc-shipments.php:582
 msgid "Estimated delivery: %s."
 msgstr ""
 
-#: includes/class-rwsc-shipments.php:562
+#: includes/class-rwsc-shipments.php:609
 msgid "Auto-assigned %s (recommended)"
 msgstr ""
 
@@ -1157,46 +1185,46 @@ msgid "An earlier attempt timed out and may have created a parcel. Check the cou
 msgstr ""
 
 #. translators: 1: courier, 2: id, 3: user
-#: includes/dispatch/class-rwsc-courier-base.php:216
+#: includes/dispatch/class-rwsc-courier-base.php:217
 msgid "Sent to %1$s. Consignment %2$s, by %3$s."
 msgstr ""
 
-#: includes/dispatch/class-rwsc-courier-base.php:219 includes/dispatch/class-rwsc-pathao-orders.php:268
+#: includes/dispatch/class-rwsc-courier-base.php:220 includes/dispatch/class-rwsc-pathao-orders.php:268
 msgid "automation"
 msgstr ""
 
 #. translators: %s: courier
-#: includes/dispatch/class-rwsc-courier-base.php:223
+#: includes/dispatch/class-rwsc-courier-base.php:224
 msgid "Sent to %s."
 msgstr ""
 
-#: includes/dispatch/class-rwsc-courier-base.php:286
+#: includes/dispatch/class-rwsc-courier-base.php:287
 msgid "%1$s status: %2$s."
 msgstr ""
 
 #. translators: %s: courier
-#: includes/dispatch/class-rwsc-courier-base.php:290
+#: includes/dispatch/class-rwsc-courier-base.php:291
 msgid "%s: delivered."
 msgstr ""
 
 #. translators: %s: courier
-#: includes/dispatch/class-rwsc-courier-base.php:292
+#: includes/dispatch/class-rwsc-courier-base.php:293
 msgid "%s: returned / cancelled."
 msgstr ""
 
-#: includes/dispatch/class-rwsc-courier-base.php:303
+#: includes/dispatch/class-rwsc-courier-base.php:304
 msgid "This courier has no API: update the status by hand."
 msgstr ""
 
-#: includes/dispatch/class-rwsc-courier-base.php:306
+#: includes/dispatch/class-rwsc-courier-base.php:307
 msgid "No consignment ID yet."
 msgstr ""
 
-#: includes/dispatch/class-rwsc-courier-base.php:309
+#: includes/dispatch/class-rwsc-courier-base.php:310
 msgid "Courier credentials are missing."
 msgstr ""
 
-#: includes/dispatch/class-rwsc-courier-base.php:424 includes/dispatch/class-rwsc-dispatch-orders-ui.php:150
+#: includes/dispatch/class-rwsc-courier-base.php:431 includes/dispatch/class-rwsc-couriers.php:278 includes/dispatch/class-rwsc-couriers.php:288
 msgid "Refresh status"
 msgstr ""
 
@@ -1205,20 +1233,40 @@ msgstr ""
 msgid "%1$s auto-send failed: %2$s"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-couriers.php:208
+#: includes/dispatch/class-rwsc-couriers.php:226
+msgid "Chosen at checkout"
+msgstr ""
+
+#: includes/dispatch/class-rwsc-couriers.php:227
+msgid "Set by staff"
+msgstr ""
+
+#: includes/dispatch/class-rwsc-couriers.php:228
+msgid "Suggested by Smart Courier"
+msgstr ""
+
+#: includes/dispatch/class-rwsc-couriers.php:240
 msgid "Pathao"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-couriers.php:217 includes/dispatch/class-rwsc-dispatch-admin.php:317
-msgid "Connect a courier"
+#: includes/dispatch/class-rwsc-couriers.php:250
+msgid "Connect a courier API"
 msgstr ""
 
-#. translators: %s: courier
-#: includes/dispatch/class-rwsc-couriers.php:230 includes/dispatch/class-rwsc-pathao-orders.php:583
-msgid "Customer chose: %s"
+#: includes/dispatch/class-rwsc-couriers.php:253
+msgid "Book with"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-couriers.php:259
+#. translators: %s: fee
+#: includes/dispatch/class-rwsc-couriers.php:280 includes/dispatch/class-rwsc-pathao-orders.php:594
+msgid "Fee ৳%s"
+msgstr ""
+
+#: includes/dispatch/class-rwsc-couriers.php:300
+msgid "%1$s says: %2$s"
+msgstr ""
+
+#: includes/dispatch/class-rwsc-couriers.php:336
 msgid "Not sent with this courier."
 msgstr ""
 
@@ -1226,545 +1274,590 @@ msgstr ""
 msgid "Every 30 minutes"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:44 includes/dispatch/class-rwsc-dispatch-admin.php:89
-msgid "API Overview"
+#: includes/dispatch/class-rwsc-dispatch-admin.php:105
+msgid "RAR Woo Smart Courier is an independent plugin by Ruhul Amin. Pathao, RedX, SteadFast, Paperfly and Sundarban Courier are names of their respective owners; this plugin is not affiliated with or endorsed by them."
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:45 includes/dispatch/class-rwsc-dispatch-admin.php:90 includes/dispatch/class-rwsc-dispatch-admin.php:399 includes/dispatch/class-rwsc-dispatch-admin.php:466
-msgid "Parcels"
+#: includes/dispatch/class-rwsc-dispatch-admin.php:111
+msgid "Connected"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:46 includes/dispatch/class-rwsc-dispatch-admin.php:93 includes/dispatch/class-rwsc-dispatch-admin.php:339
-msgid "Courier APIs"
-msgstr ""
-
-#: includes/dispatch/class-rwsc-dispatch-admin.php:47 includes/dispatch/class-rwsc-dispatch-admin.php:94 includes/dispatch/class-rwsc-dispatch-admin.php:987
-msgid "Tools & Health"
-msgstr ""
-
+#. translators: %s: human time difference
 #: includes/dispatch/class-rwsc-dispatch-admin.php:114
-msgid "RAR Woo Smart Courier Pro is an independent plugin by Ruhul Amin. Pathao, RedX, SteadFast, Paperfly and Sundarban Courier are names of their respective owners; this plugin is not affiliated with or endorsed by them."
-msgstr ""
-
-#: includes/dispatch/class-rwsc-dispatch-admin.php:120 includes/dispatch/class-rwsc-dispatch-admin.php:129
-msgid "Configured (test required)"
+msgid "Connected · verified %s ago"
 msgstr ""
 
 #: includes/dispatch/class-rwsc-dispatch-admin.php:120
 msgid "Not connected"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:124
+#: includes/dispatch/class-rwsc-dispatch-admin.php:126 includes/dispatch/class-rwsc-dispatch-admin.php:139
+msgid "Saved · not tested yet"
+msgstr ""
+
+#: includes/dispatch/class-rwsc-dispatch-admin.php:130
 msgid "Disabled"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:127
+#: includes/dispatch/class-rwsc-dispatch-admin.php:133
 msgid "Manual · active"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:129
+#: includes/dispatch/class-rwsc-dispatch-admin.php:136
 msgid "Needs credentials"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:317
+#: includes/dispatch/class-rwsc-dispatch-admin.php:327
+msgid "Connect a courier"
+msgstr ""
+
+#: includes/dispatch/class-rwsc-dispatch-admin.php:327
 msgid "Add API credentials for Pathao, RedX, SteadFast or Paperfly — or enable Sundarban for manual CN entry."
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:318
+#: includes/dispatch/class-rwsc-dispatch-admin.php:328
 msgid "Receive live status updates"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:318
+#: includes/dispatch/class-rwsc-dispatch-admin.php:328
 msgid "Paste the webhook URL into the courier panel (Pathao, SteadFast). Until then the 30-minute sync keeps statuses fresh."
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:319
+#: includes/dispatch/class-rwsc-dispatch-admin.php:329
 msgid "Choose automation"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:319
+#: includes/dispatch/class-rwsc-dispatch-admin.php:329
 msgid "Pick the default courier, auto-send status and the WooCommerce status after sent / delivered / returned."
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:320
+#: includes/dispatch/class-rwsc-dispatch-admin.php:330
 msgid "Send your first parcel"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:320
+#: includes/dispatch/class-rwsc-dispatch-admin.php:330
 msgid "Open Parcels, pick one order and use the courier button — or the bulk bar for many."
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:340
+#: includes/dispatch/class-rwsc-dispatch-admin.php:350
 msgid "Pathao · RedX · SteadFast · Paperfly · Sundarban — one control centre"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:342
+#: includes/dispatch/class-rwsc-dispatch-admin.php:352
 msgid "Send parcels"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:343 includes/dispatch/class-rwsc-dispatch-admin.php:372 includes/dispatch/class-rwsc-dispatch-admin.php:413 includes/dispatch/class-rwsc-pathao-status.php:95
+#: includes/dispatch/class-rwsc-dispatch-admin.php:353 includes/dispatch/class-rwsc-dispatch-admin.php:383 includes/dispatch/class-rwsc-dispatch-admin.php:424 includes/dispatch/class-rwsc-pathao-status.php:95
 msgid "Needs attention"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:354
+#: includes/dispatch/class-rwsc-dispatch-admin.php:364
 msgid "Get started"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:358
+#: includes/dispatch/class-rwsc-dispatch-admin.php:368
 msgid "Open"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:368
+#: includes/dispatch/class-rwsc-dispatch-admin.php:376
+msgid "%1$d%% %2$s"
+msgstr ""
+
+#: includes/dispatch/class-rwsc-dispatch-admin.php:379
 msgid "Parcels (30 days)"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:369
+#: includes/dispatch/class-rwsc-dispatch-admin.php:380
 msgid "Pickup / transit"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:373
+#: includes/dispatch/class-rwsc-dispatch-admin.php:381
+msgid "success rate"
+msgstr ""
+
+#: includes/dispatch/class-rwsc-dispatch-admin.php:382
+msgid "return rate"
+msgstr ""
+
+#: includes/dispatch/class-rwsc-dispatch-admin.php:384
 msgid "COD still with couriers"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:381
+#: includes/dispatch/class-rwsc-dispatch-admin.php:388
+msgid "Of finished parcels (delivered + returned)"
+msgstr ""
+
+#: includes/dispatch/class-rwsc-dispatch-admin.php:392
 msgid "Pipeline"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:381
+#: includes/dispatch/class-rwsc-dispatch-admin.php:392
 msgid "Parcel status distribution"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:387
+#: includes/dispatch/class-rwsc-dispatch-admin.php:398
 msgid "Pending · In transit · Delivered · Returned · Needs attention — last 30 days, all couriers."
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:397
+#: includes/dispatch/class-rwsc-dispatch-admin.php:408
 msgid "sent"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:397
+#: includes/dispatch/class-rwsc-dispatch-admin.php:408
 msgid "delivered"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:397
+#: includes/dispatch/class-rwsc-dispatch-admin.php:408
 msgid "returned"
 msgstr ""
 
 #. translators: %d: percent
-#: includes/dispatch/class-rwsc-dispatch-admin.php:398
+#: includes/dispatch/class-rwsc-dispatch-admin.php:409
 msgid "Delivery success %d%%"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:398
+#: includes/dispatch/class-rwsc-dispatch-admin.php:409
 msgid "No finished parcels yet"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:413
+#: includes/dispatch/class-rwsc-dispatch-admin.php:410
+msgid "Parcels"
+msgstr ""
+
+#: includes/dispatch/class-rwsc-dispatch-admin.php:424
 msgid "Failed pickups, delivery failures and holds — act on these first."
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:413
+#: includes/dispatch/class-rwsc-dispatch-admin.php:424
 msgid "Nothing needs attention. 🎉"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:414
+#: includes/dispatch/class-rwsc-dispatch-admin.php:425
 msgid "Recent parcels"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:414
+#: includes/dispatch/class-rwsc-dispatch-admin.php:425
 msgid "No parcels yet."
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:417
+#: includes/dispatch/class-rwsc-dispatch-admin.php:428
 msgid "Courier performance — last 30 days"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:417
+#: includes/dispatch/class-rwsc-dispatch-admin.php:428
 msgid "Success rate = delivered ÷ (delivered + returned). Open COD = amount to collect on parcels not yet finished."
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:418 includes/dispatch/class-rwsc-dispatch-orders-ui.php:224
+#: includes/dispatch/class-rwsc-dispatch-admin.php:429 includes/dispatch/class-rwsc-dispatch-orders-ui.php:176
 msgid "Sent"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:418
+#: includes/dispatch/class-rwsc-dispatch-admin.php:429
 msgid "In progress"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:418
+#: includes/dispatch/class-rwsc-dispatch-admin.php:429
 msgid "Success rate"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:418
+#: includes/dispatch/class-rwsc-dispatch-admin.php:429
 msgid "Attention"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:418
+#: includes/dispatch/class-rwsc-dispatch-admin.php:429
 msgid "Open COD (৳)"
 msgstr ""
 
 #. translators: %s: amount
-#: includes/dispatch/class-rwsc-dispatch-admin.php:425
+#: includes/dispatch/class-rwsc-dispatch-admin.php:436
 msgid "Pathao delivery fees recorded: ৳%s (only Pathao returns a fee)."
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:429
+#: includes/dispatch/class-rwsc-dispatch-admin.php:440
 msgid "Statistics use the latest 500 parcels per courier of the last 30 days."
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:467
+#: includes/dispatch/class-rwsc-dispatch-admin.php:478
 msgid "Every order and parcel across all couriers — send, track, refresh and export."
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:487
+#: includes/dispatch/class-rwsc-dispatch-admin.php:498
 msgid "Order #, name, phone, consignment"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:493
+#: includes/dispatch/class-rwsc-dispatch-admin.php:504
 msgid "Filter"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:494
+#: includes/dispatch/class-rwsc-dispatch-admin.php:505
 msgid "Export CSV"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:506
+#: includes/dispatch/class-rwsc-dispatch-admin.php:517
 msgid "Send selected"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:508
+#: includes/dispatch/class-rwsc-dispatch-admin.php:519
 msgid "Refresh selected"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:511
+#: includes/dispatch/class-rwsc-dispatch-admin.php:522
 msgid "District"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:512
+#: includes/dispatch/class-rwsc-dispatch-admin.php:523
 msgid "Courier / parcel"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:514
+#: includes/dispatch/class-rwsc-dispatch-admin.php:525
 msgid "No orders match."
 msgstr ""
 
 #. translators: %d: count
-#: includes/dispatch/class-rwsc-dispatch-admin.php:529
+#: includes/dispatch/class-rwsc-dispatch-admin.php:540
 msgid "%d parcel / order in this view."
 msgid_plural "%d parcels / orders in this view."
 msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: cap
-#: includes/dispatch/class-rwsc-dispatch-admin.php:531
+#: includes/dispatch/class-rwsc-dispatch-admin.php:542
 msgid "Only the newest %d orders with a parcel are scanned — narrow the dates to see older ones."
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:669
+#: includes/dispatch/class-rwsc-dispatch-admin.php:680
 msgid "— do nothing —"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:670
+#: includes/dispatch/class-rwsc-dispatch-admin.php:681
 msgid "General"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:676
+#: includes/dispatch/class-rwsc-dispatch-admin.php:687
 msgid "Connect each courier, set routing and automation. Secrets are stored encrypted."
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:678
+#: includes/dispatch/class-rwsc-dispatch-admin.php:689
 msgid "Settings saved."
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:698
+#: includes/dispatch/class-rwsc-dispatch-admin.php:709
 msgid "One Save button covers every tab."
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:706
+#: includes/dispatch/class-rwsc-dispatch-admin.php:717
 msgid "Routing"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:707
+#: includes/dispatch/class-rwsc-dispatch-admin.php:718
 msgid "Decide which courier automation uses and keep one parcel per order."
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:708
+#: includes/dispatch/class-rwsc-dispatch-admin.php:719
 msgid "Default courier for auto-send"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:709
+#: includes/dispatch/class-rwsc-dispatch-admin.php:720
 msgid "One courier per order"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:719
+#: includes/dispatch/class-rwsc-dispatch-admin.php:730
 msgid "Applies to every courier."
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:720
+#: includes/dispatch/class-rwsc-dispatch-admin.php:731
 msgid "Auto-send when order becomes"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:721
+#: includes/dispatch/class-rwsc-dispatch-admin.php:732
 msgid "After sending set status"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:722
+#: includes/dispatch/class-rwsc-dispatch-admin.php:733
 msgid "On delivered set status"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:723
+#: includes/dispatch/class-rwsc-dispatch-admin.php:734
 msgid "On returned set status"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:724
+#: includes/dispatch/class-rwsc-dispatch-admin.php:735
 msgid "Ready-to-dispatch statuses"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:725
+#: includes/dispatch/class-rwsc-dispatch-admin.php:736
 msgid "Order notes"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:726
+#: includes/dispatch/class-rwsc-dispatch-admin.php:737
 msgid "Status sync"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:730
+#: includes/dispatch/class-rwsc-dispatch-admin.php:737
+msgid "Batch"
+msgstr ""
+
+#: includes/dispatch/class-rwsc-dispatch-admin.php:737
+msgid "orders"
+msgstr ""
+
+#: includes/dispatch/class-rwsc-dispatch-admin.php:737
+msgid "up to"
+msgstr ""
+
+#: includes/dispatch/class-rwsc-dispatch-admin.php:737
+msgid "days old"
+msgstr ""
+
+#: includes/dispatch/class-rwsc-dispatch-admin.php:741
 msgid "Customer & advanced"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:732
+#: includes/dispatch/class-rwsc-dispatch-admin.php:743
 msgid "Customer tracking"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:732
+#: includes/dispatch/class-rwsc-dispatch-admin.php:743
 msgid "Customer tracking (My Account, e-mails, [rwsc_tracking]) is handled by the Smart Courier settings."
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:733
+#: includes/dispatch/class-rwsc-dispatch-admin.php:744
 msgid "Debug log"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:734
+#: includes/dispatch/class-rwsc-dispatch-admin.php:745
 msgid "Uninstall"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:740
+#: includes/dispatch/class-rwsc-dispatch-admin.php:751
 msgid "Pathao default store"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:751
+#: includes/dispatch/class-rwsc-dispatch-admin.php:762
 msgid "Test connection"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:751
+#: includes/dispatch/class-rwsc-dispatch-admin.php:762
 msgid "Renew token"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:755
+#: includes/dispatch/class-rwsc-dispatch-admin.php:766
 msgid "Connection"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:759 includes/dispatch/class-rwsc-dispatch-admin.php:793 includes/dispatch/class-rwsc-dispatch-admin.php:828 includes/dispatch/class-rwsc-dispatch-admin.php:954
+#: includes/dispatch/class-rwsc-dispatch-admin.php:770 includes/dispatch/class-rwsc-dispatch-admin.php:805 includes/dispatch/class-rwsc-dispatch-admin.php:840 includes/dispatch/class-rwsc-dispatch-admin.php:966
 msgid "Environment"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:761
+#: includes/dispatch/class-rwsc-dispatch-admin.php:772
 msgid "Authentication"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:770
-msgid "Dispatch defaults"
-msgstr ""
-
-#: includes/dispatch/class-rwsc-dispatch-admin.php:772
-msgid "Pickup store"
-msgstr ""
-
-#: includes/dispatch/class-rwsc-dispatch-admin.php:773
-msgid "Delivery type"
-msgstr ""
-
-#: includes/dispatch/class-rwsc-dispatch-admin.php:774
-msgid "Item type"
-msgstr ""
-
-#: includes/dispatch/class-rwsc-dispatch-admin.php:775
-msgid "Fallback weight (kg)"
+#: includes/dispatch/class-rwsc-dispatch-admin.php:776
+msgid "Merchant e-mail"
 msgstr ""
 
 #: includes/dispatch/class-rwsc-dispatch-admin.php:776
-msgid "City / zone / area"
+msgid "Only for the password grant"
 msgstr ""
 
 #: includes/dispatch/class-rwsc-dispatch-admin.php:777
-msgid "Prepaid gateways"
+msgid "Merchant password"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:778
-msgid "Item description"
+#: includes/dispatch/class-rwsc-dispatch-admin.php:782
+msgid "Dispatch defaults"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:779
-msgid "Special instruction"
+#: includes/dispatch/class-rwsc-dispatch-admin.php:784
+msgid "Pickup store"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:780
-msgid "Bulk sending"
+#: includes/dispatch/class-rwsc-dispatch-admin.php:785
+msgid "Delivery type"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:781 includes/dispatch/class-rwsc-dispatch-admin.php:797 includes/dispatch/class-rwsc-dispatch-admin.php:813 includes/dispatch/class-rwsc-dispatch-admin.php:837 includes/dispatch/class-rwsc-dispatch-admin.php:848
-msgid "Tracking URL"
+#: includes/dispatch/class-rwsc-dispatch-admin.php:786
+msgid "Item type"
 msgstr ""
 
 #: includes/dispatch/class-rwsc-dispatch-admin.php:787
-msgid "Test RedX connection"
+msgid "Fallback weight (kg)"
+msgstr ""
+
+#: includes/dispatch/class-rwsc-dispatch-admin.php:788
+msgid "City / zone / area"
 msgstr ""
 
 #: includes/dispatch/class-rwsc-dispatch-admin.php:789
+msgid "Prepaid gateways"
+msgstr ""
+
+#: includes/dispatch/class-rwsc-dispatch-admin.php:790
+msgid "Item description"
+msgstr ""
+
+#: includes/dispatch/class-rwsc-dispatch-admin.php:791
+msgid "Special instruction"
+msgstr ""
+
+#: includes/dispatch/class-rwsc-dispatch-admin.php:792
+msgid "Bulk sending"
+msgstr ""
+
+#: includes/dispatch/class-rwsc-dispatch-admin.php:793 includes/dispatch/class-rwsc-dispatch-admin.php:809 includes/dispatch/class-rwsc-dispatch-admin.php:825 includes/dispatch/class-rwsc-dispatch-admin.php:849 includes/dispatch/class-rwsc-dispatch-admin.php:860
+msgid "Tracking URL"
+msgstr ""
+
+#: includes/dispatch/class-rwsc-dispatch-admin.php:799
+msgid "Test RedX connection"
+msgstr ""
+
+#: includes/dispatch/class-rwsc-dispatch-admin.php:801
 msgid "RedX"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:794
+#: includes/dispatch/class-rwsc-dispatch-admin.php:806
 msgid "Parcel API mode"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:795
+#: includes/dispatch/class-rwsc-dispatch-admin.php:807
 msgid "Pickup store ID"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:796 includes/dispatch/class-rwsc-dispatch-admin.php:812 includes/dispatch/class-rwsc-dispatch-admin.php:836
+#: includes/dispatch/class-rwsc-dispatch-admin.php:808 includes/dispatch/class-rwsc-dispatch-admin.php:824 includes/dispatch/class-rwsc-dispatch-admin.php:848
 msgid "API base URL override"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:802
+#: includes/dispatch/class-rwsc-dispatch-admin.php:814
 msgid "Test SteadFast connection"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:804
+#: includes/dispatch/class-rwsc-dispatch-admin.php:816
 msgid "SteadFast"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:809
+#: includes/dispatch/class-rwsc-dispatch-admin.php:821
 msgid "Send customer note"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:818
+#: includes/dispatch/class-rwsc-dispatch-admin.php:830
 msgid "Test Paperfly credentials"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:819
+#: includes/dispatch/class-rwsc-dispatch-admin.php:831
 msgid "Paperfly’s merchant API documentation is not public; this module follows community SDKs. Test with one parcel before relying on it."
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:821
+#: includes/dispatch/class-rwsc-dispatch-admin.php:833
 msgid "Paperfly"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:829
+#: includes/dispatch/class-rwsc-dispatch-admin.php:841
 msgid "Create-order path"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:830
+#: includes/dispatch/class-rwsc-dispatch-admin.php:842
 msgid "Delivery option"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:832
+#: includes/dispatch/class-rwsc-dispatch-admin.php:844
 msgid "Pickup details"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:843
+#: includes/dispatch/class-rwsc-dispatch-admin.php:855
 msgid "Sundarban has no merchant API we could verify, so this module is manual: book the parcel in the Sundarban portal/app, then click “Sundarban” on the order and enter the CN number. You keep one-courier-per-order protection, duplicate-CN protection, tracking link and COD tracking."
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:845
+#: includes/dispatch/class-rwsc-dispatch-admin.php:857
 msgid "Sundarban Courier (manual)"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:987
+#: includes/dispatch/class-rwsc-dispatch-admin.php:999
 msgid "Diagnostics, maintenance and import tools. Nothing here changes a parcel unless you press a button."
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:989
+#: includes/dispatch/class-rwsc-dispatch-admin.php:1001
 msgid "RAR Courier Suite settings imported and existing parcels synced to the Shipments board."
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:989
+#: includes/dispatch/class-rwsc-dispatch-admin.php:1001
 msgid "No RAR Courier Suite settings found to import."
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:1007
+#: includes/dispatch/class-rwsc-dispatch-admin.php:1019
 msgid "Health"
 msgstr ""
 
 #. translators: %d: count
-#: includes/dispatch/class-rwsc-dispatch-admin.php:1007
+#: includes/dispatch/class-rwsc-dispatch-admin.php:1019
 msgid "%d item to review"
 msgid_plural "%d items to review"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:1007
+#: includes/dispatch/class-rwsc-dispatch-admin.php:1019
 msgid "All good"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:1017
+#: includes/dispatch/class-rwsc-dispatch-admin.php:1029
 msgid "Couriers — last 30 days"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:1024
+#: includes/dispatch/class-rwsc-dispatch-admin.php:1036
 msgid "Suite migration progress"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:1028
+#: includes/dispatch/class-rwsc-dispatch-admin.php:1040
 msgid "Continue parcel migration (up to 300)"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:1030
+#: includes/dispatch/class-rwsc-dispatch-admin.php:1042
 msgid "Migrate from RAR Courier Suite"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:1032
+#: includes/dispatch/class-rwsc-dispatch-admin.php:1044
 msgid "Copies the credentials and options of RAR Courier Suite that are still empty here, and mirrors existing parcels into the Shipments board. Safe to repeat; nothing is overwritten. Do this before deleting the Suite."
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:1032
+#: includes/dispatch/class-rwsc-dispatch-admin.php:1044
 msgid "Import from RAR Courier Suite"
 msgstr ""
 
 #. translators: %s: time
-#: includes/dispatch/class-rwsc-dispatch-admin.php:1032
+#: includes/dispatch/class-rwsc-dispatch-admin.php:1044
 msgid "Last imported %s ago."
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:1032
+#: includes/dispatch/class-rwsc-dispatch-admin.php:1044
 msgid "Not imported yet."
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:1034
+#: includes/dispatch/class-rwsc-dispatch-admin.php:1046
 msgid "Maintenance"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:1035
+#: includes/dispatch/class-rwsc-dispatch-admin.php:1047
 msgid "Clear cached Pathao stores / cities / zones"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:1038
+#: includes/dispatch/class-rwsc-dispatch-admin.php:1050
 msgid "Import parcels created by the old \"Redx for WooCommerce\" / \"SteadFast API\" plugins so they show here and join status sync (500 new legacy records per run; press again to continue)."
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:1038
+#: includes/dispatch/class-rwsc-dispatch-admin.php:1050
 msgid "Import RedX / SteadFast parcels"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:1042
+#: includes/dispatch/class-rwsc-dispatch-admin.php:1054
 msgid "HPOS is on: copy Pathao data created by the original Pathao plugin from legacy post meta into order meta (500 new legacy records per run; press again to continue)."
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:1042
+#: includes/dispatch/class-rwsc-dispatch-admin.php:1054
 msgid "Migrate legacy parcel data"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-admin.php:1047
+#: includes/dispatch/class-rwsc-dispatch-admin.php:1059
 msgid "Latest log lines"
 msgstr ""
 
@@ -1788,134 +1881,154 @@ msgstr ""
 msgid "Sundarban has no API to test."
 msgstr ""
 
-#. translators: %s: auth mode
-#: includes/dispatch/class-rwsc-dispatch-ajax.php:350
-msgid "Connected (%s authentication). Save settings to use these credentials."
+#: includes/dispatch/class-rwsc-dispatch-ajax.php:325
+msgid "Click Save settings to start using these credentials."
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-ajax.php:364
+#. translators: %s: auth mode
+#: includes/dispatch/class-rwsc-dispatch-ajax.php:358
+msgid "These credentials work (%s login). Click Save settings to start using them."
+msgstr ""
+
+#: includes/dispatch/class-rwsc-dispatch-ajax.php:369
+msgid "Connected — saved credentials verified (%s login)."
+msgstr ""
+
+#: includes/dispatch/class-rwsc-dispatch-ajax.php:383
 msgid "Token renewed."
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-ajax.php:370
+#: includes/dispatch/class-rwsc-dispatch-ajax.php:389
 msgid "Cached stores, cities, zones and areas cleared."
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:32
-msgid "Dispatch"
-msgstr ""
-
-#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:55 includes/dispatch/class-rwsc-pathao-orders.php:581
+#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:34 includes/dispatch/class-rwsc-pathao-orders.php:581
 msgid "Send with Pathao"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:56
+#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:35
 msgid "Refresh Pathao status"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:61
+#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:40
 msgid "Send with %s"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:63
+#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:42
 msgid "Refresh %s status"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:99
-msgid "Courier Dispatch"
-msgstr ""
-
 #. translators: 1: courier 2: action 3: ok 4: failed 5: first error
-#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:126
+#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:89
 msgid "%1$s %2$s: %3$d done, %4$d failed. %5$s"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:128
+#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:91
 msgid "send"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:128
+#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:91
 msgid "refresh"
 msgstr ""
 
-#. translators: %s: courier
-#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:146
-msgid "Checkout courier: %s"
+#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:105
+msgid "booked"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:211
+#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:106
+msgid "webhook"
+msgstr ""
+
+#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:107
+msgid "auto sync"
+msgstr ""
+
+#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:108
+msgid "refreshed"
+msgstr ""
+
+#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:109
+msgid "bulk refresh"
+msgstr ""
+
+#. translators: 1: courier 2: count
+#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:124
+msgid "%1$s updates (%2$d)"
+msgstr ""
+
+#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:163
 msgid "Normal delivery"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:212
+#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:164
 msgid "On-demand"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:215
+#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:167
 msgid "Parcel"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:216
+#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:168
 msgid "Document"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:219
+#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:171
 msgid "Send to Pathao"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:220
+#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:172
 msgid "Loading orders…"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:221
+#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:173
 msgid "Send %d order(s)"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:222
+#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:174
 msgid "Close"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:223
+#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:175
 msgid "Sending…"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:225
+#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:177
 msgid "Skipped"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:226
+#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:178
 msgid "Failed"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:227
+#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:179
 msgid "Estimated fee"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:228
+#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:180
 msgid "Suggested"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:229
+#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:181
 msgid "Apply"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:230
+#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:182
 msgid "Refreshing…"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:232
+#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:184
 msgid "Enter the Sundarban CN (consignment note) number for order #%s"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:233
+#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:185
 msgid "Send order #%1$s with %2$s?"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:234
+#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:186
 msgid "Send %1$s order(s) with %2$s?"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:235
+#: includes/dispatch/class-rwsc-dispatch-orders-ui.php:187
 msgid "Network error. If a parcel was being created, check the courier panel before retrying."
 msgstr ""
 
@@ -2027,11 +2140,11 @@ msgstr ""
 msgid "Could not obtain an API token right now. Please retry."
 msgstr ""
 
-#: includes/dispatch/class-rwsc-pathao-api.php:271
+#: includes/dispatch/class-rwsc-pathao-api.php:286
 msgid "The Pathao API returned an error."
 msgstr ""
 
-#: includes/dispatch/class-rwsc-pathao-api.php:484
+#: includes/dispatch/class-rwsc-pathao-api.php:499
 msgid "Pathao accepted the request but returned no consignment ID. Check the Pathao merchant panel before retrying."
 msgstr ""
 
@@ -2095,13 +2208,13 @@ msgstr ""
 msgid "Sent with %s"
 msgstr ""
 
-#: includes/dispatch/class-rwsc-pathao-orders.php:588
-msgid "Queued — awaiting consignment ID"
+#. translators: %s: courier
+#: includes/dispatch/class-rwsc-pathao-orders.php:583
+msgid "Customer chose: %s"
 msgstr ""
 
-#. translators: %s: fee
-#: includes/dispatch/class-rwsc-pathao-orders.php:594
-msgid "Fee ৳%s"
+#: includes/dispatch/class-rwsc-pathao-orders.php:588
+msgid "Queued — awaiting consignment ID"
 msgstr ""
 
 #: includes/dispatch/class-rwsc-pathao-status.php:89

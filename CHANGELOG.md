@@ -1,5 +1,33 @@
 # Changelog
 
+## 3.2.0 — 2026-11-14
+
+UI, options and functionality clean-up, reviewed against live nabiad.com screenshots and re-checked by rendering every admin page at phone (412 px) and desktop (1366 px) width. Integration-tested on WordPress 7.1.4 + WooCommerce 11.3.0, legacy and HPOS storage, RAR Courier Suite active and inactive; courier HTTP mocked.
+
+### Changed
+- **Orders list:** one *Courier* column renders a unified cell (`RWSC_Couriers::cell_html`) — courier pill and shipment status, consignment with refresh, booking buttons, errors. The separate *Dispatch* column (`rwsc_dispatch`) is removed. AJAX send/refresh responses return the same cell, so the whole cell updates live.
+- **Order screen:** the *Courier Dispatch* meta box is merged into *Smart Courier*. A booked API parcel shows the courier's update history; manual fields move under *Edit manually (override)*.
+- Status chip always uses the shipment-model wording; the raw courier wording is shown as "‹Courier› says: …" only when it adds information. The source hint reads *Chosen at checkout* / *Set by staff* / *Suggested by Smart Courier* (was "Customer chose: …" even for auto suggestions).
+- **Navigation:** one tab bar built from the registered sub-menu (so tabs, menu and capabilities agree) and a fixed menu order: Dashboard, Shipments, Book Parcels, API Overview, Rates & Checkout, Courier APIs, Tools & Health. "Settings" → *Rates & Checkout*, "Parcels" → *Book Parcels*; the API settings page is titled *Courier APIs*.
+- Courier presets spelled **RedX** and **SteadFast**; saved names still equal to the old preset are updated on upgrade (lookups stay case-insensitive). API chips use the courier colour from Rates & Checkout.
+- API Overview: *Delivered* / *Returned* cards say "N% success rate" / "N% return rate".
+- Pathao authentication options shortened; merchant e-mail and password get their own rows; sync batch fields are labelled inline.
+- Footer and notices use the plugin's real name, *RAR Woo Smart Courier*.
+
+### Fixed
+- **Connection badges stuck on "Configured (test required)"**, even after successful bookings. New verified-connection record (`rwsc_api_verified`, fingerprinted on the account credentials) is set by Test connection, token issue/renewal, successful booking and status sync, and is cleared automatically when credentials change. Badges: *Connected · verified ‹time› ago* / *Saved · not tested yet* / *Needs credentials* / *Disabled*. The badge and tab dot update in place after a test.
+- **Pathao "Test connection" always replied "Save settings to use these credentials"**: the form re-posts the saved Client ID / environment / auth mode, which were treated as new credentials, so the token was never stored. Only values that differ from the saved ones now count as unsaved. The same applies to RedX / SteadFast / Paperfly tests.
+- **Estimated delivery counted from the assignment day**, so an order assigned later (migration, backfill, auto-assign) showed a future window. `auto_assign()` now counts from the order date; a one-time repair (`rwsc_edd_repaired`) recounts stored windows from the last 60 days and only ever moves them earlier.
+- Courier API settings overflowed on phones (inline e-mail/password inputs, long selects, unlabelled number inputs).
+- Tab dots were orange for disabled couriers; now grey.
+- "Connect a courier" link in an order cell pointed to a non-existent settings tab.
+- RedX: "Parcel is delivered", "Package delivered successfully" and "partial-delivered" were not treated as delivered; "undelivered" was not treated as needing attention.
+- Pathao bulk/refresh AJAX returned the old Pathao-only cell.
+- Shared pill / status styles are loaded on the API pages (Book Parcels showed unstyled pills).
+
+### Removed
+- `RWSC_Dispatch_Orders_UI::columns()`, `column_hpos()`, `column_legacy()`, `meta_box()`, `render_box()`, `render_suite_box()` (replaced by the unified cell and `courier_history_html()`).
+
 ## 3.1.2 — 2026-11-14
 
 Integration-tested on WordPress 7.1.4 + WooCommerce 11.3.0 (SQLite), legacy and HPOS order storage, with RAR Courier Suite active and inactive; courier HTTP calls mocked.

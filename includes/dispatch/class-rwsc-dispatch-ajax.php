@@ -180,7 +180,7 @@ final class RWSC_Dispatch_Ajax {
 				'consignment_id' => $res['consignment_id'],
 				'delivery_fee'   => $res['delivery_fee'],
 				'status'         => $res['status'],
-				'cell'           => $order ? RWSC_Pathao_Orders::cell_html( $order ) : '',
+				'cell'           => $order ? RWSC_Couriers::cell_html( $order ) : '',
 				'panel_url'      => RWSC_Pathao_Orders::panel_url( $res['consignment_id'] ),
 			)
 		);
@@ -203,7 +203,7 @@ final class RWSC_Dispatch_Ajax {
 		foreach ( $res['accepted'] as $oid ) {
 			$o = wc_get_order( $oid );
 			if ( $o ) {
-				$cells[ $oid ] = RWSC_Pathao_Orders::cell_html( $o );
+				$cells[ $oid ] = RWSC_Couriers::cell_html( $o );
 			}
 		}
 		$res['cells'] = $cells;
@@ -225,7 +225,7 @@ final class RWSC_Dispatch_Ajax {
 			array(
 				'order_id' => $order->get_id(),
 				'changed'  => $res['changed'],
-				'cell'     => RWSC_Pathao_Orders::cell_html( $order ),
+				'cell'     => RWSC_Couriers::cell_html( $order ),
 			)
 		);
 	}
@@ -315,7 +315,17 @@ final class RWSC_Dispatch_Ajax {
 		if ( is_wp_error( $res ) ) {
 			wp_send_json_error( array( 'message' => $res->get_error_message() ), 400 );
 		}
-		wp_send_json_success( array( 'message' => $res ) );
+		$typed = false;
+		foreach ( RWSC_Api_Settings::cred_keys( $m->slug() ) as $k ) {
+			if ( '' !== $p( $k ) && $p( $k ) !== (string) RWSC_Api_Settings::get( $k, '' ) ) {
+				$typed = true;
+			}
+		}
+		if ( $typed ) {
+			wp_send_json_success( array( 'message' => $res . ' ' . __( 'Click Save settings to start using these credentials.', 'rar-woo-smart-courier' ) ) );
+		}
+		RWSC_Api_Settings::mark_verified( $m->slug(), 'test' );
+		wp_send_json_success( array( 'message' => $res, 'state' => array( 'ok', RWSC_Dispatch_Admin::state_text_verified( RWSC_Api_Settings::verified( $m->slug() ) ) ) ) );
 	}
 
 	/* ------------------------------------------------------------------ *
@@ -327,8 +337,8 @@ final class RWSC_Dispatch_Ajax {
 		$args = array();
 		foreach ( array( 'client_id', 'client_secret', 'username', 'password', 'environment', 'auth_mode' ) as $k ) {
 			$v = isset( $_POST[ $k ] ) ? trim( sanitize_text_field( wp_unslash( $_POST[ $k ] ) ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
-			if ( '' !== $v ) {
-				$args[ $k ] = $v; // Blank means "use the saved value" (secrets are never echoed to the form).
+			if ( '' !== $v && $v !== (string) RWSC_Api_Settings::get( $k, '' ) ) {
+				$args[ $k ] = $v; // Blank / unchanged means "use the saved value" (secrets are never echoed to the form).
 			}
 		}
 		if ( isset( $args['environment'] ) && ! in_array( $args['environment'], array( 'live', 'staging' ), true ) ) {
@@ -340,16 +350,24 @@ final class RWSC_Dispatch_Ajax {
 		}
 		// Persist the working token only when testing the saved credentials.
 		$tested_saved = ! array_intersect( array( 'client_id', 'client_secret', 'username', 'password', 'environment', 'auth_mode' ), array_keys( $args ) );
-		if ( $tested_saved ) {
-			update_option( RWSC_Pathao_API::TOKEN_OPTION, $tok, false );
+		if ( ! $tested_saved ) {
+			wp_send_json_success(
+				array(
+					'message' => sprintf(
+						/* translators: %s: auth mode */
+						__( 'These credentials work (%s login). Click Save settings to start using them.', 'rar-woo-smart-courier' ),
+						$tok['mode']
+					),
+				)
+			);
 		}
+		update_option( RWSC_Pathao_API::TOKEN_OPTION, $tok, false );
+		RWSC_Api_Settings::mark_verified( 'pathao', 'test' );
 		wp_send_json_success(
 			array(
-				'message' => sprintf(
-					/* translators: %s: auth mode */
-					__( 'Connected (%s authentication). Save settings to use these credentials.', 'rar-woo-smart-courier' ),
-					$tok['mode']
-				),
+				/* translators: %s: auth mode */
+				'message' => sprintf( __( 'Connected — saved credentials verified (%s login).', 'rar-woo-smart-courier' ), $tok['mode'] ),
+				'state'   => array( 'ok', RWSC_Dispatch_Admin::state_text_verified( RWSC_Api_Settings::verified( 'pathao' ) ) ),
 			)
 		);
 	}
@@ -361,7 +379,8 @@ final class RWSC_Dispatch_Ajax {
 		if ( is_wp_error( $t ) ) {
 			self::fail( $t, 400 );
 		}
-		wp_send_json_success( array( 'message' => __( 'Token renewed.', 'rar-woo-smart-courier' ) ) );
+		RWSC_Api_Settings::mark_verified( 'pathao', 'token' );
+		wp_send_json_success( array( 'message' => __( 'Token renewed.', 'rar-woo-smart-courier' ), 'state' => array( 'ok', RWSC_Dispatch_Admin::state_text_verified( RWSC_Api_Settings::verified( 'pathao' ) ) ) ) );
 	}
 
 	public static function handle_flush_cache() {

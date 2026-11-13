@@ -306,7 +306,16 @@
 			btn.disabled = false;
 			out.textContent = (r.success ? '✓ ' : '✗ ') + ((r.data && r.data.message) || '');
 			out.style.color = r.success ? '#008a20' : '#d63638';
+			if (r.success && r.data) { applyState(btn, 'pathao', r.data.state); }
 		});
+	}
+
+	function applyState(btn, slug, st) {
+		if (!st) { return; }
+		var pane = btn.closest ? btn.closest('.rwsc-d-pane') : null, pill = pane && pane.querySelector('.rwsc-d-state');
+		if (pill) { pill.className = 'rwsc-d-state is-' + st[0]; pill.textContent = st[1]; }
+		var dot = document.querySelector('.rwsc-d-tabs [data-tab="' + slug + '"] .rwsc-d-dot');
+		if (dot) { dot.className = 'rwsc-d-dot is-' + st[0]; dot.title = st[1]; }
 	}
 
 	/* ---------------- RedX / SteadFast ---------------- */
@@ -341,6 +350,7 @@
 		var out = document.querySelector('.rwsc-d-ctest-out[data-courier="' + c + '"]'); btn.disabled = true; out.textContent = '…';
 		post('courier_test', data).then(function (r) {
 			btn.disabled = false; out.textContent = (r.success ? '✓ ' : '✗ ') + ((r.data && r.data.message) || ''); out.style.color = r.success ? '#008a20' : '#d63638';
+			if (r.success && r.data) { applyState(btn, c, r.data.state); }
 		});
 	}
 

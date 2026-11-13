@@ -284,14 +284,14 @@ final class RWSC_RedX extends RWSC_Courier_Base {
 		$g   = 'transit';
 		$fin = false;
 		$slug = trim( preg_replace( '/\s+/', '_', $t ), '_' );
-		if ( preg_match( '/fail|hold|not delivered|unreach|resched|refus|problem/', $t ) ) {
+		if ( preg_match( '/fail|hold|undeliver|not delivered|unreach|resched|refus|problem/', $t ) ) {
 			$g = 'attention';
 		} elseif ( preg_match( '/returning|return in|to return|return process/', $t ) ) {
 			$g = 'attention';
 		} elseif ( preg_match( '/return|cancel|rto/', $t ) ) {
 			$g = 'returned';
 			$fin = true;
-		} elseif ( preg_match( '/^(parcel )?delivered|successfully delivered|delivery complete/', $t ) ) {
+		} elseif ( preg_match( '/\\bdelivered\\b|delivery complete/', $t ) ) {
 			$g    = 'delivered';
 			$fin  = true;
 			$slug = 'delivered';

@@ -48,7 +48,7 @@ final class RWSC_Settings {
                 'eta_dhaka' => '1–2 business days', 'eta_nearby' => '1–3 business days', 'eta_outside' => '1–3 business days',
             ),
             'steadfast' => array(
-                'name'         => 'Steadfast',
+                'name'         => 'SteadFast',
                 'priority'     => 30,
                 'color'        => '#10b981',
                 'tracking_url' => 'https://steadfast.com.bd/t/{tracking}',
@@ -58,7 +58,7 @@ final class RWSC_Settings {
                 'eta_dhaka' => '1–3 business days', 'eta_nearby' => '1–3 business days', 'eta_outside' => '1–4 business days',
             ),
             'redx'      => array(
-                'name'         => 'Redx',
+                'name'         => 'RedX',
                 'priority'     => 40,
                 'color'        => '#db2777',
                 'tracking_url' => 'https://redx.com.bd/track-global-parcel/?trackingId={tracking}',
@@ -234,6 +234,29 @@ final class RWSC_Settings {
             }
         );
         return $out;
+    }
+
+    /**
+     * v3.2: use the couriers' own spelling (RedX, SteadFast) so the checkout, Shipments board
+     * and API screens show one name. Only names still equal to the old preset are changed.
+     */
+    public static function migrate_brand_names() {
+        $saved = get_option( self::OPTION, null );
+        if ( ! is_array( $saved ) || empty( $saved['couriers'] ) || ! is_array( $saved['couriers'] ) ) {
+            return;
+        }
+        $map     = array( 'redx' => array( 'Redx', 'RedX' ), 'steadfast' => array( 'Steadfast', 'SteadFast' ) );
+        $changed = false;
+        foreach ( $map as $key => $names ) {
+            if ( isset( $saved['couriers'][ $key ]['name'] ) && $names[0] === $saved['couriers'][ $key ]['name'] ) {
+                $saved['couriers'][ $key ]['name'] = $names[1];
+                $changed                           = true;
+            }
+        }
+        if ( $changed ) {
+            update_option( self::OPTION, $saved );
+            self::$cache = null;
+        }
     }
 
     public static function courier( $key ) {

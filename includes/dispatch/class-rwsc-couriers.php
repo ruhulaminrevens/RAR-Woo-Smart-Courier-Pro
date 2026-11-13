@@ -140,7 +140,9 @@ final class RWSC_Couriers {
 
 	/** Brand chip (coloured dot + name) used across the UI. */
 	public static function chip( $slug ) {
-		return '<span class="rwsc-d-chip rwsc-d-c-' . esc_attr( sanitize_html_class( $slug ) ) . '">' . esc_html( self::label( $slug ) ) . '</span>';
+		// Same colour as the courier everywhere else (Smart Courier settings), so a courier never changes colour between screens.
+		$style = class_exists( 'RWSC_Settings' ) && RWSC_Settings::courier( $slug ) ? ' style="--c:' . esc_attr( RWSC_Settings::courier_color( $slug ) ) . '"' : '';
+		return '<span class="rwsc-d-chip rwsc-d-c-' . esc_attr( sanitize_html_class( $slug ) ) . '"' . $style . '>' . esc_html( self::label( $slug ) ) . '</span>';
 	}
 
 	/** Meta key that holds the consignment / parcel id of a courier. */
@@ -193,16 +195,46 @@ final class RWSC_Couriers {
 		);
 	}
 
-	/** Order-list cell: the parcel (any courier) or send buttons for every usable courier. */
+	/**
+	 * The one courier cell used in the Orders list, the order screen and the Parcels page.
+	 *
+	 * Line 1: courier + shipment status (same names, colours and statuses as the Shipments
+	 * board). Line 2: the consignment with a refresh button, or send buttons when nothing is
+	 * booked yet. Line 3: the courier's own wording of the status when it adds information.
+	 */
 	public static function cell_html( WC_Order $order ) {
-		$via = self::sent_via( $order );
-		if ( 'pathao' === $via ) {
-			return RWSC_Pathao_Orders::cell_html( $order );
+		$s    = RWSC_Shipments::get( $order );
+		$via  = self::sent_via( $order );
+		$html = '';
+		if ( '' !== $s['courier'] ) {
+			$html .= '<div class="rwsc-u-head"><span class="rwsc-pill" style="--c:' . esc_attr( $s['color'] ) . '"><i></i>' . esc_html( $s['courier_name'] ) . '</span>'
+				. '<span class="rwsc-st" style="--s:' . esc_attr( $s['status_color'] ) . '">' . esc_html( $s['status_label'] ) . '</span></div>';
 		}
 		if ( '' !== $via ) {
-			return '<div>' . self::get( $via )->sent_html( $order ) . '</div>';
+			return $html . self::parcel_line( $order, $via, $s );
 		}
-		$chosen = self::detect( RWSC_Order_Data::selected_courier( $order ) );
+		if ( '' !== $s['tracking'] ) {
+			// Booked outside the APIs (typed on the order screen / Shipments board).
+			$html .= $s['tracking_url']
+				? '<a class="rwsc-trk" href="' . esc_url( $s['tracking_url'] ) . '" target="_blank" rel="noopener noreferrer">' . esc_html( $s['tracking'] ) . ' ↗</a>'
+				: '<span class="rwsc-trk">' . esc_html( $s['tracking'] ) . '</span>';
+			return $html;
+		}
+		if ( '' !== $s['courier'] ) {
+			$src   = (string) $order->get_meta( '_rwsc_source', true );
+			$hints = array(
+				'checkout' => __( 'Chosen at checkout', 'rar-woo-smart-courier' ),
+				'manual'   => __( 'Set by staff', 'rar-woo-smart-courier' ),
+				'auto'     => __( 'Suggested by Smart Courier', 'rar-woo-smart-courier' ),
+			);
+			if ( isset( $hints[ $src ] ) ) {
+				$html .= '<div class="rwsc-u-sub">' . esc_html( $hints[ $src ] ) . '</div>';
+			}
+		}
+		if ( in_array( $s['status'], array( 'delivered', 'returned', 'cancelled' ), true ) ) {
+			return $html; // Finished without an API parcel: nothing to send.
+		}
+		$chosen = '' !== $s['courier'] ? $s['courier'] : self::detect( RWSC_Order_Data::selected_courier( $order ) );
 		$btns   = '';
 		if ( RWSC_Api_Settings::is_configured() ) {
 			$btns .= '<button type="button" class="button button-small rwsc-d-open' . ( 'pathao' === $chosen ? ' button-primary' : '' ) . '" data-order-ids="' . esc_attr( $order->get_id() ) . '">' . esc_html__( 'Pathao', 'rar-woo-smart-courier' ) . '</button> ';
@@ -214,21 +246,66 @@ final class RWSC_Couriers {
 			$btns .= '<button type="button" class="button button-small rwsc-d-cs' . ( $m->manual() ? ' rwsc-d-manual' : '' ) . ( $chosen === $slug ? ' button-primary' : '' ) . '" data-courier="' . esc_attr( $slug ) . '" data-order-id="' . esc_attr( $order->get_id() ) . '">' . esc_html( $m->label() ) . '</button> ';
 		}
 		if ( '' === $btns ) {
-			$btns = '<a href="' . esc_url( admin_url( 'admin.php?page=rar-woo-smart-courier&tab=api' ) ) . '" class="rwsc-d-muted">' . esc_html__( 'Connect a courier', 'rar-woo-smart-courier' ) . '</a>';
+			if ( current_user_can( 'manage_options' ) ) {
+				$html .= '<a href="' . esc_url( admin_url( 'admin.php?page=' . RWSC_Dispatch_Admin::PAGE_SETTINGS ) ) . '" class="rwsc-d-muted">' . esc_html__( 'Connect a courier API', 'rar-woo-smart-courier' ) . '</a>';
+			}
+		} else {
+			$html .= '<div class="rwsc-d-btns" role="group" aria-label="' . esc_attr__( 'Book with', 'rar-woo-smart-courier' ) . '">' . $btns . '</div>';
 		}
-		$err = '';
 		foreach ( self::modules() as $m ) {
 			$e = $m->get( $order, 'last_error' );
 			if ( '' !== $e && $m->enabled() ) {
-				$err .= '<div class="rwsc-d-error rwsc-d-muted">' . esc_html( $m->label() . ': ' . self::cut( $e, 140 ) ) . '</div>';
+				$html .= '<div class="rwsc-d-error">' . esc_html( $m->label() . ': ' . self::cut( $e, 140 ) ) . '</div>';
 			}
 		}
 		$pe = (string) $order->get_meta( 'ptc_last_error', true );
 		if ( '' !== $pe && RWSC_Api_Settings::is_configured() ) {
-			$err .= '<div class="rwsc-d-error rwsc-d-muted">' . esc_html( 'Pathao: ' . self::cut( $pe, 140 ) ) . '</div>';
+			$html .= '<div class="rwsc-d-error">' . esc_html( 'Pathao: ' . self::cut( $pe, 140 ) ) . '</div>';
 		}
-		$hint = '' !== RWSC_Order_Data::selected_courier( $order ) ? '<div class="rwsc-d-muted">' . esc_html( sprintf( /* translators: %s: courier */ __( 'Customer chose: %s', 'rar-woo-smart-courier' ), RWSC_Order_Data::selected_courier( $order ) ) ) . '</div>' : '';
-		return '<div class="rwsc-d-btns">' . $btns . '</div>' . $err . $hint;
+		return $html;
+	}
+
+	/** Consignment line of a booked order: id (linked), refresh, courier wording, fee, manual controls. */
+	private static function parcel_line( WC_Order $order, $via, array $s ) {
+		$info  = self::parcel_info( $order );
+		$label = $info ? (string) $info['label'] : '';
+		if ( 'pathao' === $via ) {
+			$cid = RWSC_Pathao_Orders::consignment( $order );
+			if ( '' === $cid || RWSC_Pathao_Orders::EMPTY_FLAG === $cid ) {
+				return '<div class="rwsc-u-sub">' . RWSC_Pathao_Orders::cell_html( $order ) . '</div>';
+			}
+			$line = '<a href="' . esc_url( RWSC_Pathao_Orders::panel_url( $cid ) ) . '" target="_blank" rel="noopener noreferrer" class="rwsc-d-cid">' . esc_html( $cid ) . '</a>'
+				. ' <button type="button" class="rwsc-u-icon rwsc-d-refresh" data-order-id="' . esc_attr( $order->get_id() ) . '" title="' . esc_attr__( 'Refresh status', 'rar-woo-smart-courier' ) . '" aria-label="' . esc_attr__( 'Refresh status', 'rar-woo-smart-courier' ) . '">&#8635;</button>';
+			$fee  = (string) RWSC_Pathao_Orders::get( $order, RWSC_Pathao_Orders::META_FEE );
+			$extra = '' !== $fee ? sprintf( /* translators: %s: fee */ __( 'Fee ৳%s', 'rar-woo-smart-courier' ), $fee ) : '';
+			$ctrl  = '';
+		} else {
+			$m    = self::get( $via );
+			$cid  = $m->consignment( $order );
+			$url  = $m->tracking_url( $order );
+			$line = $url ? '<a href="' . esc_url( $url ) . '" target="_blank" rel="noopener noreferrer" class="rwsc-d-cid">' . esc_html( $cid ) . '</a>' : '<span class="rwsc-d-cid">' . esc_html( $cid ) . '</span>';
+			if ( ! $m->manual() ) {
+				$line .= ' <button type="button" class="rwsc-u-icon rwsc-d-cr" data-courier="' . esc_attr( $via ) . '" data-order-id="' . esc_attr( $order->get_id() ) . '" title="' . esc_attr__( 'Refresh status', 'rar-woo-smart-courier' ) . '" aria-label="' . esc_attr__( 'Refresh status', 'rar-woo-smart-courier' ) . '">&#8635;</button>';
+			}
+			$extra = '';
+			$ctrl  = $m->controls_html( $order );
+		}
+		$html = '<div class="rwsc-u-trk">' . $line . '</div>';
+		$sub  = array();
+		if ( '' === $s['courier'] ) {
+			$sub[] = self::label( $via );
+		}
+		if ( '' !== $label && '—' !== $label && 0 !== strcasecmp( $label, (string) $s['status_label'] ) ) {
+			/* translators: 1: courier 2: the courier's own status text */
+			$sub[] = sprintf( __( '%1$s says: %2$s', 'rar-woo-smart-courier' ), self::label( $via ), $label );
+		}
+		if ( '' !== $extra ) {
+			$sub[] = $extra;
+		}
+		if ( $sub ) {
+			$html .= '<div class="rwsc-u-sub">' . esc_html( implode( ' · ', $sub ) ) . '</div>';
+		}
+		return $html . $ctrl;
 	}
 
 	/** Wrapper used by every list / meta box so both AJAX updaters can refresh it. */

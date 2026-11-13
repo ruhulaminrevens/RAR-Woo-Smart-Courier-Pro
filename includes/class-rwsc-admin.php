@@ -15,6 +15,7 @@ final class RWSC_Admin {
 
     public static function init() {
         add_action( 'admin_menu', array( __CLASS__, 'menu' ), 60 );
+        add_action( 'admin_menu', array( __CLASS__, 'order_submenu' ), 999 );
         add_action( 'admin_enqueue_scripts', array( __CLASS__, 'assets' ) );
         add_action( 'admin_post_rwsc_save_settings', array( __CLASS__, 'handle_save' ) );
         add_action( 'admin_post_rwsc_import_settings', array( __CLASS__, 'handle_import' ) );
@@ -38,7 +39,7 @@ final class RWSC_Admin {
         $count = self::ready_count();
         $badge = $count ? ' <span class="awaiting-mod count-' . (int) $count . '"><span class="pending-count">' . (int) $count . '</span></span>' : '';
         add_submenu_page( 'rwsc-dashboard', __( 'Shipments', 'rar-woo-smart-courier' ), __( 'Shipments', 'rar-woo-smart-courier' ) . $badge, self::view_cap(), 'rwsc-shipments', array( __CLASS__, 'render_shipments' ) );
-        add_submenu_page( 'rwsc-dashboard', __( 'Smart Courier Settings', 'rar-woo-smart-courier' ), __( 'Settings', 'rar-woo-smart-courier' ), self::manage_cap(), self::SETTINGS_SLUG, array( __CLASS__, 'render_settings' ) );
+        add_submenu_page( 'rwsc-dashboard', __( 'Rates & Checkout', 'rar-woo-smart-courier' ), __( 'Rates & Checkout', 'rar-woo-smart-courier' ), self::manage_cap(), self::SETTINGS_SLUG, array( __CLASS__, 'render_settings' ) );
     }
 
     /**
@@ -58,6 +59,69 @@ final class RWSC_Admin {
         }
         set_transient( 'rwsc_ready_count', $n, 3 * MINUTE_IN_SECONDS );
         return $n;
+    }
+
+    /** Display order of the Smart Courier sub-menu and page tabs (one navigation everywhere). */
+    const NAV_ORDER = array( 'rwsc-dashboard', 'rwsc-shipments', 'rwsc-parcels', 'rwsc-api-overview', 'rar-woo-smart-courier', 'rwsc-api', 'rwsc-tools' );
+
+    /** Sort the sub-menu (pages are added by two modules at different priorities). */
+    public static function order_submenu() {
+        global $submenu;
+        if ( empty( $submenu['rwsc-dashboard'] ) || ! is_array( $submenu['rwsc-dashboard'] ) ) {
+            return;
+        }
+        $rank = array_flip( self::NAV_ORDER );
+        $items = array_values( $submenu['rwsc-dashboard'] );
+        foreach ( $items as $i => $item ) {
+            $items[ $i ]['_r'] = isset( $rank[ $item[2] ] ) ? $rank[ $item[2] ] : 100 + $i;
+        }
+        usort(
+            $items,
+            static function ( $a, $b ) {
+                return $a['_r'] <=> $b['_r'];
+            }
+        );
+        foreach ( $items as $i => $item ) {
+            unset( $items[ $i ]['_r'] );
+        }
+        $submenu['rwsc-dashboard'] = $items; // phpcs:ignore WordPress.WP.GlobalVariablesOverride
+    }
+
+    /**
+     * Tabs shown on every Smart Courier page, built from the registered sub-menu so the tabs,
+     * the WordPress menu and the user's capabilities can never disagree.
+     *
+     * @return array slug => label
+     */
+    public static function nav_items() {
+        global $submenu;
+        $out = array();
+        foreach ( isset( $submenu['rwsc-dashboard'] ) ? (array) $submenu['rwsc-dashboard'] : array() as $item ) {
+            if ( empty( $item[2] ) || ! current_user_can( $item[1] ) ) {
+                continue;
+            }
+            $out[ $item[2] ] = trim( wp_strip_all_tags( preg_replace( '#<span[^>]*>.*?</span>#s', '', (string) $item[0] ) ) );
+        }
+        if ( $out ) {
+            return $out;
+        }
+        // Menu not built (e.g. page rendered outside the normal admin request): static fallback.
+        $dispatch = class_exists( 'RWSC_Dispatch_Admin' ) && has_action( 'admin_menu', array( 'RWSC_Dispatch_Admin', 'menu' ) );
+        $all      = array(
+            'rwsc-dashboard'      => array( __( 'Dashboard', 'rar-woo-smart-courier' ), self::view_cap(), true ),
+            'rwsc-shipments'      => array( __( 'Shipments', 'rar-woo-smart-courier' ), self::view_cap(), true ),
+            'rwsc-parcels'        => array( __( 'Book Parcels', 'rar-woo-smart-courier' ), 'edit_shop_orders', $dispatch ),
+            'rwsc-api-overview'   => array( __( 'API Overview', 'rar-woo-smart-courier' ), 'edit_shop_orders', $dispatch ),
+            self::SETTINGS_SLUG   => array( __( 'Rates & Checkout', 'rar-woo-smart-courier' ), self::manage_cap(), true ),
+            'rwsc-api'            => array( __( 'Courier APIs', 'rar-woo-smart-courier' ), 'manage_options', $dispatch ),
+            'rwsc-tools'          => array( __( 'Tools & Health', 'rar-woo-smart-courier' ), 'manage_options', $dispatch ),
+        );
+        foreach ( $all as $slug => $a ) {
+            if ( $a[2] && current_user_can( $a[1] ) ) {
+                $out[ $slug ] = $a[0];
+            }
+        }
+        return $out;
     }
 
     public static function is_plugin_screen() {
@@ -264,11 +328,7 @@ final class RWSC_Admin {
             'test' => __( 'Safe Test Mode', 'rar-woo-smart-courier' ),
             'off'  => __( 'Engine off', 'rar-woo-smart-courier' ),
         );
-        $nav = array(
-            'rwsc-dashboard'    => __( 'Dashboard', 'rar-woo-smart-courier' ),
-            'rwsc-shipments'    => __( 'Shipments', 'rar-woo-smart-courier' ),
-            self::SETTINGS_SLUG => __( 'Settings', 'rar-woo-smart-courier' ),
-        );
+        $nav = self::nav_items();
         ?>
         <header class="rwsc-hero">
             <div class="rwsc-hero-glow" aria-hidden="true"></div>
@@ -288,10 +348,7 @@ final class RWSC_Admin {
             <nav class="rwsc-nav" aria-label="<?php esc_attr_e( 'Smart Courier', 'rar-woo-smart-courier' ); ?>">
                 <?php
                 foreach ( $nav as $slug => $label ) {
-                    if ( self::SETTINGS_SLUG === $slug && ! current_user_can( self::manage_cap() ) ) {
-                        continue;
-                    }
-                    printf( '<a href="%s" class="%s">%s</a>', esc_url( admin_url( 'admin.php?page=' . $slug ) ), $slug === $page ? 'is-active' : '', esc_html( $label ) );
+                    printf( '<a href="%s" class="%s"%s>%s</a>', esc_url( admin_url( 'admin.php?page=' . $slug ) ), $slug === $page ? 'is-active' : '', $slug === $page ? ' aria-current="page"' : '', esc_html( $label ) );
                 }
                 ?>
             </nav>

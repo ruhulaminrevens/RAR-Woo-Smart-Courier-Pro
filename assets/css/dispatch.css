@@ -86,7 +86,7 @@
 .rwsc-d-row{display:grid;grid-template-columns:minmax(180px,260px) 1fr;gap:6px 24px;padding:12px 0;border-top:1px solid var(--rwsc-d-line)}
 .rwsc-d-row:first-of-type{border-top:0}
 .rwsc-d-lbl{font-weight:600}
-.rwsc-d-ctl input[type=text],.rwsc-d-ctl input[type=password],.rwsc-d-ctl input[type=number],.rwsc-d-ctl select,.rwsc-d-ctl .regular-text,.rwsc-d-ctl .large-text{max-width:100%;min-height:34px;border-radius:8px}
+.rwsc-d-ctl input[type=text],.rwsc-d-ctl input[type=password],.rwsc-d-ctl input[type=email],.rwsc-d-ctl input[type=url],.rwsc-d-ctl input[type=number],.rwsc-d-ctl select,.rwsc-d-ctl .regular-text,.rwsc-d-ctl .large-text{max-width:100%;min-height:34px;border-radius:8px}
 .rwsc-d-ctl .large-text{width:100%}
 .rwsc-d-ctl .description{margin:6px 0 0;color:var(--rwsc-d-mut);font-size:12.5px}
 .rwsc-d-switch{display:inline-flex;align-items:center;gap:8px;cursor:pointer;margin:2px 14px 2px 0}
@@ -104,7 +104,9 @@
 .rwsc-d-health{width:100%;border-collapse:collapse}
 .rwsc-d-health th{width:260px;text-align:left;font-weight:600}
 .rwsc-d-health th,.rwsc-d-health td{padding:8px 6px;border-top:1px solid var(--rwsc-d-line);vertical-align:top}
-.rwsc-d-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;background:#10b981}.rwsc-d-dot.is-warn{background:#f59e0b}
+.rwsc-d-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;background:#10b981}.rwsc-d-dot.is-warn{background:#f59e0b}.rwsc-d-dot.is-off{background:#cbd5e1}
+.rwsc-d-inline{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:8px}.rwsc-d-inline label{display:inline-flex;align-items:center;gap:6px}.rwsc-d-ctl input.small-text{width:76px;min-width:0}
+.rwsc-d-ctl select{max-width:100%;text-overflow:ellipsis}
 .rwsc-d-foot{margin:18px 0 6px;color:var(--rwsc-d-mut);font-size:12px}
 @media(max-width:782px){
  .rwsc-d-row{grid-template-columns:1fr;gap:6px}
@@ -113,6 +115,11 @@
  .rwsc-d-filter input[type=search]{min-width:0;width:100%}
  .rwsc-d-table{display:block;overflow-x:auto}
  .rwsc-d-health th{width:120px}
+ .rwsc-d-ctl input[type=text],.rwsc-d-ctl input[type=email],.rwsc-d-ctl input[type=password],.rwsc-d-ctl input[type=url],.rwsc-d-ctl select,.rwsc-d-ctl .regular-text{width:100%;box-sizing:border-box}
+ .rwsc-d-ctl input.small-text{width:76px}
+ .rwsc-d-copy{flex-wrap:wrap}.rwsc-d-copy code{word-break:break-all}
+ .rwsc-d-panel{padding:14px}
+ .rwsc-d-tabs{gap:6px}
 }
 /* dispatch modal (unchanged behaviour) */
 .rwsc-d-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100000;display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:4vh 12px}

@@ -6,7 +6,7 @@ Tested up to: 7.1
 Requires PHP: 7.4
 WC requires at least: 8.0
 WC tested up to: 11.3
-Stable tag: 3.1.2
+Stable tag: 3.2.0
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -47,9 +47,9 @@ Checkout pricing uses the merchant-defined rate table. The separate dispatch eng
 == Installation ==
 
 1. Take a full backup of your site (files and database).
-2. Plugins → Add New → Upload Plugin → choose `rar-woo-smart-courier-v3.1.2.zip` → Install Now → Activate. When upgrading, choose "Replace current with uploaded".
+2. Plugins → Add New → Upload Plugin → choose `rar-woo-smart-courier-v3.2.0.zip` → Install Now → Activate. When upgrading, choose "Replace current with uploaded".
 3. WooCommerce → Settings → Shipping: make sure there is a zone for Bangladesh with a **Flat rate** method (and Free shipping if you use it).
-4. Smart Courier → Settings: enter your courier rates and ETAs, and pick your Nearby districts and areas.
+4. Smart Courier → Rates & Checkout: enter your courier rates and ETAs, and pick your Nearby districts and areas.
 5. Keep Safe Test Mode ON and place a test order for an Inside Dhaka, a Nearby and an Outside Dhaka address.
 6. Turn Safe Test Mode OFF.
 
@@ -73,6 +73,16 @@ Order meta is kept by this plugin's uninstall handler. Its API credential settin
 5. Parcel labels
 
 == Changelog ==
+
+= 3.2.0 =
+* One Courier column in the Orders list and one Smart Courier box on the order screen (the separate Dispatch column and Courier Dispatch box are merged).
+* Status chips use the Shipments board wording; the courier's raw text is shown as "RedX says: …".
+* Connection badges show "Connected · verified" after a successful test, booking or sync; fixed the Pathao test always asking to save settings.
+* Same navigation on every Smart Courier page; menu renamed to Book Parcels and Rates & Checkout.
+* Courier API settings are usable on a phone.
+* Delivery estimates count from the order date; older wrong estimates are repaired once.
+* Presets spelled RedX / SteadFast; one colour per courier on every screen.
+* Clearer success / return rates; better RedX status matching.
 
 = 3.1.2 =
 * Suite parcel migration now runs after WooCommerce loads, so it can no longer finish empty; restarts once on upgrade.

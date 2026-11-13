@@ -317,6 +317,46 @@ final class RWSC_Shipments {
      * @param string   $prefer Courier key to prefer (manual choice) – recalculates ETA/date for it.
      * @return array|WP_Error Shipment data.
      */
+    /**
+     * One-time repair (v3.2): estimates stored by older builds when an old order was assigned
+     * later were counted from the assignment day. Recount them from the order date; only ever
+     * moves an estimate earlier, never later.
+     *
+     * @return int Orders repaired.
+     */
+    public static function repair_edd( $limit = 500 ) {
+        $ids = wc_get_orders(
+            array(
+                'limit'        => (int) $limit,
+                'return'       => 'ids',
+                'type'         => 'shop_order',
+                'date_created' => '>' . ( time() - 60 * DAY_IN_SECONDS ),
+                'meta_key'     => '_rwsc_edd', // phpcs:ignore WordPress.DB.SlowDBQuery
+                'meta_compare' => 'EXISTS',
+            )
+        );
+        $fixed = 0;
+        foreach ( (array) $ids as $id ) {
+            $order = wc_get_order( $id );
+            if ( ! $order instanceof WC_Order || ! $order->get_date_created() ) {
+                continue;
+            }
+            $eta = (string) $order->get_meta( '_rwsc_eta', true );
+            $old = explode( '|', (string) $order->get_meta( '_rwsc_edd', true ) );
+            if ( '' === $eta || '' === $old[0] ) {
+                continue;
+            }
+            $placed = ( new DateTimeImmutable( '@' . $order->get_date_created()->getTimestamp() ) )->setTimezone( wp_timezone() );
+            $new    = RWSC_Engine::edd( $eta, $placed );
+            if ( $new && $new['from'] < $old[0] ) {
+                $order->update_meta_data( '_rwsc_edd', $new['from'] . '|' . $new['to'] );
+                $order->save_meta_data();
+                ++$fixed;
+            }
+        }
+        return $fixed;
+    }
+
     public static function auto_assign( WC_Order $order, $force = false, $prefer = '' ) {
         if ( ! $force && '' !== (string) $order->get_meta( '_rwsc_courier', true ) ) {
             return self::get( $order );
@@ -357,6 +397,13 @@ final class RWSC_Shipments {
         }
         if ( ! $pick ) {
             return new WP_Error( 'rwsc_none', __( 'No enabled courier is available for this address and weight.', 'rar-woo-smart-courier' ) );
+        }
+        // Delivery window counts from when the order was placed, not from when it is assigned
+        // (assigning an older order today must not push its estimate into the future).
+        $created = $order->get_date_created();
+        if ( $created && time() - $created->getTimestamp() > 30 * MINUTE_IN_SECONDS && '' !== (string) $pick['eta'] ) {
+            $placed      = ( new DateTimeImmutable( '@' . $created->getTimestamp() ) )->setTimezone( wp_timezone() );
+            $pick['edd'] = RWSC_Engine::edd( $pick['eta'], $placed );
         }
         self::apply_assignment(
             $order,

@@ -197,6 +197,7 @@ abstract class RWSC_Courier_Base {
 				RWSC_Logger::error( $this->label() . ' send failed for order ' . $order->get_id() . ': ' . $res->get_error_message() );
 				return $res;
 			}
+			RWSC_Api_Settings::mark_verified( $this->slug(), 'send' );
 
 			$order->update_meta_data( $this->key( 'id' ), (string) $res['id'] );
 			$order->update_meta_data( $this->key( 'ref' ), (string) ( $res['ref'] ?? '' ) );
@@ -312,6 +313,7 @@ abstract class RWSC_Courier_Base {
 		if ( is_wp_error( $r ) ) {
 			return $r;
 		}
+		RWSC_Api_Settings::mark_verified( $this->slug(), 'sync' );
 		$order->update_meta_data( $this->key( 'last_sync' ), time() );
 		$order->save_meta_data();
 		$changed = $this->apply_status( $order, $r['status'], (int) ( $r['ts'] ?? 0 ), $source );
@@ -376,6 +378,11 @@ abstract class RWSC_Courier_Base {
 		$n    = $this->normalise( $raw );
 		$tone = array( 'delivered' => 'success', 'returned' => 'danger', 'attention' => 'warning', 'transit' => 'info', 'pending' => 'info' );
 		return sprintf( '<span class="rwsc-d-badge rwsc-d-tone-%s">%s</span>', esc_attr( $tone[ $n['group'] ] ?? 'neutral' ), esc_html( $n['label'] ) );
+	}
+
+	/** Public wrapper: status picker of a manual courier, empty for API couriers. */
+	public function controls_html( WC_Order $order ) {
+		return $this->manual() ? $this->manual_controls( $order ) : '';
 	}
 
 	/** Status picker for manual couriers (overridden there). */

@@ -40,6 +40,7 @@ final class RAR_Woo_Smart_Courier {
         self::maybe_upgrade();
         // Orders can only be queried once WooCommerce has registered its post types / order tables.
         add_action( 'wp_loaded', array( __CLASS__, 'maybe_backfill_dispatch' ) );
+        add_action( 'wp_loaded', array( __CLASS__, 'maybe_repair' ) );
 
         RWSC_Engine::init();
         RWSC_Shipments::init();
@@ -93,6 +94,9 @@ final class RAR_Woo_Smart_Courier {
                 delete_option( 'rwsc_dispatch_backfill_done' );
                 delete_option( 'rwsc_dispatch_backfill_cursor' );
             }
+            if ( '' !== $stored && version_compare( $stored, '3.2.0', '<' ) ) {
+                RWSC_Settings::migrate_brand_names();
+            }
             update_option( 'rwsc_version', RWSC_VERSION, false );
             if ( class_exists( 'WC_Cache_Helper' ) ) {
                 WC_Cache_Helper::get_transient_version( 'shipping', true );
@@ -101,6 +105,15 @@ final class RAR_Woo_Smart_Courier {
     }
 
     /** Incrementally mirror Suite API parcels into the unified shipment board. */
+    /** One-time data repairs that need WooCommerce orders (run on wp_loaded, admin only). */
+    public static function maybe_repair() {
+        if ( ! is_admin() || ! current_user_can( 'manage_woocommerce' ) || get_option( 'rwsc_edd_repaired' ) ) {
+            return;
+        }
+        update_option( 'rwsc_edd_repaired', time(), false );
+        RWSC_Shipments::repair_edd( 500 );
+    }
+
     public static function maybe_backfill_dispatch() {
         if ( ! is_admin() || ! current_user_can( 'manage_woocommerce' )
             || get_option( 'rwsc_dispatch_backfill_done' ) ) {

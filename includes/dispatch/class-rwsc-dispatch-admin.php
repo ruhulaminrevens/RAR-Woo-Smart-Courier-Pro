@@ -42,7 +42,7 @@ final class RWSC_Dispatch_Admin {
 	public static function menu() {
 		$cap = RWSC_Dispatch_Ajax::operator_cap();
 		add_submenu_page( self::PAGE_PARENT, __( 'API Overview', 'rar-woo-smart-courier' ), __( 'API Overview', 'rar-woo-smart-courier' ), $cap, self::PAGE_DASH, array( __CLASS__, 'page_dashboard' ) );
-		add_submenu_page( self::PAGE_PARENT, __( 'Parcels', 'rar-woo-smart-courier' ), __( 'Parcels', 'rar-woo-smart-courier' ), $cap, self::PAGE_ORDERS, array( __CLASS__, 'page_orders' ) );
+		add_submenu_page( self::PAGE_PARENT, __( 'Book Parcels', 'rar-woo-smart-courier' ), __( 'Book Parcels', 'rar-woo-smart-courier' ), $cap, self::PAGE_ORDERS, array( __CLASS__, 'page_orders' ) );
 		add_submenu_page( self::PAGE_PARENT, __( 'Courier APIs', 'rar-woo-smart-courier' ), __( 'Courier APIs', 'rar-woo-smart-courier' ), 'manage_options', self::PAGE_SETTINGS, array( __CLASS__, 'page_settings' ) );
 		add_submenu_page( self::PAGE_PARENT, __( 'Tools & Health', 'rar-woo-smart-courier' ), __( 'Tools & Health', 'rar-woo-smart-courier' ), 'manage_options', self::PAGE_TOOLS, array( __CLASS__, 'page_tools' ) );
 	}
@@ -67,9 +67,9 @@ final class RWSC_Dispatch_Admin {
 			return; // Do not nag on unrelated admin screens (plugins list, posts, ...).
 		}
 		if ( RWSC_Api_Settings::secrets_unreadable() ) {
-			echo '<div class="notice notice-warning"><p><strong>RAR Woo Smart Courier Pro:</strong> saved API secrets cannot be decrypted (WordPress salts changed). Re-enter them under Smart Courier → Courier APIs.</p></div>';
+			echo '<div class="notice notice-warning"><p><strong>RAR Woo Smart Courier:</strong> saved API secrets cannot be decrypted (WordPress salts changed). Re-enter them under Smart Courier → Courier APIs.</p></div>';
 		} elseif ( 0 === self::usable_count() && ! in_array( $page, array( self::PAGE_SETTINGS, self::PAGE_DASH ), true ) ) {
-			echo '<div class="notice notice-info"><p><strong>RAR Woo Smart Courier Pro</strong> has no connected courier yet. <a href="' . esc_url( admin_url( 'admin.php?page=' . self::PAGE_SETTINGS ) ) . '">Connect Pathao, RedX, SteadFast, Paperfly or Sundarban</a>.</p></div>';
+			echo '<div class="notice notice-info"><p><strong>RAR Woo Smart Courier</strong> has no connected courier yet. <a href="' . esc_url( admin_url( 'admin.php?page=' . self::PAGE_SETTINGS ) ) . '">Connect Pathao, RedX, SteadFast, Paperfly or Sundarban</a>.</p></div>';
 		}
 	}
 
@@ -83,16 +83,7 @@ final class RWSC_Dispatch_Admin {
 
 	/** Hero banner + top navigation. Opens <div class="wrap rwsc-d-wrap">. */
 	private static function head( $active, $title, $sub, array $actions = array() ) {
-			$nav = array(
-			self::PAGE_PARENT => __( 'Smart Courier', 'rar-woo-smart-courier' ),
-			'rwsc-shipments'  => __( 'Shipments', 'rar-woo-smart-courier' ),
-			self::PAGE_DASH   => __( 'API Overview', 'rar-woo-smart-courier' ),
-			self::PAGE_ORDERS => __( 'Parcels', 'rar-woo-smart-courier' ),
-		);
-		if ( current_user_can( 'manage_options' ) ) {
-			$nav[ self::PAGE_SETTINGS ] = __( 'Courier APIs', 'rar-woo-smart-courier' );
-			$nav[ self::PAGE_TOOLS ]    = __( 'Tools & Health', 'rar-woo-smart-courier' );
-		}
+		$nav = RWSC_Admin::nav_items();
 		echo '<div class="wrap rwsc-d-wrap rwsc-d-js"><h1 class="screen-reader-text">' . esc_html( $title ) . '</h1><hr class="wp-header-end">';
 		echo '<div class="rwsc-d-hero"><img src="' . esc_url( RWSC_URL . 'assets/images/dispatch-logo.svg' ) . '" alt="">'
 			. '<div><h1>' . esc_html( $title ) . '<span class="rwsc-d-ver">v' . esc_html( RWSC_VERSION ) . '</span></h1><p>' . esc_html( $sub ) . '</p></div>';
@@ -103,7 +94,7 @@ final class RWSC_Dispatch_Admin {
 			}
 			echo '</div>';
 		}
-		echo '</div><nav class="rwsc-d-nav" aria-label="Courier APIs">';
+		echo '</div><nav class="rwsc-d-nav" aria-label="' . esc_attr__( 'Smart Courier', 'rar-woo-smart-courier' ) . '">';
 		foreach ( $nav as $slug => $label ) {
 			echo '<a href="' . esc_url( self::page_url( $slug ) ) . '"' . ( $slug === $active ? ' class="is-on" aria-current="page"' : '' ) . '>' . esc_html( $label ) . '</a>';
 		}
@@ -111,13 +102,28 @@ final class RWSC_Dispatch_Admin {
 	}
 
 	private static function foot() {
-		echo '<p class="rwsc-d-foot">' . esc_html__( 'RAR Woo Smart Courier Pro is an independent plugin by Ruhul Amin. Pathao, RedX, SteadFast, Paperfly and Sundarban Courier are names of their respective owners; this plugin is not affiliated with or endorsed by them.', 'rar-woo-smart-courier' ) . '</p></div>';
+		echo '<p class="rwsc-d-foot">' . esc_html__( 'RAR Woo Smart Courier is an independent plugin by Ruhul Amin. Pathao, RedX, SteadFast, Paperfly and Sundarban Courier are names of their respective owners; this plugin is not affiliated with or endorsed by them.', 'rar-woo-smart-courier' ) . '</p></div>';
 	}
 
 	/** Connection state of a courier for badges: array( key => ok|warn|off, text ). */
+	public static function state_text_verified( $v ) {
+		if ( ! $v ) {
+			return __( 'Connected', 'rar-woo-smart-courier' );
+		}
+		/* translators: %s: human time difference */
+		return sprintf( __( 'Connected · verified %s ago', 'rar-woo-smart-courier' ), human_time_diff( (int) $v['t'] ) );
+	}
+
 	private static function state( $slug ) {
 		if ( 'pathao' === $slug ) {
-			return RWSC_Api_Settings::is_configured() ? array( 'warn', __( 'Configured (test required)', 'rar-woo-smart-courier' ) ) : array( 'off', __( 'Not connected', 'rar-woo-smart-courier' ) );
+			if ( ! RWSC_Api_Settings::is_configured() ) {
+				return array( 'off', __( 'Not connected', 'rar-woo-smart-courier' ) );
+			}
+			$v = RWSC_Api_Settings::verified( 'pathao' );
+			if ( $v || RWSC_Pathao_API::has_valid_token() ) {
+				return array( 'ok', self::state_text_verified( $v ) );
+			}
+			return array( 'warn', __( 'Saved · not tested yet', 'rar-woo-smart-courier' ) );
 		}
 		$m = RWSC_Couriers::get( $slug );
 		if ( ! $m->enabled() ) {
@@ -126,7 +132,11 @@ final class RWSC_Dispatch_Admin {
 		if ( $m->manual() ) {
 			return array( 'ok', __( 'Manual · active', 'rar-woo-smart-courier' ) );
 		}
-		return $m->configured() ? array( 'warn', __( 'Configured (test required)', 'rar-woo-smart-courier' ) ) : array( 'warn', __( 'Needs credentials', 'rar-woo-smart-courier' ) );
+		if ( ! $m->configured() ) {
+			return array( 'warn', __( 'Needs credentials', 'rar-woo-smart-courier' ) );
+		}
+		$v = RWSC_Api_Settings::verified( $slug );
+		return $v ? array( 'ok', self::state_text_verified( $v ) ) : array( 'warn', __( 'Saved · not tested yet', 'rar-woo-smart-courier' ) );
 	}
 
 	private static function state_pill( $slug ) {
@@ -336,7 +346,7 @@ final class RWSC_Dispatch_Admin {
 
 		self::head(
 			self::PAGE_DASH,
-			__( 'Courier APIs', 'rar-woo-smart-courier' ),
+			__( 'API Overview', 'rar-woo-smart-courier' ),
 			__( 'Pathao · RedX · SteadFast · Paperfly · Sundarban — one control centre', 'rar-woo-smart-courier' ),
 			array(
 				array( __( 'Send parcels', 'rar-woo-smart-courier' ), self::page_url( self::PAGE_ORDERS ), true ),
@@ -361,20 +371,21 @@ final class RWSC_Dispatch_Admin {
 		}
 
 		// KPIs.
-		$pct = static function ( $n, $d ) {
-			return $d ? ' · ' . round( 100 * $n / $d ) . '%' : '';
+		$pct = static function ( $n, $d, $what ) {
+			/* translators: 1: percent 2: "success rate" or "return rate" */
+			return $d ? sprintf( __( '%1$d%% %2$s', 'rar-woo-smart-courier' ), round( 100 * $n / $d ), $what ) : '';
 		};
 		$kpi = array(
 			array( __( 'Parcels (30 days)', 'rar-woo-smart-courier' ), $tot['sent'], '' ),
 			array( __( 'Pickup / transit', 'rar-woo-smart-courier' ), $tot['pending'] + $tot['transit'], '' ),
-			array( __( 'Delivered', 'rar-woo-smart-courier' ), $tot['delivered'], 'is-ok', $pct( $tot['delivered'], $fin ) ),
-			array( __( 'Returned', 'rar-woo-smart-courier' ), $tot['returned'], $tot['returned'] ? 'is-bad' : '', $pct( $tot['returned'], $fin ) ),
+			array( __( 'Delivered', 'rar-woo-smart-courier' ), $tot['delivered'], 'is-ok', $pct( $tot['delivered'], $fin, __( 'success rate', 'rar-woo-smart-courier' ) ) ),
+			array( __( 'Returned', 'rar-woo-smart-courier' ), $tot['returned'], $tot['returned'] ? 'is-bad' : '', $pct( $tot['returned'], $fin, __( 'return rate', 'rar-woo-smart-courier' ) ) ),
 			array( __( 'Needs attention', 'rar-woo-smart-courier' ), $tot['attention'], $tot['attention'] ? 'is-warn' : '' ),
 			array( __( 'COD still with couriers', 'rar-woo-smart-courier' ), '৳' . number_format_i18n( $tot['cod_open'] ), '' ),
 		);
 		echo '<div class="rwsc-d-kpis">';
 		foreach ( $kpi as $k ) {
-			echo '<div class="rwsc-d-kpi ' . esc_attr( $k[2] ) . '"><span>' . esc_html( $k[0] ) . '</span><strong>' . esc_html( (string) $k[1] ) . '</strong>' . ( ! empty( $k[3] ) ? '<small>' . esc_html( trim( $k[3], ' ·' ) ) . '</small>' : '' ) . '</div>';
+			echo '<div class="rwsc-d-kpi ' . esc_attr( $k[2] ) . '"><span>' . esc_html( $k[0] ) . '</span><strong>' . esc_html( (string) $k[1] ) . '</strong>' . ( ! empty( $k[3] ) ? '<small title="' . esc_attr__( 'Of finished parcels (delivered + returned)', 'rar-woo-smart-courier' ) . '">' . esc_html( $k[3] ) . '</small>' : '' ) . '</div>';
 		}
 		echo '</div>';
 		if ( $tot['sent'] ) {
@@ -463,7 +474,7 @@ final class RWSC_Dispatch_Admin {
 
 		self::head(
 			self::PAGE_ORDERS,
-			__( 'Parcels', 'rar-woo-smart-courier' ),
+			__( 'Book Parcels', 'rar-woo-smart-courier' ),
 			__( 'Every order and parcel across all couriers — send, track, refresh and export.', 'rar-woo-smart-courier' )
 		);
 
@@ -673,7 +684,7 @@ final class RWSC_Dispatch_Admin {
 			$active = 'general';
 		}
 
-		self::head( self::PAGE_SETTINGS, __( 'Settings', 'rar-woo-smart-courier' ), __( 'Connect each courier, set routing and automation. Secrets are stored encrypted.', 'rar-woo-smart-courier' ) );
+		self::head( self::PAGE_SETTINGS, __( 'Courier APIs', 'rar-woo-smart-courier' ), __( 'Connect each courier, set routing and automation. Secrets are stored encrypted.', 'rar-woo-smart-courier' ) );
 		if ( isset( $_GET['saved'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
 			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Settings saved.', 'rar-woo-smart-courier' ) . '</p></div>';
 		}
@@ -683,7 +694,7 @@ final class RWSC_Dispatch_Admin {
 
 		echo '<div class="rwsc-d-tabs" role="tablist">';
 		foreach ( $tabs as $slug => $label ) {
-			$dot = 'general' === $slug ? '' : ' <span class="rwsc-d-dot is-' . esc_attr( 'ok' === self::state( $slug )[0] ? 'ok' : 'warn' ) . '"></span>';
+			$dot = 'general' === $slug ? '' : ' <span class="rwsc-d-dot is-' . esc_attr( self::state( $slug )[0] ) . '" title="' . esc_attr( self::state( $slug )[1] ) . '"></span>';
 			echo '<button type="button" role="tab" class="' . ( $slug === $active ? 'is-on' : '' ) . '" data-tab="' . esc_attr( $slug ) . '">' . esc_html( $label ) . $dot . '</button>'; // phpcs:ignore WordPress.Security.EscapeOutput
 		}
 		echo '</div>';
@@ -723,7 +734,7 @@ final class RWSC_Dispatch_Admin {
 			. self::row( __( 'On returned set status', 'rar-woo-smart-courier' ), self::select( 'status_on_returned', $opt_st, $s['status_on_returned'] ) )
 			. self::row( __( 'Ready-to-dispatch statuses', 'rar-woo-smart-courier' ), $q, 'Orders in these statuses appear in Parcels → “Not sent yet”.' )
 			. self::row( __( 'Order notes', 'rar-woo-smart-courier' ), self::check( 'add_order_notes', 'Add a private order note for every courier event' ) )
-			. self::row( __( 'Status sync', 'rar-woo-smart-courier' ), self::check( 'sync_enabled', 'Poll couriers every 30 min for open parcels (safety net for missed webhooks)' ) . '<br>Batch <input type="number" min="5" max="100" name="rwsc_api[sync_batch]" value="' . esc_attr( $s['sync_batch'] ) . '"> orders, up to <input type="number" min="7" max="180" name="rwsc_api[sync_max_age_days]" value="' . esc_attr( $s['sync_max_age_days'] ) . '"> days old' )
+			. self::row( __( 'Status sync', 'rar-woo-smart-courier' ), self::check( 'sync_enabled', 'Poll couriers every 30 min for open parcels (safety net for missed webhooks)' ) . '<div class="rwsc-d-inline"><label>' . esc_html__( 'Batch', 'rar-woo-smart-courier' ) . ' <input type="number" class="small-text" min="5" max="100" name="rwsc_api[sync_batch]" value="' . esc_attr( $s['sync_batch'] ) . '"> ' . esc_html__( 'orders', 'rar-woo-smart-courier' ) . '</label><label>' . esc_html__( 'up to', 'rar-woo-smart-courier' ) . ' <input type="number" class="small-text" min="7" max="180" name="rwsc_api[sync_max_age_days]" value="' . esc_attr( $s['sync_max_age_days'] ) . '"> ' . esc_html__( 'days old', 'rar-woo-smart-courier' ) . '</label></div>' )
 		);
 
 		$h .= self::panel(
@@ -759,10 +770,11 @@ final class RWSC_Dispatch_Admin {
 			. self::row( __( 'Environment', 'rar-woo-smart-courier' ), self::select( 'environment', array( 'live' => 'Live', 'staging' => 'Staging (sandbox)' ), $s['environment'] ) )
 			. self::row(
 				__( 'Authentication', 'rar-woo-smart-courier' ),
-				self::select( 'auth_mode', array( 'auto' => 'Auto (password grant if email+password set, else client login)', 'client' => 'Client ID/Secret login', 'password' => 'Password grant (documented issue-token)' ), $s['auth_mode'] )
-				. '<br>Merchant e-mail <input type="text" class="regular-text" name="rwsc_api[username]" value="' . esc_attr( $s['username'] ) . '" autocomplete="off"> Password <input type="password" class="regular-text" name="rwsc_api[password]" placeholder="' . esc_attr( $pass_ph ) . '" autocomplete="new-password">',
-				'E-mail/password are only needed for the password grant. Leave empty to keep using client login.'
+				self::select( 'auth_mode', array( 'auto' => 'Auto (recommended)', 'client' => 'Client ID / Secret only', 'password' => 'Password grant (e-mail + password)' ), $s['auth_mode'] ),
+				'Auto uses the password grant when a merchant e-mail and password are saved, otherwise the client login.'
 			)
+			. self::row( __( 'Merchant e-mail', 'rar-woo-smart-courier' ), '<input type="email" class="regular-text" name="rwsc_api[username]" value="' . esc_attr( $s['username'] ) . '" autocomplete="off" placeholder="' . esc_attr__( 'Only for the password grant', 'rar-woo-smart-courier' ) . '">' )
+			. self::row( __( 'Merchant password', 'rar-woo-smart-courier' ), '<input type="password" class="regular-text" name="rwsc_api[password]" placeholder="' . esc_attr( $pass_ph ) . '" autocomplete="new-password">', 'Leave both empty to use the client login. Stored encrypted.' )
 			. self::row( 'Webhook URL', self::copybox( RWSC_Webhook::url() ), 'Paste into the Pathao merchant panel → Developer API → Webhook.' )
 			. self::row( 'Webhook secret', self::text( 'webhook_secret', $s ), 'Blank = your Client Secret (Pathao default). Compared in constant time.' )
 		);

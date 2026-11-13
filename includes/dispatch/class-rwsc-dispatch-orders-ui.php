@@ -10,12 +10,13 @@ defined( 'ABSPATH' ) || exit;
 
 final class RWSC_Dispatch_Orders_UI {
 
+	/** @var bool True when the API booking UI is active (no conflicting dispatch plugin). */
+	public static $on = false;
+
 	public static function init() {
-		// Columns: HPOS + legacy.
-		add_filter( 'woocommerce_shop_order_list_table_columns', array( __CLASS__, 'columns' ) );
-		add_filter( 'manage_edit-shop_order_columns', array( __CLASS__, 'columns' ) );
-		add_action( 'woocommerce_shop_order_list_table_custom_column', array( __CLASS__, 'column_hpos' ), 10, 2 );
-		add_action( 'manage_shop_order_posts_custom_column', array( __CLASS__, 'column_legacy' ), 10, 2 );
+		self::$on = true;
+		// No separate column / meta box: the Smart Courier "Courier" column and order box render
+		// the unified cell (RWSC_Couriers::cell_html), so one place shows courier, status and booking.
 
 		// Bulk actions: HPOS + legacy.
 		foreach ( array( 'woocommerce_page_wc-orders', 'edit-shop_order' ) as $screen ) {
@@ -23,30 +24,8 @@ final class RWSC_Dispatch_Orders_UI {
 			add_filter( 'handle_bulk_actions-' . $screen, array( __CLASS__, 'handle_bulk' ), 10, 3 );
 		}
 
-		add_action( 'add_meta_boxes', array( __CLASS__, 'meta_box' ) );
 		add_action( 'admin_notices', array( __CLASS__, 'bulk_notice' ) );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'assets' ) );
-	}
-
-	public static function columns( $columns ) {
-		$columns['rwsc_dispatch'] = __( 'Dispatch', 'rar-woo-smart-courier' );
-		return $columns;
-	}
-
-	public static function column_hpos( $column, $order ) {
-		// Column id is rwsc_dispatch (rwsc_courier belongs to the shipment column). Older ids kept for custom code.
-		if ( in_array( $column, array( 'rwsc_dispatch', 'rwsc_pathao', 'rwsc_couriers' ), true ) && $order instanceof WC_Order ) {
-			echo RWSC_Couriers::cell_wrap( $order ); // phpcs:ignore WordPress.Security.EscapeOutput
-		}
-	}
-
-	public static function column_legacy( $column, $post_id ) {
-		if ( in_array( $column, array( 'rwsc_dispatch', 'rwsc_pathao', 'rwsc_couriers' ), true ) ) {
-			$order = wc_get_order( $post_id );
-			if ( $order ) {
-				self::column_hpos( $column, $order );
-			}
-		}
 	}
 
 	public static function bulk_actions( $actions ) {
@@ -91,22 +70,6 @@ final class RWSC_Dispatch_Orders_UI {
 		);
 	}
 
-	public static function meta_box() {
-		$screen = 'shop_order';
-		if ( function_exists( 'wc_get_page_screen_id' ) ) {
-			$screen = wc_get_page_screen_id( 'shop-order' );
-		}
-		add_meta_box( 'rwsc-d-courier-dispatch', __( 'Courier Dispatch', 'rar-woo-smart-courier' ), array( __CLASS__, 'render_box' ), $screen, 'side', 'high' );
-	}
-
-	public static function render_suite_box( $post_or_order ) {
-		$order = $post_or_order instanceof WP_Post ? wc_get_order( $post_or_order->ID ) : $post_or_order;
-		if ( ! $order instanceof WC_Order ) {
-			return;
-		}
-		echo RWSC_Couriers::cell_wrap( $order ); // phpcs:ignore WordPress.Security.EscapeOutput
-	}
-
 	public static function bulk_notice() {
 		if ( empty( $_GET['rwsc_bulk'] ) || ! current_user_can( RWSC_Dispatch_Ajax::operator_cap() ) ) { // phpcs:ignore WordPress.Security.NonceVerification
 			return;
@@ -134,49 +97,37 @@ final class RWSC_Dispatch_Orders_UI {
 		);
 	}
 
-	public static function render_box( $post_or_order ) {
-		$order = $post_or_order instanceof WP_Post ? wc_get_order( $post_or_order->ID ) : $post_or_order;
-		if ( ! $order instanceof WC_Order ) {
-			return;
-		}
-		echo '<div class="rwsc-d-box">' . RWSC_Couriers::cell_wrap( $order ) . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput
-
-		$chose = RWSC_Order_Data::selected_courier( $order );
-		if ( '' !== $chose ) {
-			echo '<p class="rwsc-d-muted">' . esc_html( sprintf( /* translators: %s: courier */ __( 'Checkout courier: %s', 'rar-woo-smart-courier' ), $chose ) ) . '</p>';
-		}
-		$via = RWSC_Couriers::sent_via( $order );
-		if ( 'pathao' === $via && RWSC_Pathao_Orders::has_real_consignment( $order ) ) {
-			echo '<p><button type="button" class="button rwsc-d-refresh" data-order-id="' . esc_attr( $order->get_id() ) . '">' . esc_html__( 'Refresh status', 'rar-woo-smart-courier' ) . '</button> ';
-			$track = RWSC_Pathao_Orders::tracking_url( $order );
-			if ( $track ) {
-				echo '<a class="button" target="_blank" rel="noopener noreferrer" href="' . esc_url( $track ) . '">' . esc_html__( 'Track', 'rar-woo-smart-courier' ) . '</a>';
-			}
-			echo '</p>';
-		}
+	/** Courier-side history of an API parcel (newest first), for the order screen. */
+	public static function courier_history_html( WC_Order $order ) {
+		$via   = RWSC_Couriers::sent_via( $order );
 		$items = array();
+		$src   = array(
+			'send'    => __( 'booked', 'rar-woo-smart-courier' ),
+			'webhook' => __( 'webhook', 'rar-woo-smart-courier' ),
+			'cron'    => __( 'auto sync', 'rar-woo-smart-courier' ),
+			'manual'  => __( 'refreshed', 'rar-woo-smart-courier' ),
+			'bulk'    => __( 'bulk refresh', 'rar-woo-smart-courier' ),
+		);
 		if ( 'pathao' === $via ) {
 			foreach ( array_reverse( RWSC_Pathao_Orders::events( $order ) ) as $e ) {
 				$items[] = array( RWSC_Pathao_Status::info( $e['s'] )['label'], $e );
 			}
 		} elseif ( '' !== $via ) {
 			$m = RWSC_Couriers::get( $via );
-			$u = $m->tracking_url( $order );
-			if ( $u ) {
-				echo '<p><a class="button" target="_blank" rel="noopener noreferrer" href="' . esc_url( $u ) . '">' . esc_html__( 'Track', 'rar-woo-smart-courier' ) . '</a></p>';
-			}
 			foreach ( array_reverse( (array) $m->events( $order ) ) as $e ) {
 				$items[] = array( $m->normalise( isset( $e['s'] ) ? $e['s'] : '' )['label'], $e );
 			}
 		}
-		if ( $items ) {
-			echo '<ul class="rwsc-d-timeline">';
-			foreach ( array_slice( $items, 0, 12 ) as $it ) {
-				$e = $it[1];
-				echo '<li><strong>' . esc_html( $it[0] ) . '</strong> <span class="rwsc-d-muted">' . esc_html( wp_date( 'd M, h:i a', (int) ( isset( $e['t'] ) ? $e['t'] : 0 ) ) . ' · ' . ( isset( $e['src'] ) ? $e['src'] : '' ) . ( ! empty( $e['r'] ) ? ' · ' . $e['r'] : '' ) ) . '</span></li>';
-			}
-			echo '</ul>';
+		if ( ! $items ) {
+			return '';
 		}
+		$h = '<details class="rwsc-mb-log"><summary>' . esc_html( sprintf( /* translators: 1: courier 2: count */ __( '%1$s updates (%2$d)', 'rar-woo-smart-courier' ), RWSC_Couriers::label( $via ), count( $items ) ) ) . '</summary><ol>';
+		foreach ( array_slice( $items, 0, 20 ) as $it ) {
+			$e = $it[1];
+			$s = isset( $e['src'] ) ? (string) $e['src'] : '';
+			$h .= '<li><b>' . esc_html( $it[0] ) . '</b><span>' . esc_html( wp_date( 'j M, g:i a', (int) ( isset( $e['t'] ) ? $e['t'] : 0 ) ) . ( '' !== $s ? ' · ' . ( isset( $src[ $s ] ) ? $src[ $s ] : $s ) : '' ) . ( ! empty( $e['r'] ) ? ' · ' . $e['r'] : '' ) ) . '</span></li>';
+		}
+		return $h . '</ol></details>';
 	}
 
 	public static function is_plugin_screen() {
@@ -192,7 +143,8 @@ final class RWSC_Dispatch_Orders_UI {
 		if ( ! self::is_plugin_screen() || ! current_user_can( RWSC_Dispatch_Ajax::operator_cap() ) ) {
 			return;
 		}
-		wp_enqueue_style( 'rwsc-dispatch', RWSC_URL . 'assets/css/dispatch.css', array(), RWSC_VERSION );
+		wp_enqueue_style( 'rwsc-admin', RWSC_URL . 'assets/css/admin.css', array(), RWSC_VERSION ); // Shared courier pills / status chips.
+		wp_enqueue_style( 'rwsc-dispatch', RWSC_URL . 'assets/css/dispatch.css', array( 'rwsc-admin' ), RWSC_VERSION );
 		wp_enqueue_script( 'rwsc-dispatch', RWSC_URL . 'assets/js/dispatch.js', array(), RWSC_VERSION, true );
 
 		$do  = isset( $_GET['rwsc_do'] ) ? sanitize_key( wp_unslash( $_GET['rwsc_do'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification

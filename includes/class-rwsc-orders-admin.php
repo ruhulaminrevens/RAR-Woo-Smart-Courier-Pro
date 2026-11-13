@@ -70,12 +70,21 @@ final class RWSC_Orders_Admin {
         echo '<input type="hidden" name="rwsc_note_orig" value="' . esc_attr( $s['note'] ) . '">';
         echo '<input type="hidden" name="rwsc_status_orig" value="' . esc_attr( '' !== $s['status'] ? $s['status'] : 'pending' ) . '">';
         ?>
+        <?php
+        $unified = self::unified();
+        $api     = $unified && '' !== RWSC_Couriers::sent_via( $order );
+        ?>
         <div class="rwsc-mb" style="--c:<?php echo esc_attr( $s['color'] ); ?>">
+            <?php if ( $unified ) : ?>
+                <div class="rwsc-mb-cell"><?php echo RWSC_Couriers::cell_wrap( $order ); // phpcs:ignore WordPress.Security.EscapeOutput ?></div>
+            <?php endif; ?>
             <?php if ( '' !== $s['courier'] ) : ?>
+                <?php if ( ! $unified ) : ?>
                 <div class="rwsc-mb-head">
                     <span class="rwsc-pill" style="--c:<?php echo esc_attr( $s['color'] ); ?>"><i></i><?php echo esc_html( $s['courier_name'] ); ?></span>
                     <span class="rwsc-st" style="--s:<?php echo esc_attr( $s['status_color'] ); ?>"><?php echo esc_html( $s['status_label'] ); ?></span>
                 </div>
+                <?php endif; ?>
                 <div class="rwsc-mb-steps" aria-hidden="true">
                     <?php
                     $steps = array( 0, 1, 2, 3, 4 );
@@ -93,10 +102,18 @@ final class RWSC_Orders_Admin {
                     <?php if ( $s['cod'] > 0 ) : ?><dt>COD</dt><dd><?php echo wp_kses_post( wc_price( $s['cod'] ) ); ?></dd><?php endif; ?>
                     <?php if ( $s['free_applied'] ) : ?><dt><?php esc_html_e( 'Free ship', 'rar-woo-smart-courier' ); ?></dt><dd><?php echo esc_html__( 'Yes – normal', 'rar-woo-smart-courier' ) . ' ' . wp_strip_all_tags( wc_price( $s['normal_cost'] ) ); ?></dd><?php endif; ?>
                 </dl>
-            <?php else : ?>
+            <?php elseif ( ! $unified ) : ?>
                 <p class="rwsc-mb-empty"><?php esc_html_e( 'No courier yet. Pick one below (or "Recommended") and update the order.', 'rar-woo-smart-courier' ); ?></p>
             <?php endif; ?>
 
+            <?php if ( $api ) : ?>
+                <?php echo RWSC_Dispatch_Orders_UI::courier_history_html( $order ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+            <?php endif; ?>
+            <details class="rwsc-mb-edit"<?php echo $api ? '' : ' open'; ?>>
+            <summary><?php echo esc_html( $api ? __( 'Edit manually (override)', 'rar-woo-smart-courier' ) : __( 'Courier & tracking', 'rar-woo-smart-courier' ) ); ?></summary>
+            <?php if ( $api ) : ?>
+                <p class="rwsc-mb-hint"><?php esc_html_e( 'This parcel is managed through the courier API; its status updates automatically. Change these only to correct a mistake.', 'rar-woo-smart-courier' ); ?></p>
+            <?php endif; ?>
             <label class="rwsc-mb-l"><?php esc_html_e( 'Courier', 'rar-woo-smart-courier' ); ?>
                 <select name="rwsc_courier">
                     <option value=""><?php esc_html_e( '— keep —', 'rar-woo-smart-courier' ); ?></option>
@@ -123,6 +140,7 @@ final class RWSC_Orders_Admin {
                 <textarea name="rwsc_note" rows="2"><?php echo esc_textarea( $s['note'] ); ?></textarea>
             </label>
             <label class="rwsc-mb-c"><input type="checkbox" name="rwsc_notify" value="1" <?php checked( RWSC_Settings::on( 'notify_tracking' ) ); ?>> <?php esc_html_e( 'Email the customer when tracking is added', 'rar-woo-smart-courier' ); ?></label>
+            </details>
             <div class="rwsc-mb-links">
                 <a href="<?php echo esc_url( RWSC_Print::url( 'labels', array( 'ids' => $order->get_id() ) ) ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'Print label', 'rar-woo-smart-courier' ); ?></a>
                 <a href="<?php echo esc_url( admin_url( 'admin.php?page=rwsc-shipments' ) ); ?>"><?php esc_html_e( 'Shipments board', 'rar-woo-smart-courier' ); ?></a>
@@ -215,7 +233,16 @@ final class RWSC_Orders_Admin {
         }
     }
 
+    /** True when courier API booking is available on order screens (one unified cell). */
+    private static function unified() {
+        return class_exists( 'RWSC_Dispatch_Orders_UI' ) && RWSC_Dispatch_Orders_UI::$on && current_user_can( RWSC_Dispatch_Ajax::operator_cap() );
+    }
+
     private static function column_html( WC_Order $order ) {
+        if ( self::unified() ) {
+            echo RWSC_Couriers::cell_wrap( $order ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped inside.
+            return;
+        }
         $s = RWSC_Shipments::get( $order );
         if ( '' === $s['courier'] ) {
             echo '<span class="rwsc-dim">—</span>';

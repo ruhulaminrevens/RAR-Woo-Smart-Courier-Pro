@@ -210,6 +210,59 @@ final class RWSC_Api_Settings {
 		return array_key_exists( $key, $all ) ? $all[ $key ] : $default;
 	}
 
+	/* ---------------- Verified connections ---------------- */
+
+	const VERIFIED_OPTION = 'rwsc_api_verified';
+
+	/** Settings that identify a courier account. Changing any of them invalidates "verified". */
+	public static function cred_keys( $slug ) {
+		$map = array(
+			'pathao'    => array( 'client_id', 'client_secret', 'username', 'environment' ),
+			'redx'      => array( 'redx_token', 'redx_env', 'redx_base_url' ),
+			'steadfast' => array( 'sf_api_key', 'sf_secret_key', 'sf_base_url' ),
+			'paperfly'  => array( 'pf_username', 'pf_password', 'pf_key', 'pf_env', 'pf_base_url' ),
+		);
+		return isset( $map[ $slug ] ) ? $map[ $slug ] : array();
+	}
+
+	public static function cred_fingerprint( $slug ) {
+		$parts = array();
+		foreach ( self::cred_keys( $slug ) as $k ) {
+			$parts[] = (string) self::get( $k, '' );
+		}
+		return substr( hash( 'sha256', $slug . '|' . implode( '|', $parts ) ), 0, 16 );
+	}
+
+	/**
+	 * Record that the saved credentials of a courier just worked (test, token, booking or sync).
+	 *
+	 * @param string $slug Courier.
+	 * @param string $how  test|token|send|sync.
+	 */
+	public static function mark_verified( $slug, $how ) {
+		if ( ! self::cred_keys( $slug ) ) {
+			return;
+		}
+		$all = get_option( self::VERIFIED_OPTION, array() );
+		$all = is_array( $all ) ? $all : array();
+		$fp  = self::cred_fingerprint( $slug );
+		// Avoid a DB write on every sync of an already-verified account.
+		if ( isset( $all[ $slug ]['fp'] ) && $all[ $slug ]['fp'] === $fp && 'test' !== $how && time() - (int) $all[ $slug ]['t'] < HOUR_IN_SECONDS ) {
+			return;
+		}
+		$all[ $slug ] = array( 't' => time(), 'fp' => $fp, 'how' => sanitize_key( $how ) );
+		update_option( self::VERIFIED_OPTION, $all, false );
+	}
+
+	/** @return array|null t, how — only while the saved credentials are unchanged. */
+	public static function verified( $slug ) {
+		$all = get_option( self::VERIFIED_OPTION, array() );
+		if ( ! is_array( $all ) || empty( $all[ $slug ]['fp'] ) || $all[ $slug ]['fp'] !== self::cred_fingerprint( $slug ) ) {
+			return null;
+		}
+		return $all[ $slug ];
+	}
+
 	public static function yes( $key ) {
 		return 'yes' === self::get( $key );
 	}
