@@ -57,3 +57,37 @@ jobs:
             rar-woo-smart-courier-v3.1.0.zip
             rar-woo-smart-courier-v3.1.0.zip.sha256
           retention-days: 90
+
+  publish:
+    name: Publish tested v3.1.0 GitHub Release
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [php, package]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: rar-woo-smart-courier-v3.1.0-installable
+          path: release-dist
+      - name: Verify artifact
+        run: |
+          cd release-dist
+          sha256sum -c rar-woo-smart-courier-v3.1.0.zip.sha256
+          unzip -t rar-woo-smart-courier-v3.1.0.zip
+      - name: Create GitHub release once after all checks pass
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if gh release view v3.1.0 >/dev/null 2>&1; then
+            echo "v3.1.0 already released; not changing an existing release"
+            exit 0
+          fi
+          gh release create v3.1.0 \
+            release-dist/rar-woo-smart-courier-v3.1.0.zip \
+            release-dist/rar-woo-smart-courier-v3.1.0.zip.sha256 \
+            --target "$GITHUB_SHA" \
+            --title "RAR Woo Smart Courier Pro v3.1.0" \
+            --notes-file docs/RELEASE_NOTES_3.1.0.md \
+            --latest
