@@ -359,32 +359,52 @@ final class RWSC_Couriers {
 	 */
 	public static function import_legacy( $limit = 500 ) {
 		global $wpdb;
-		$n = 0;
+		$n      = 0;
+		$limit  = max( 1, min( 500, (int) $limit ) );
+		$cursor = get_option( 'rwsc_legacy_import_cursor', array() );
+		$cursor = is_array( $cursor ) ? $cursor : array();
 		foreach ( self::modules() as $m ) {
-			if ( '' === $m->legacy_id_key() ) {
+			$key = $m->legacy_id_key();
+			if ( '' === $key ) {
 				continue;
 			}
-			$ids = $wpdb->get_col( $wpdb->prepare( "SELECT DISTINCT post_id FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value <> '' LIMIT %d", $m->legacy_id_key(), (int) $limit ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$slug = $m->slug();
+			$after = (int) ( $cursor[ $slug ] ?? 0 );
+			// Per-courier ID cursor: repeated clicks scan the next batch rather than
+			// always checking the same earliest 500 legacy postmeta entries.
+			$ids = $wpdb->get_col( $wpdb->prepare(
+				"SELECT DISTINCT post_id FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value <> '' AND post_id > %d ORDER BY post_id ASC LIMIT %d",
+				$key, $after, $limit
+			) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			if ( ! is_array( $ids ) ) {
+				continue;
+			}
 			foreach ( $ids as $id ) {
+				$after = max( $after, (int) $id );
 				$order = wc_get_order( (int) $id );
-				if ( ! $order || '' !== $m->get( $order, 'id' ) ) {
+				if ( ! $order instanceof WC_Order || '' !== (string) $m->get( $order, 'id' ) ) {
 					continue;
 				}
-				$cid = (string) get_post_meta( (int) $id, $m->legacy_id_key(), true );
+				$cid = (string) get_post_meta( (int) $id, $key, true );
 				if ( '' === $cid ) {
 					continue;
 				}
 				$order->update_meta_data( $m->key( 'id' ), $cid );
-				if ( 'steadfast' === $m->slug() ) {
+				if ( 'steadfast' === $slug ) {
 					$st = (string) get_post_meta( (int) $id, 'stdf_delivery_status', true );
 					if ( '' !== $st ) {
 						$order->update_meta_data( $m->key( 'status' ), $st );
 					}
 				}
 				$order->save_meta_data();
+				if ( class_exists( 'RWSC_Bridge' ) ) {
+					RWSC_Bridge::sync( $order, array( 'notify' => false, 'history' => true ) );
+				}
 				++$n;
 			}
+			$cursor[ $slug ] = $after;
 		}
+		update_option( 'rwsc_legacy_import_cursor', $cursor, false );
 		return $n;
 	}
 }
