@@ -43,11 +43,14 @@ final class RWSC_Dispatch {
 	public static function boot() {
 		// The bridge listens to the engine's hooks, which the stand-alone Suite fires too.
 		RWSC_Bridge::init();
+		RWSC_Api_Settings::maybe_import_suite();
 		if ( self::conflicting_dispatch_active() ) {
 			add_action( 'admin_notices', array( __CLASS__, 'suite_notice' ) );
+			if ( is_admin() ) {
+				RWSC_Dispatch_Ajax::init( true ); // Read-only API connection/lookup tests.
+			}
 			return;
 		}
-		RWSC_Api_Settings::maybe_import_suite();
 		RWSC_Webhook::init();
 		RWSC_SteadFast::init();
 		RWSC_Cron::init();
