@@ -163,7 +163,7 @@ final class RWSC_Bridge {
 					&& '' !== (string) $order->get_meta( '_rwsc_status', true ) ) {
 					continue;
 				}
-				if ( self::sync( $order, array( 'notify' => false ) ) ) {
+				if ( self::sync( $order, array( 'notify' => false, 'history' => true ) ) ) {
 					++$synced;
 				}
 			}
