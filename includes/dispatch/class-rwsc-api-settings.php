@@ -106,6 +106,7 @@ final class RWSC_Api_Settings {
 			return self::$cache;
 		}
 		self::maybe_import_suite();
+		self::harden_legacy_webhook_secret();
 		$saved = get_option( self::OPTION, array() );
 		$saved = is_array( $saved ) ? $saved : array();
 		$out   = wp_parse_args( $saved, self::defaults() );
@@ -178,6 +179,30 @@ final class RWSC_Api_Settings {
 			update_option( 'rwsc_suite_imported', time(), false );
 		}
 		return $changed;
+	}
+
+	/**
+	 * Encrypt an existing plaintext webhook credential on first read. v3.0.0
+	 * stored webhook_secret unencrypted because it was omitted from SECRETS.
+	 * Never replace a value when OpenSSL is unavailable or encryption fails.
+	 */
+	public static function harden_legacy_webhook_secret() {
+		$saved = get_option( self::OPTION, array() );
+		if ( ! is_array( $saved ) ) {
+			return false;
+		}
+		$old = (string) ( $saved['webhook_secret'] ?? '' );
+		if ( '' === $old || 0 === strpos( $old, 'rpc1:' ) ) {
+			return false;
+		}
+		$enc = self::encrypt( $old );
+		if ( 0 !== strpos( $enc, 'rpc1:' ) ) {
+			return false;
+		}
+		$saved['webhook_secret'] = $enc;
+		update_option( self::OPTION, $saved, false );
+		self::$cache = null;
+		return true;
 	}
 
 	public static function get( $key, $default = null ) {
