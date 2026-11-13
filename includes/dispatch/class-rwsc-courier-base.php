@@ -157,7 +157,7 @@ abstract class RWSC_Courier_Base {
 		}
 		if ( ! $this->enabled() || ! $this->configured() ) {
 			/* translators: %s: courier */
-			return new WP_Error( 'rwsc_not_configured', sprintf( __( '%s is not enabled / configured (Courier Suite → Settings).', 'rar-woo-smart-courier' ), $this->label() ), array( 'status' => 400 ) );
+			return new WP_Error( 'rwsc_not_configured', sprintf( __( '%s is not enabled / configured (Smart Courier → Courier APIs).', 'rar-woo-smart-courier' ), $this->label() ), array( 'status' => 400 ) );
 		}
 
 		$lock = 'send_' . $order->get_id(); // Same lock name as Pathao: mutual exclusion across couriers.

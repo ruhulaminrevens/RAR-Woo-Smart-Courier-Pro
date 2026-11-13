@@ -24,7 +24,7 @@ final class RWSC_Dispatch {
 			'class-rwsc-pathao-locations', 'class-rwsc-order-data', 'class-rwsc-pathao-orders', 'class-rwsc-courier-base',
 			'class-rwsc-redx', 'class-rwsc-steadfast', 'class-rwsc-paperfly', 'class-rwsc-sundarban', 'class-rwsc-couriers',
 			'class-rwsc-webhook', 'class-rwsc-cron', 'class-rwsc-dispatch-ajax', 'class-rwsc-dispatch-orders-ui',
-			'class-rwsc-dispatch-frontend', 'class-rwsc-bridge',
+			'class-rwsc-bridge',
 		);
 		foreach ( $files as $f ) {
 			require_once $dir . $f . '.php';
@@ -42,7 +42,6 @@ final class RWSC_Dispatch {
 		RWSC_Webhook::init();
 		RWSC_SteadFast::init();
 		RWSC_Cron::init();
-		RWSC_Dispatch_Frontend::init();
 		if ( is_admin() ) {
 			RWSC_Dispatch_Ajax::init();
 			RWSC_Dispatch_Orders_UI::init();
@@ -57,6 +56,7 @@ final class RWSC_Dispatch {
 	}
 
 	public static function activate() {
+		add_filter( 'cron_schedules', array( 'RWSC_Cron', 'schedules' ) ); // phpcs:ignore WordPress.WP.CronInterval
 		if ( ! self::suite_active() && ! wp_next_scheduled( RWSC_Cron::HOOK_SYNC ) ) {
 			wp_schedule_event( time() + 300, 'rwsc_30min', RWSC_Cron::HOOK_SYNC );
 		}

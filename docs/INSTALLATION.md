@@ -1,4 +1,4 @@
-# Installation & Production Checklist (v3.0.0)
+# Installation & Production Checklist (v3.0.1)
 
 ## 1. Before you start
 
@@ -9,7 +9,7 @@
 ## 2. Install or upgrade
 
 1. WordPress Admin → Plugins → Add New → Upload Plugin.
-2. Choose `rar-woo-smart-courier-v3.0.0.zip` → Install Now.
+2. Choose `rar-woo-smart-courier-v3.0.1.zip` → Install Now.
    - **Upgrading from 1.x:** choose **Replace current with uploaded**.
 3. Activate. A new **Smart Courier** menu appears (Dashboard · Shipments · Settings).
 
@@ -95,7 +95,7 @@ Smart Courier → Settings → Checkout display → turn **Safe Test Mode OFF** 
 
 ### Replacing the RAR Courier Suite plugin
 
-1. Install/activate v3.0.0 first. If the Suite is still active, dispatch pauses and a notice reminds you; nothing is duplicated.
+1. Install/activate v3.0.1 first. If the Suite is still active, dispatch pauses and a notice reminds you; nothing is duplicated.
 2. Check **Courier APIs**: credentials and options were imported automatically (the encrypted values use the same key, so they work as they are).
 3. Confirm the webhook URLs above (unchanged from the Suite).
 4. In the Suite's settings keep **Delete data on uninstall = No**. Deactivate, then delete **RAR Courier Suite**.

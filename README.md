@@ -1,6 +1,6 @@
 # RAR Woo Smart Courier Pro
 
-![Version](https://img.shields.io/badge/version-3.0.0-6366f1) ![WordPress](https://img.shields.io/badge/WordPress-6.2%2B-21759b) ![WooCommerce](https://img.shields.io/badge/WooCommerce-8.0%2B%20·%20tested%2010.1-7f54b3) ![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4) ![HPOS](https://img.shields.io/badge/HPOS-compatible-16a34a) ![Blocks](https://img.shields.io/badge/Checkout%20blocks-compatible-16a34a) ![License](https://img.shields.io/badge/license-GPL--2.0--or--later-lightgrey)
+![Version](https://img.shields.io/badge/version-3.0.1-6366f1) ![WordPress](https://img.shields.io/badge/WordPress-6.2%2B-21759b) ![WooCommerce](https://img.shields.io/badge/WooCommerce-8.0%2B%20·%20tested%2010.1-7f54b3) ![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4) ![HPOS](https://img.shields.io/badge/HPOS-compatible-16a34a) ![Blocks](https://img.shields.io/badge/Checkout%20blocks-compatible-16a34a) ![License](https://img.shields.io/badge/license-GPL--2.0--or--later-lightgrey)
 
 Multi-courier shipping and dispatch for WooCommerce stores in Bangladesh. It gives customers one courier choice per company at checkout, each with a price, a delivery time and an estimated arrival date. Behind the scenes it gives your team a dispatch board, parcel labels, hand-over manifests, tracking and a courier performance dashboard.
 
@@ -8,15 +8,15 @@ Multi-courier shipping and dispatch for WooCommerce stores in Bangladesh. It giv
 
 ## Download
 
-### [⬇️ Download RAR Woo Smart Courier v3.0.0 (installable ZIP)](https://github.com/ruhulaminrevens/RAR-Woo-Smart-Courier-Pro/raw/main/releases/rar-woo-smart-courier-v3.0.0.zip)
+### [⬇️ Download RAR Woo Smart Courier v3.0.1 (installable ZIP)](https://github.com/ruhulaminrevens/RAR-Woo-Smart-Courier-Pro/raw/main/releases/rar-woo-smart-courier-v3.0.1.zip)
 
-- **Installable ZIP:** [`releases/rar-woo-smart-courier-v3.0.0.zip`](releases/rar-woo-smart-courier-v3.0.0.zip). Upload this file to WordPress.
+- **Installable ZIP:** [`releases/rar-woo-smart-courier-v3.0.1.zip`](releases/rar-woo-smart-courier-v3.0.1.zip). Upload this file to WordPress.
 - **Source code:** [Download the repository as ZIP](https://github.com/ruhulaminrevens/RAR-Woo-Smart-Courier-Pro/archive/refs/heads/main.zip). This is for developers; don't upload it to WordPress.
 
 ### Install in 1 minute
 
 1. Take a **full backup** of your site (files + database).
-2. WordPress → **Plugins → Add New → Upload Plugin** → choose `rar-woo-smart-courier-v3.0.0.zip` → **Install Now** → **Activate**.
+2. WordPress → **Plugins → Add New → Upload Plugin** → choose `rar-woo-smart-courier-v3.0.1.zip` → **Install Now** → **Activate**.
 3. **Already using v1.x?** Choose **Replace current with uploaded**. Your settings and older orders are converted automatically; see [Upgrading from 1.x](#upgrading-from-1x).
 4. Open **Smart Courier → Settings**, enter your courier rates, and test with **Safe Test Mode ON** before going live.
 
@@ -36,7 +36,7 @@ Version 3 merges the stand-alone **RAR Courier Suite** into this plugin. One plu
 
 ### Replacing RAR Courier Suite
 
-1. Update to v3.0.0 and activate (the Suite can stay active for now — dispatch pauses and a notice appears).
+1. Update to v3.0.1 and activate (the Suite can stay active for now — dispatch pauses and a notice appears).
 2. Open **Smart Courier → Courier APIs**: your credentials are already there (imported). Use each tab's *Test connection* once.
 3. Make sure the Pathao and SteadFast webhook URLs in the courier panels still point to `/wp-json/ptc/v1/webhook` and `/wp-json/ptc/v1/steadfast` (they do not change).
 4. In the Suite, leave **Delete data on uninstall** switched **off**, then **deactivate and delete RAR Courier Suite**.
@@ -208,7 +208,7 @@ releases/                          Installable ZIPs
 
 ## Version
 
-**v3.0.0 — 2026-11-14.** See [CHANGELOG.md](CHANGELOG.md).
+**v3.0.1 — 2026-11-14.** See [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 

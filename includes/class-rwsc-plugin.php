@@ -38,6 +38,8 @@ final class RAR_Woo_Smart_Courier {
         }
 
         self::maybe_upgrade();
+        // Orders can only be queried once WooCommerce has registered its post types / order tables.
+        add_action( 'wp_loaded', array( __CLASS__, 'maybe_backfill_dispatch' ) );
 
         RWSC_Engine::init();
         RWSC_Shipments::init();
@@ -79,14 +81,13 @@ final class RAR_Woo_Smart_Courier {
     public static function maybe_upgrade() {
         RWSC_Settings::migrate(); // Idempotent: returns at once when settings are already v2.
         $stored = (string) get_option( 'rwsc_version', '' );
-        self::maybe_backfill_dispatch();
         if ( RWSC_VERSION === $stored ) {
             return;
         }
         if ( '' === $stored || version_compare( $stored, '2.0.0', '<' ) ) {
             delete_option( 'rwsc_backfill_done' );
         }
-        if ( '' === $stored || version_compare( $stored, '3.0.0', '<' ) ) {
+        if ( '' === $stored || version_compare( $stored, '3.0.1', '<' ) ) {
             // v3: dispatch engine arrives. Pull in RAR Courier Suite settings and mirror its parcels once.
             delete_option( 'rwsc_dispatch_backfill_done' );
         }

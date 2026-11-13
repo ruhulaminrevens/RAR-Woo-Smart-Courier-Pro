@@ -223,7 +223,7 @@ final class RWSC_Shipments {
         return ( $u && $u->exists() ) ? $u->display_name : __( 'System', 'rar-woo-smart-courier' );
     }
 
-    private static function log( WC_Order $order, $status, $message ) {
+    public static function log( WC_Order $order, $status, $message ) {
         $log = $order->get_meta( '_rwsc_log', true );
         $log = is_array( $log ) ? $log : array();
         $log[] = array(

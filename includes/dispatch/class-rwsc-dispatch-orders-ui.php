@@ -96,7 +96,7 @@ final class RWSC_Dispatch_Orders_UI {
 		if ( function_exists( 'wc_get_page_screen_id' ) ) {
 			$screen = wc_get_page_screen_id( 'shop-order' );
 		}
-		add_meta_box( 'rwsc-d-courier-suite', __( 'Courier Suite', 'rar-woo-smart-courier' ), array( __CLASS__, 'render_box' ), $screen, 'side', 'high' );
+		add_meta_box( 'rwsc-d-courier-dispatch', __( 'Courier Dispatch', 'rar-woo-smart-courier' ), array( __CLASS__, 'render_box' ), $screen, 'side', 'high' );
 	}
 
 	public static function render_suite_box( $post_or_order ) {
@@ -185,7 +185,7 @@ final class RWSC_Dispatch_Orders_UI {
 		if ( in_array( $id, array( 'woocommerce_page_wc-orders', 'edit-shop_order', 'shop_order' ), true ) ) {
 			return true;
 		}
-		return false !== strpos( $id, 'rwsc-api' ) || false !== strpos( $id, 'rwsc-tools' );
+		return false !== strpos( $id, 'rwsc-api' ) || false !== strpos( $id, 'rwsc-tools' ) || false !== strpos( $id, 'rwsc-parcels' );
 	}
 
 	public static function assets() {

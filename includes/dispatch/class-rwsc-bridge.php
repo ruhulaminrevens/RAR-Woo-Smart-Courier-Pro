@@ -61,6 +61,19 @@ final class RWSC_Bridge {
 	}
 
 	/**
+	 * The reference customers track by. SteadFast links use the tracking code, not the consignment id.
+	 */
+	public static function tracking_value( WC_Order $order, array $info ) {
+		if ( 'steadfast' === $info['courier'] ) {
+			$ref = (string) $order->get_meta( 'sfc_ref', true );
+			if ( '' !== $ref ) {
+				return $ref;
+			}
+		}
+		return (string) $info['id'];
+	}
+
+	/**
 	 * Mirror the engine's parcel state into the shipment model.
 	 *
 	 * @param WC_Order $order  Order.
@@ -76,10 +89,18 @@ final class RWSC_Bridge {
 			return false;
 		}
 		$changes = array(
-			'courier'  => $info['courier'],
-			'tracking' => $info['id'],
+			'tracking' => self::tracking_value( $order, $info ),
 			'status'   => self::map_status( $info['group'], RWSC_Pathao_Status::slug( $info['raw'] ) ),
 		);
+		// The courier that really holds the parcel wins over the checkout choice. It is set directly
+		// (no re-quote), so an unusual address or weight can never block the tracking/status mirror.
+		if ( (string) $order->get_meta( '_rwsc_courier', true ) !== $info['courier'] ) {
+			$name = RWSC_Settings::courier_name( $info['courier'] );
+			$order->update_meta_data( '_rwsc_courier', $info['courier'] );
+			$order->update_meta_data( '_rwsc_selected_courier', '' !== $name ? $name : RWSC_Couriers::label( $info['courier'] ) );
+			/* translators: %s: courier name */
+			RWSC_Shipments::log( $order, (string) $order->get_meta( '_rwsc_status', true ), sprintf( __( 'Courier set to %s', 'rar-woo-smart-courier' ), RWSC_Couriers::label( $info['courier'] ) ) );
+		}
 		// A manual shipment-board edit to "delivered/returned" must not be undone by a stale sync.
 		$cur = (string) $order->get_meta( '_rwsc_status', true );
 		if ( in_array( $cur, array( 'delivered', 'returned' ), true ) && ! $info['final'] ) {
@@ -105,45 +126,56 @@ final class RWSC_Bridge {
 	 * Push existing engine parcels (e.g. imported from RAR Courier Suite) into the
 	 * shipment model. Silent: customers get no notification for old parcels.
 	 *
-	 * @param int $limit Orders per run.
+	 * @param int $limit     Orders per page.
+	 * @param int $max_pages Pages per courier (bounded, 20 s time budget).
 	 * @return array array( scanned, synced )
 	 */
-	public static function backfill( $limit = 300 ) {
-		$scanned = 0;
-		$synced  = 0;
-		$seen    = array();
+	public static function backfill( $limit = 300, $max_pages = 6 ) {
+		$scanned  = 0;
+		$synced   = 0;
+		$seen     = array();
+		$deadline = microtime( true ) + 20;
 		foreach ( RWSC_Couriers::slugs() as $slug ) {
 			$key = RWSC_Couriers::id_key( $slug );
 			if ( '' === $key ) {
 				continue;
 			}
-			$ids = wc_get_orders(
-				array(
-					'limit'        => (int) $limit,
-					'return'       => 'ids',
-					'type'         => 'shop_order',
-					'orderby'      => 'date',
-					'order'        => 'DESC',
-					'meta_key'     => $key, // phpcs:ignore WordPress.DB.SlowDBQuery
-					'meta_compare' => '!=',
-					'meta_value'   => '', // phpcs:ignore WordPress.DB.SlowDBQuery
-				)
-			);
-			foreach ( (array) $ids as $id ) {
-				if ( isset( $seen[ $id ] ) ) {
-					continue;
+			for ( $page = 1; $page <= (int) $max_pages && microtime( true ) < $deadline; $page++ ) {
+				$ids = wc_get_orders(
+					array(
+						'limit'        => (int) $limit,
+						'paged'        => $page,
+						'return'       => 'ids',
+						'type'         => 'shop_order',
+						'orderby'      => 'date',
+						'order'        => 'DESC',
+						'meta_key'     => $key, // phpcs:ignore WordPress.DB.SlowDBQuery
+						'meta_compare' => '!=',
+						'meta_value'   => '', // phpcs:ignore WordPress.DB.SlowDBQuery
+					)
+				);
+				if ( empty( $ids ) ) {
+					break;
 				}
-				$seen[ $id ] = true;
-				$order       = wc_get_order( $id );
-				if ( ! $order ) {
-					continue;
+				foreach ( (array) $ids as $id ) {
+					if ( isset( $seen[ $id ] ) ) {
+						continue;
+					}
+					$seen[ $id ] = true;
+					$order       = wc_get_order( $id );
+					if ( ! $order ) {
+						continue;
+					}
+					++$scanned;
+					if ( '' !== (string) $order->get_meta( '_rwsc_tracking', true ) && '' !== (string) $order->get_meta( '_rwsc_status', true ) ) {
+						continue;
+					}
+					if ( self::sync( $order, array( 'notify' => false ) ) ) {
+						++$synced;
+					}
 				}
-				++$scanned;
-				if ( '' !== (string) $order->get_meta( '_rwsc_tracking', true ) && '' !== (string) $order->get_meta( '_rwsc_status', true ) ) {
-					continue;
-				}
-				if ( self::sync( $order, array( 'notify' => false ) ) ) {
-					++$synced;
+				if ( count( $ids ) < (int) $limit ) {
+					break;
 				}
 			}
 		}

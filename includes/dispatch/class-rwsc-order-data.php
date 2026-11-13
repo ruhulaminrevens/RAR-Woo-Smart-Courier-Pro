@@ -39,10 +39,22 @@ final class RWSC_Order_Data {
 	}
 
 	/**
+	 * The courier a person picked (customer at checkout, or staff manually). A courier that
+	 * Smart Courier merely auto-recommended for an admin / phone order is not a choice, so it
+	 * never overrides the "default courier for automation" setting.
+	 */
+	public static function chosen_courier( WC_Order $order ) {
+		if ( 'auto' === (string) $order->get_meta( '_rwsc_source', true ) ) {
+			return '';
+		}
+		return self::selected_courier( $order );
+	}
+
+	/**
 	 * True when the customer explicitly chose a courier other than Pathao.
 	 */
 	public static function chose_other_courier( WC_Order $order ) {
-		$c = self::selected_courier( $order );
+		$c = self::chosen_courier( $order );
 		return '' !== $c && false === stripos( $c, 'pathao' );
 	}
 

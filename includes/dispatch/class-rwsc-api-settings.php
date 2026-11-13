@@ -148,7 +148,13 @@ final class RWSC_Api_Settings {
 		if ( ( ! $force && null !== $own ) || ! is_array( $suite ) || empty( $suite ) ) {
 			return false;
 		}
-		$merged = is_array( $own ) ? array_merge( $suite, array_filter( $own, 'strlen' ) ) : $suite;
+		$filled = is_array( $own ) ? array_filter(
+			$own,
+			static function ( $v ) {
+				return is_array( $v ) ? ! empty( $v ) : '' !== (string) $v;
+			}
+		) : array();
+		$merged = array_merge( $suite, $filled );
 		update_option( self::OPTION, $merged, false );
 		$token = get_option( self::SUITE_TOKEN, null );
 		if ( $token && false === get_option( RWSC_Pathao_API::TOKEN_OPTION, false ) ) {

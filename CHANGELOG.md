@@ -1,5 +1,23 @@
 # Changelog
 
+## 3.0.1 — 2026-11-14
+
+Stabilisation release after a full audit and integration testing on WordPress 7.1 + WooCommerce 11.3 (legacy and HPOS storage, with and without the Suite active).
+
+### Fixed
+- Suite parcels are imported reliably: the one-time backfill now runs on `wp_loaded` (it used to run before WooCommerce registered orders, found nothing and marked itself done). It is paginated and time-boxed.
+- API-booked parcels now mirror to the Shipments board with the right tracking value (SteadFast consignment reference) and status; a delivered / returned parcel is never reopened.
+- An auto-recommended courier no longer overrides the courier you chose in Settings, and the courier picked at checkout is respected.
+- Admin menu order, duplicated front-end block, action-name collisions and stale "Suite" branding strings.
+- Fatal `TypeError` when saving settings with empty fields, and Suite settings import merging empty values over saved ones.
+- Cron schedule (`rwsc_30min`) is registered before activation scheduling, so status sync starts immediately.
+
+### Added
+- "Migrate from RAR Courier Suite" panel in Tools (re-run settings / parcel import on demand).
+
+### Changed
+- Uninstall removes settings only when "Delete data on uninstall" is enabled; order meta is never deleted.
+
 ## 3.0.0 — 2026-11-14
 
 **RAR Courier Suite is now built in.** Everything the stand-alone Suite did is included, so you can deactivate and delete it. Settings and parcels are imported automatically.
