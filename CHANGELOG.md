@@ -11,6 +11,7 @@
 - API shipment bridge writes the true courier without re-quoting checkout shipping for old orders; terminal states cannot silently reverse.
 - Native Pathao bulk now checks all-courier duplicate and uncertain-timeout guards under the order lock. Transport uncertainty prevents unsafe retries.
 - Pathao, RedX, SteadFast, Paperfly and Sundarban automated terminal status changes are protected against late events.
+- Pauses embedded API dispatch if an original Pathao, RedX or SteadFast plugin is active; prevents overlapping webhook/admin handlers.
 - Registers custom 30-minute WP-Cron interval before activation scheduling and cleans up migration tasks on deactivation.
 - Deduplicates customer-facing tracking cards and emails across Pro and its ported dispatch module.
 - Legacy RedX/SteadFast and HPOS old-Pathao postmeta migration actions now scan additional batches instead of repeatedly reading the first 500.
