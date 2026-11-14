@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.2.1 — 2026-11-14
+
+### Fixed
+- **Courier replaced by an automatic pick.** When an order without Smart Courier data reached a "ready" status, auto-assign always chose the recommended courier, even if the order's shipping line already named one (a courier typed on the WooCommerce order screen, or sent by another app). `RWSC_Shipments::courier_from_shipping_lines()` now matches the line title against courier names (exact, or as a whole word such as "SteadFast Courier") and keeps that courier as *Set by staff*; only orders without a named courier get the recommendation. Integration-checked on WordPress 7.1.4 + WooCommerce 11.3.0.
+
+### Works with
+- RAR Woo Stock & Order 1.5.0, whose staff app now shows Smart Courier's couriers, prices and delivery dates in Create Order and saves the chosen courier on the order (*Set by staff*).
+
 ## 3.2.0 — 2026-11-14
 
 UI, options and functionality clean-up, reviewed against live nabiad.com screenshots and re-checked by rendering every admin page at phone (412 px) and desktop (1366 px) width. Integration-tested on WordPress 7.1.4 + WooCommerce 11.3.0, legacy and HPOS storage, RAR Courier Suite active and inactive; courier HTTP mocked.
