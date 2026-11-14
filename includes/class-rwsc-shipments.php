@@ -603,12 +603,49 @@ final class RWSC_Shipments {
             $order->save();
             return;
         }
+        // A courier already named on the order's shipping line (typed by staff in WooCommerce, or
+        // sent by another app) is a person's choice: keep it instead of recommending another one.
+        $named = self::courier_from_shipping_lines( $order );
+        if ( '' !== $named ) {
+            $r = self::auto_assign( $order, true, $named );
+            if ( ! is_wp_error( $r ) ) {
+                /* translators: %s: courier name */
+                self::log( $order, 'pending', sprintf( __( 'Courier %s taken from the order\'s shipping line', 'rar-woo-smart-courier' ), $r['courier_name'] ) );
+                $order->save();
+                return;
+            }
+        }
         $r = self::auto_assign( $order );
         if ( ! is_wp_error( $r ) ) {
             /* translators: %s: courier name */
             self::log( $order, 'pending', sprintf( __( 'Auto-assigned %s (recommended)', 'rar-woo-smart-courier' ), $r['courier_name'] ) );
             $order->save();
         }
+    }
+
+    /**
+     * Courier key named by a shipping line title ("SteadFast", "Pathao Delivery"…), or ''.
+     */
+    public static function courier_from_shipping_lines( WC_Order $order ) {
+        $couriers = RWSC_Settings::couriers();
+        foreach ( $order->get_shipping_methods() as $item ) {
+            $title = trim( wp_strip_all_tags( (string) $item->get_method_title() ) );
+            if ( '' === $title ) {
+                continue;
+            }
+            $key = RWSC_Settings::courier_key_by_name( $title );
+            if ( '' !== $key ) {
+                return $key;
+            }
+            $lc = strtolower( $title );
+            foreach ( $couriers as $k => $c ) {
+                $name = strtolower( trim( (string) $c['name'] ) );
+                if ( strlen( $name ) >= 4 && preg_match( '/(^|[^a-z0-9])' . preg_quote( $name, '/' ) . '($|[^a-z0-9])/', $lc ) ) {
+                    return (string) $k;
+                }
+            }
+        }
+        return '';
     }
 
     public static function hidden_item_meta( $keys ) {

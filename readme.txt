@@ -6,7 +6,7 @@ Tested up to: 7.1
 Requires PHP: 7.4
 WC requires at least: 8.0
 WC tested up to: 11.3
-Stable tag: 3.2.0
+Stable tag: 3.2.1
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -47,7 +47,7 @@ Checkout pricing uses the merchant-defined rate table. The separate dispatch eng
 == Installation ==
 
 1. Take a full backup of your site (files and database).
-2. Plugins → Add New → Upload Plugin → choose `rar-woo-smart-courier-v3.2.0.zip` → Install Now → Activate. When upgrading, choose "Replace current with uploaded".
+2. Plugins → Add New → Upload Plugin → choose `rar-woo-smart-courier-v3.2.1.zip` → Install Now → Activate. When upgrading, choose "Replace current with uploaded".
 3. WooCommerce → Settings → Shipping: make sure there is a zone for Bangladesh with a **Flat rate** method (and Free shipping if you use it).
 4. Smart Courier → Rates & Checkout: enter your courier rates and ETAs, and pick your Nearby districts and areas.
 5. Keep Safe Test Mode ON and place a test order for an Inside Dhaka, a Nearby and an Outside Dhaka address.
@@ -73,6 +73,9 @@ Order meta is kept by this plugin's uninstall handler. Its API credential settin
 5. Parcel labels
 
 == Changelog ==
+
+= 3.2.1 =
+* A courier already named on an order's shipping line (e.g. "SteadFast" typed in WooCommerce, or chosen in the RAR Woo Stock & Order staff app) is kept when the order reaches a ready status, instead of being replaced by the recommended courier.
 
 = 3.2.0 =
 * One Courier column in the Orders list and one Smart Courier box on the order screen (the separate Dispatch column and Courier Dispatch box are merged).
